@@ -19,6 +19,7 @@ import ProjectsPage from "./pages/ProjectsPage";
 import HealthPage from "./pages/HealthPage";
 import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
+import PublicProfilePage from "./pages/PublicProfilePage";
 import StudyRoomsPage from "./pages/StudyRoomsPage";
 import StudyRoomDetail from "./pages/StudyRoomDetail";
 import MealAnalyzerPage from "./pages/MealAnalyzerPage";
@@ -109,6 +110,7 @@ const App = () => (
             <Route path="/rewards" element={<ProtectedLayout><GamificationPage /></ProtectedLayout>} />
             <Route path="/team-challenges" element={<ProtectedLayout><TeamChallengesPage /></ProtectedLayout>} />
             <Route path="/profile" element={<ProtectedLayout><ProfilePage /></ProtectedLayout>} />
+            <Route path="/profile/:userId" element={<PublicProfilePage />} />
             <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
             <Route path="*" element={<NotFound />} />
             </Routes>
