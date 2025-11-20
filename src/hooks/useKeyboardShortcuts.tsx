@@ -1,7 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-export const useKeyboardShortcuts = () => {
+interface KeyboardShortcutsHook {
+  showHelp: () => void;
+}
+
+export const useKeyboardShortcuts = (showHelp?: () => void) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -14,6 +18,13 @@ export const useKeyboardShortcuts = () => {
         target.tagName === "TEXTAREA" ||
         target.isContentEditable
       ) {
+        return;
+      }
+
+      // ? - Show shortcuts help
+      if (event.key === "?" && showHelp) {
+        event.preventDefault();
+        showHelp();
         return;
       }
 
@@ -56,5 +67,5 @@ export const useKeyboardShortcuts = () => {
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [navigate, location]);
+  }, [navigate, location, showHelp]);
 };
