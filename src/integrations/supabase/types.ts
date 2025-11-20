@@ -125,6 +125,44 @@ export type Database = {
         }
         Relationships: []
       }
+      collaborative_editing_sessions: {
+        Row: {
+          active_users: Json | null
+          current_content: string | null
+          id: string
+          last_updated: string | null
+          note_id: string
+          version: number | null
+          workspace_id: string
+        }
+        Insert: {
+          active_users?: Json | null
+          current_content?: string | null
+          id?: string
+          last_updated?: string | null
+          note_id: string
+          version?: number | null
+          workspace_id: string
+        }
+        Update: {
+          active_users?: Json | null
+          current_content?: string | null
+          id?: string
+          last_updated?: string | null
+          note_id?: string
+          version?: number | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collaborative_editing_sessions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_tags: {
         Row: {
           content_id: string
@@ -191,6 +229,47 @@ export type Database = {
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      editing_operations: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          operation_type: string
+          position: number
+          session_id: string
+          timestamp: number
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          operation_type: string
+          position: number
+          session_id: string
+          timestamp: number
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          operation_type?: string
+          position?: number
+          session_id?: string
+          timestamp?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "editing_operations_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "collaborative_editing_sessions"
             referencedColumns: ["id"]
           },
         ]
@@ -361,6 +440,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      marketplace_templates: {
+        Row: {
+          author_id: string
+          author_name: string | null
+          category: string
+          color: string | null
+          created_at: string | null
+          description: string | null
+          downloads_count: number | null
+          icon: string | null
+          id: string
+          is_published: boolean | null
+          name: string
+          rating: number | null
+          template_data: Json
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          author_name?: string | null
+          category: string
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          downloads_count?: number | null
+          icon?: string | null
+          id?: string
+          is_published?: boolean | null
+          name: string
+          rating?: number | null
+          template_data: Json
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          author_name?: string | null
+          category?: string
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          downloads_count?: number | null
+          icon?: string | null
+          id?: string
+          is_published?: boolean | null
+          name?: string
+          rating?: number | null
+          template_data?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       meal_plans: {
         Row: {
@@ -1022,6 +1152,41 @@ export type Database = {
         }
         Relationships: []
       }
+      template_ratings: {
+        Row: {
+          created_at: string | null
+          id: string
+          rating: number | null
+          review: string | null
+          template_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          review?: string | null
+          template_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          review?: string | null
+          template_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_ratings_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       timetable_events: {
         Row: {
           category: string | null
@@ -1384,6 +1549,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "workspace_activities_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_automation_rules: {
+        Row: {
+          action_config: Json | null
+          action_type: string
+          created_at: string | null
+          created_by: string
+          id: string
+          is_enabled: boolean | null
+          last_triggered: string | null
+          rule_name: string
+          trigger_config: Json | null
+          trigger_type: string
+          workspace_id: string
+        }
+        Insert: {
+          action_config?: Json | null
+          action_type: string
+          created_at?: string | null
+          created_by: string
+          id?: string
+          is_enabled?: boolean | null
+          last_triggered?: string | null
+          rule_name: string
+          trigger_config?: Json | null
+          trigger_type: string
+          workspace_id: string
+        }
+        Update: {
+          action_config?: Json | null
+          action_type?: string
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          is_enabled?: boolean | null
+          last_triggered?: string | null
+          rule_name?: string
+          trigger_config?: Json | null
+          trigger_type?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_automation_rules_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"

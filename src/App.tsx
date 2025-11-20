@@ -42,6 +42,8 @@ import KeyboardShortcutsSettings from "./pages/KeyboardShortcutsSettings";
 import WorkspacesPage from "@/pages/WorkspacesPage";
 import WorkspaceTemplatesPage from "@/pages/WorkspaceTemplatesPage";
 import WorkspaceDashboard from "@/pages/WorkspaceDashboard";
+import WorkspaceCalendar from "@/pages/WorkspaceCalendar";
+import TemplatesMarketplace from "@/pages/TemplatesMarketplace";
 import NotFound from "./pages/NotFound";
 import { NotificationProvider } from "./components/NotificationProvider";
 
@@ -145,6 +147,8 @@ const App = () => (
             <Route path="/workspaces" element={<ProtectedLayout><WorkspacesPage /></ProtectedLayout>} />
             <Route path="/workspace-templates" element={<ProtectedLayout><WorkspaceTemplatesPage /></ProtectedLayout>} />
             <Route path="/workspace/:workspaceId/dashboard" element={<ProtectedLayout><WorkspaceDashboard /></ProtectedLayout>} />
+            <Route path="/workspace/:workspaceId/calendar" element={<ProtectedLayout><WorkspaceCalendar /></ProtectedLayout>} />
+            <Route path="/templates-marketplace" element={<ProtectedLayout><TemplatesMarketplace /></ProtectedLayout>} />
             <Route path="*" element={<NotFound />} />
             </Routes>
           </NotificationProvider>
