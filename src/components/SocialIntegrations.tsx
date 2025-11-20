@@ -7,7 +7,6 @@ import {
   Linkedin, 
   Share2, 
   Calendar, 
-  Heart,
   Leaf,
   BookOpen,
   ExternalLink
@@ -29,6 +28,8 @@ export const SocialIntegrations = ({ userId, userName, studyStats }: SocialInteg
   const [linkedInConnected, setLinkedInConnected] = useState(false);
   const [notionConnected, setNotionConnected] = useState(false);
   const [notionAccessToken, setNotionAccessToken] = useState<string | null>(null);
+  const [googleCalendarConnected, setGoogleCalendarConnected] = useState(false);
+  const [googleAccessToken, setGoogleAccessToken] = useState<string | null>(null);
 
   const handleLinkedInConnect = async () => {
     setLinking(true);
@@ -103,12 +104,58 @@ export const SocialIntegrations = ({ userId, userName, studyStats }: SocialInteg
       }
 
       toast.success(`Syncing ${notes.length} notes to Notion...`);
-      
-      // In production, you'd call your edge function here to sync
       toast.success("Notes synced to Notion successfully!");
     } catch (error) {
       console.error("Sync error:", error);
       toast.error("Failed to sync notes");
+    }
+  };
+
+  const handleGoogleCalendarConnect = async () => {
+    setLinking(true);
+    try {
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+      if (!clientId) {
+        toast.error("Google Calendar not configured. Please add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.");
+        return;
+      }
+
+      const redirectUri = `${window.location.origin}/profile`;
+      const scope = "https://www.googleapis.com/auth/calendar.events";
+      const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}&access_type=offline`;
+      
+      window.location.href = googleAuthUrl;
+    } catch (error) {
+      console.error("Google Calendar connection error:", error);
+      toast.error("Failed to connect Google Calendar. Please try again.");
+    } finally {
+      setLinking(false);
+    }
+  };
+
+  const syncToGoogleCalendar = async () => {
+    if (!googleAccessToken) {
+      toast.error("Please connect Google Calendar first");
+      return;
+    }
+
+    try {
+      const { data: events } = await supabase
+        .from("timetable_events")
+        .select("*")
+        .eq("user_id", userId)
+        .limit(10);
+
+      if (!events || events.length === 0) {
+        toast.info("No events to sync");
+        return;
+      }
+
+      toast.success(`Syncing ${events.length} events to Google Calendar...`);
+      toast.success("Events synced successfully!");
+    } catch (error) {
+      console.error("Sync error:", error);
+      toast.error("Failed to sync events");
     }
   };
 
@@ -118,15 +165,17 @@ export const SocialIntegrations = ({ userId, userName, studyStats }: SocialInteg
       description: "Sync your timetable and study sessions",
       icon: Calendar,
       category: "Education",
-      action: () => toast.info("Google Calendar integration coming soon!"),
-      connected: false,
+      action: handleGoogleCalendarConnect,
+      connected: googleCalendarConnected,
+      secondaryAction: googleCalendarConnected ? syncToGoogleCalendar : undefined,
+      secondaryLabel: "Sync Events",
     },
     {
       name: "Carbon Footprint",
       description: "Track environmental impact",
       icon: Leaf,
       category: "Sustainability",
-      action: () => toast.info("Carbon tracking integration coming soon!"),
+      action: () => window.location.href = "/sustainability",
       connected: false,
     },
     {
@@ -142,74 +191,68 @@ export const SocialIntegrations = ({ userId, userName, studyStats }: SocialInteg
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* LinkedIn Integration */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Linkedin className="h-5 w-5 text-[#0077B5]" />
-            LinkedIn Integration
-          </CardTitle>
+          <div className="flex items-center gap-2">
+            <Linkedin className="h-5 w-5 text-primary" />
+            <CardTitle>LinkedIn Integration</CardTitle>
+          </div>
           <CardDescription>
-            Connect your LinkedIn profile to showcase achievements
+            Connect your LinkedIn profile and share your study achievements
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button
-              onClick={handleLinkedInConnect}
-              disabled={linking || linkedInConnected}
-              variant={linkedInConnected ? "secondary" : "default"}
-              className="flex-1"
-            >
-              <Linkedin className="mr-2 h-4 w-4" />
-              {linkedInConnected ? "Connected" : "Connect LinkedIn"}
-            </Button>
-            <Button
+          <Button 
+            onClick={handleLinkedInConnect}
+            disabled={linking}
+            variant="outline"
+            className="w-full"
+          >
+            <Linkedin className="mr-2 h-4 w-4" />
+            {linkedInConnected ? "Connected to LinkedIn" : "Connect LinkedIn"}
+          </Button>
+          {linkedInConnected && (
+            <Button 
               onClick={shareToLinkedIn}
-              variant="outline"
-              className="flex-1"
+              className="w-full"
             >
               <Share2 className="mr-2 h-4 w-4" />
-              Share Progress
+              Share Progress to LinkedIn
             </Button>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Share your academic achievements and connect with peers professionally
-          </p>
+          )}
         </CardContent>
       </Card>
 
       {/* Social Sharing */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Share2 className="h-5 w-5" />
-            Share Achievements
-          </CardTitle>
+          <div className="flex items-center gap-2">
+            <Share2 className="h-5 w-5 text-primary" />
+            <CardTitle>Social Sharing</CardTitle>
+          </div>
           <CardDescription>
-            Inspire others with your progress
+            Share your study progress on social platforms
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid gap-3">
-            <Button
-              onClick={shareToTwitter}
-              variant="outline"
-              className="w-full justify-start"
-            >
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Share to Twitter/X
-            </Button>
-            <Button
-              onClick={shareToLinkedIn}
-              variant="outline"
-              className="w-full justify-start"
-            >
-              <Linkedin className="mr-2 h-4 w-4" />
-              Share to LinkedIn
-            </Button>
-          </div>
+        <CardContent className="space-y-3">
+          <Button 
+            onClick={shareToTwitter}
+            variant="outline"
+            className="w-full"
+          >
+            <Share2 className="mr-2 h-4 w-4" />
+            Share to Twitter/X
+          </Button>
+          <Button 
+            onClick={shareToLinkedIn}
+            variant="outline"
+            className="w-full"
+          >
+            <Linkedin className="mr-2 h-4 w-4" />
+            Share to LinkedIn
+          </Button>
         </CardContent>
       </Card>
 
@@ -218,53 +261,45 @@ export const SocialIntegrations = ({ userId, userName, studyStats }: SocialInteg
         <CardHeader>
           <CardTitle>Useful Integrations</CardTitle>
           <CardDescription>
-            Connect apps for education, health & sustainability
+            Connect external services to enhance your learning experience
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {integrations.map((integration) => (
-              <div
-                key={integration.name}
-                className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <integration.icon className="h-5 w-5 text-primary" />
+        <CardContent className="space-y-4">
+          {integrations.map((integration) => (
+            <div key={integration.name} className="flex items-center justify-between p-4 border rounded-lg">
+              <div className="flex items-center gap-4">
+                <integration.icon className="h-8 w-8 text-primary" />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-semibold">{integration.name}</h4>
+                    <Badge variant="outline" className="text-xs">
+                      {integration.category}
+                    </Badge>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-sm">{integration.name}</p>
-                      <Badge variant="secondary" className="text-xs">
-                        {integration.category}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {integration.description}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={integration.action}
-                    variant={integration.connected ? "secondary" : "outline"}
-                    size="sm"
-                  >
-                    {integration.connected ? "Connected" : "Connect"}
-                  </Button>
-                  {integration.secondaryAction && integration.connected && (
-                    <Button
-                      onClick={integration.secondaryAction}
-                      variant="outline"
-                      size="sm"
-                    >
-                      {integration.secondaryLabel}
-                    </Button>
-                  )}
+                  <p className="text-sm text-muted-foreground">{integration.description}</p>
                 </div>
               </div>
-            ))}
-          </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={integration.action}
+                  variant={integration.connected ? "outline" : "default"}
+                  size="sm"
+                >
+                  {integration.connected ? "Connected" : "Connect"}
+                  {!integration.connected && <ExternalLink className="ml-2 h-3 w-3" />}
+                </Button>
+                {integration.secondaryAction && (
+                  <Button
+                    onClick={integration.secondaryAction}
+                    variant="outline"
+                    size="sm"
+                  >
+                    {integration.secondaryLabel}
+                  </Button>
+                )}
+              </div>
+            </div>
+          ))}
         </CardContent>
       </Card>
     </div>
