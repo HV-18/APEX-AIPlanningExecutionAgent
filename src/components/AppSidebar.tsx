@@ -15,6 +15,8 @@ import {
   Users,
   Camera,
   Music,
+  FileText,
+  CalendarDays,
 } from "lucide-react";
 import {
   Sidebar,
@@ -45,6 +47,8 @@ const mainItems = [
   { title: "Study Rooms", url: "/study-rooms", icon: Users },
   { title: "Focus Zone", url: "/focus", icon: Music },
   { title: "Meal Analyzer", url: "/meal-analyzer", icon: Camera },
+  { title: "Wellness Reports", url: "/wellness-reports", icon: FileText },
+  { title: "Meal Planner", url: "/meal-planner", icon: CalendarDays },
 ];
 
 export function AppSidebar() {

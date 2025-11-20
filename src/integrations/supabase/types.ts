@@ -218,6 +218,51 @@ export type Database = {
         }
         Relationships: []
       }
+      meal_plans: {
+        Row: {
+          calories: number | null
+          cost: number | null
+          created_at: string | null
+          day_of_week: number
+          id: string
+          ingredients: string[] | null
+          is_sustainable: boolean | null
+          meal_name: string
+          meal_type: string
+          recipe_notes: string | null
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          calories?: number | null
+          cost?: number | null
+          created_at?: string | null
+          day_of_week: number
+          id?: string
+          ingredients?: string[] | null
+          is_sustainable?: boolean | null
+          meal_name: string
+          meal_type: string
+          recipe_notes?: string | null
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          calories?: number | null
+          cost?: number | null
+          created_at?: string | null
+          day_of_week?: number
+          id?: string
+          ingredients?: string[] | null
+          is_sustainable?: boolean | null
+          meal_name?: string
+          meal_type?: string
+          recipe_notes?: string | null
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
       meals: {
         Row: {
           calories: number | null
@@ -626,6 +671,44 @@ export type Database = {
         }
         Relationships: []
       }
+      voice_signals: {
+        Row: {
+          created_at: string | null
+          from_user_id: string
+          id: string
+          room_id: string
+          signal_data: Json
+          signal_type: string
+          to_user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          from_user_id: string
+          id?: string
+          room_id: string
+          signal_data: Json
+          signal_type: string
+          to_user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          from_user_id?: string
+          id?: string
+          room_id?: string
+          signal_data?: Json
+          signal_type?: string
+          to_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_signals_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "study_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wellness_interventions: {
         Row: {
           completed: boolean | null
@@ -664,6 +747,89 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      wellness_reports: {
+        Row: {
+          avg_mood_score: number | null
+          avg_nutrition_score: string | null
+          created_at: string | null
+          id: string
+          insights: Json | null
+          meals_logged: number | null
+          pomodoro_count: number | null
+          recommendations: string[] | null
+          report_date: string
+          report_type: string
+          study_minutes: number | null
+          sustainability_score: number | null
+          user_id: string
+        }
+        Insert: {
+          avg_mood_score?: number | null
+          avg_nutrition_score?: string | null
+          created_at?: string | null
+          id?: string
+          insights?: Json | null
+          meals_logged?: number | null
+          pomodoro_count?: number | null
+          recommendations?: string[] | null
+          report_date: string
+          report_type: string
+          study_minutes?: number | null
+          sustainability_score?: number | null
+          user_id: string
+        }
+        Update: {
+          avg_mood_score?: number | null
+          avg_nutrition_score?: string | null
+          created_at?: string | null
+          id?: string
+          insights?: Json | null
+          meals_logged?: number | null
+          pomodoro_count?: number | null
+          recommendations?: string[] | null
+          report_date?: string
+          report_type?: string
+          study_minutes?: number | null
+          sustainability_score?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      whiteboard_strokes: {
+        Row: {
+          created_at: string | null
+          id: string
+          room_id: string
+          stroke_data: Json
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          room_id: string
+          stroke_data: Json
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          room_id?: string
+          stroke_data?: Json
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whiteboard_strokes_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "study_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

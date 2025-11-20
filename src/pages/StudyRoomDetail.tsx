@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, MessageSquare, CheckSquare, FileText } from 'lucide-react';
+import { Users, MessageSquare, CheckSquare, FileText, Palette, Mic } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import Whiteboard from '@/components/Whiteboard';
+import VoiceChat from '@/components/VoiceChat';
 
 interface Task {
   id: string;
@@ -27,6 +29,7 @@ interface Note {
 
 interface Participant {
   id: string;
+  user_id: string;
   user_name: string;
   is_active: boolean;
 }
@@ -135,7 +138,7 @@ export default function StudyRoomDetail() {
         </div>
 
         <Tabs defaultValue="tasks" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="tasks">
               <CheckSquare className="w-4 h-4 mr-2" />
               Tasks
@@ -143,6 +146,14 @@ export default function StudyRoomDetail() {
             <TabsTrigger value="notes">
               <FileText className="w-4 h-4 mr-2" />
               Notes
+            </TabsTrigger>
+            <TabsTrigger value="whiteboard">
+              <Palette className="w-4 h-4 mr-2" />
+              Whiteboard
+            </TabsTrigger>
+            <TabsTrigger value="voice">
+              <Mic className="w-4 h-4 mr-2" />
+              Voice Chat
             </TabsTrigger>
             <TabsTrigger value="participants">
               <Users className="w-4 h-4 mr-2" />
@@ -210,6 +221,14 @@ export default function StudyRoomDetail() {
                 </Card>
               ))}
             </div>
+          </TabsContent>
+
+          <TabsContent value="whiteboard" className="space-y-4">
+            {roomId && <Whiteboard roomId={roomId} />}
+          </TabsContent>
+
+          <TabsContent value="voice" className="space-y-4">
+            {roomId && <VoiceChat roomId={roomId} participants={participants} />}
           </TabsContent>
 
           <TabsContent value="participants" className="space-y-2">
