@@ -1,4 +1,4 @@
-import { Sparkles, Leaf, Lightbulb, MessageSquare, Settings as SettingsIcon } from "lucide-react";
+import { Sparkles, Leaf, Lightbulb, MessageSquare, Settings as SettingsIcon, RefreshCw } from "lucide-react";
 import { DashboardStats } from "@/components/DashboardStats";
 import { RecentActivity } from "@/components/RecentActivity";
 import { MoodTracker } from "@/components/MoodTracker";
@@ -6,10 +6,15 @@ import { StudyTools } from "@/components/StudyTools";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { BackButton } from "@/components/BackButton";
+import { useState } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+  };
 
   return (
     <div className="space-y-6">
@@ -20,13 +25,19 @@ const Dashboard = () => {
             Welcome back! Here's your wellness overview
           </p>
         </div>
-        <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
-          <Sparkles className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-primary">AI-Powered</span>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" size="sm" onClick={handleRefresh}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh
+          </Button>
+          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-primary">AI-Powered</span>
+          </div>
         </div>
       </div>
 
-      <DashboardStats />
+      <DashboardStats key={refreshKey} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">

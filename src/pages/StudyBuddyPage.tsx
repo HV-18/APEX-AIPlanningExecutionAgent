@@ -131,14 +131,21 @@ export default function StudyBuddyPage() {
         last_study_date: today,
       };
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('study_patterns')
-        .upsert(newPattern);
+        .upsert(newPattern, {
+          onConflict: 'user_id'
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error analyzing patterns:', error);
+        throw error;
+      }
 
-      setPatterns(newPattern);
-      await generatePersonalizedTips(newPattern);
+      setPatterns(data);
+      await generatePersonalizedTips(data);
 
       toast({
         title: 'Analysis complete!',
@@ -148,6 +155,7 @@ export default function StudyBuddyPage() {
       console.error('Error analyzing patterns:', error);
       toast({
         title: 'Analysis failed',
+        description: 'Unable to analyze study patterns. Please try again.',
         variant: 'destructive',
       });
     }
