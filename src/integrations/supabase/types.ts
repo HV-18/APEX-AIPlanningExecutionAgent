@@ -68,6 +68,76 @@ export type Database = {
         }
         Relationships: []
       }
+      breakout_assignments: {
+        Row: {
+          assigned_at: string | null
+          breakout_room_id: string
+          id: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          breakout_room_id: string
+          id?: string
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          assigned_at?: string | null
+          breakout_room_id?: string
+          id?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "breakout_assignments_breakout_room_id_fkey"
+            columns: ["breakout_room_id"]
+            isOneToOne: false
+            referencedRelation: "breakout_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      breakout_rooms: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          id: string
+          is_active: boolean | null
+          name: string
+          parent_room_id: string
+          room_number: number
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          parent_room_id: string
+          room_number: number
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          parent_room_id?: string
+          room_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "breakout_rooms_parent_room_id_fkey"
+            columns: ["parent_room_id"]
+            isOneToOne: false
+            referencedRelation: "study_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       budget_entries: {
         Row: {
           amount: number
@@ -124,6 +194,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      code_sessions: {
+        Row: {
+          code_content: string | null
+          id: string
+          language: string | null
+          last_edited_at: string | null
+          last_edited_by: string | null
+          last_edited_by_name: string | null
+          room_id: string
+          version: number | null
+        }
+        Insert: {
+          code_content?: string | null
+          id?: string
+          language?: string | null
+          last_edited_at?: string | null
+          last_edited_by?: string | null
+          last_edited_by_name?: string | null
+          room_id: string
+          version?: number | null
+        }
+        Update: {
+          code_content?: string | null
+          id?: string
+          language?: string | null
+          last_edited_at?: string | null
+          last_edited_by?: string | null
+          last_edited_by_name?: string | null
+          room_id?: string
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "code_sessions_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "study_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       collaborative_editing_sessions: {
         Row: {
@@ -773,6 +884,44 @@ export type Database = {
         }
         Relationships: []
       }
+      room_attendance: {
+        Row: {
+          duration_minutes: number | null
+          id: string
+          joined_at: string | null
+          left_at: string | null
+          room_id: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          duration_minutes?: number | null
+          id?: string
+          joined_at?: string | null
+          left_at?: string | null
+          room_id: string
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          duration_minutes?: number | null
+          id?: string
+          joined_at?: string | null
+          left_at?: string | null
+          room_id?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_attendance_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "study_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       room_files: {
         Row: {
           file_name: string
@@ -918,6 +1067,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "room_participants_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "study_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      room_reactions: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          reaction_type: string
+          room_id: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          reaction_type: string
+          room_id: string
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          reaction_type?: string
+          room_id?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_reactions_room_id_fkey"
             columns: ["room_id"]
             isOneToOne: false
             referencedRelation: "study_rooms"
@@ -2108,6 +2295,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_expired_reactions: { Args: never; Returns: undefined }
       get_workspace_role: {
         Args: { user_uuid: string; workspace_uuid: string }
         Returns: string
