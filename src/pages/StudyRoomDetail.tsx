@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, MessageSquare, CheckSquare, FileText, Palette, Mic, ArrowLeft } from 'lucide-react';
+import { Users, MessageSquare, CheckSquare, FileText, Palette, Video, Monitor, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import Whiteboard from '@/components/Whiteboard';
-import VoiceChat from '@/components/VoiceChat';
+import VideoChat from '@/components/VideoChat';
 import ScreenShare from '@/components/ScreenShare';
+import TextChat from '@/components/TextChat';
 
 interface Task {
   id: string;
@@ -150,7 +151,7 @@ export default function StudyRoomDetail() {
         </div>
 
         <Tabs defaultValue="tasks" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="tasks">
               <CheckSquare className="w-4 h-4 mr-2" />
               Tasks
@@ -163,9 +164,17 @@ export default function StudyRoomDetail() {
               <Palette className="w-4 h-4 mr-2" />
               Whiteboard
             </TabsTrigger>
-            <TabsTrigger value="voice">
-              <Mic className="w-4 h-4 mr-2" />
-              Voice Chat
+            <TabsTrigger value="video">
+              <Video className="w-4 h-4 mr-2" />
+              Video Call
+            </TabsTrigger>
+            <TabsTrigger value="screen">
+              <Monitor className="w-4 h-4 mr-2" />
+              Screen Share
+            </TabsTrigger>
+            <TabsTrigger value="chat">
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Chat
             </TabsTrigger>
             <TabsTrigger value="participants">
               <Users className="w-4 h-4 mr-2" />
@@ -239,13 +248,21 @@ export default function StudyRoomDetail() {
             {roomId && <Whiteboard roomId={roomId} />}
           </TabsContent>
 
-          <TabsContent value="voice" className="space-y-4">
+          <TabsContent value="video" className="space-y-4">
+            {roomId && <VideoChat roomId={roomId} participants={participants} />}
+          </TabsContent>
+
+          <TabsContent value="screen" className="space-y-4">
             {roomId && (
-              <>
-                <VoiceChat roomId={roomId} participants={participants} />
-                <ScreenShare roomId={roomId} onStreamChange={(stream) => console.log('Screen share stream:', stream)} />
-              </>
+              <ScreenShare 
+                roomId={roomId} 
+                onStreamChange={(stream) => console.log('Screen share stream:', stream)} 
+              />
             )}
+          </TabsContent>
+
+          <TabsContent value="chat" className="space-y-4">
+            {roomId && <TextChat roomId={roomId} />}
           </TabsContent>
 
           <TabsContent value="participants" className="space-y-2">

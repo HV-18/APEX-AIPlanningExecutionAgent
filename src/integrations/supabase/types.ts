@@ -732,6 +732,41 @@ export type Database = {
         }
         Relationships: []
       }
+      room_messages: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          room_id: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          room_id: string
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          room_id?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "study_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       room_notes: {
         Row: {
           content: string
