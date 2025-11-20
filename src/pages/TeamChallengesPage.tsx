@@ -1,16 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Users, Trophy, Target, Plus, LogOut } from 'lucide-react';
+import { Users, Trophy, Target, Plus, LogOut, Share2, MessageCircle, Send, Copy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface Team {
   id: string;
@@ -18,6 +19,7 @@ interface Team {
   description: string;
   team_points: number;
   created_by: string;
+  invite_code: string | null;
 }
 
 interface Challenge {
@@ -40,6 +42,15 @@ interface TeamMember {
   isOnline?: boolean;
 }
 
+interface ChatMessage {
+  id: string;
+  team_id: string;
+  user_id: string;
+  user_name: string;
+  message: string;
+  created_at: string;
+}
+
 export default function TeamChallengesPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
@@ -49,7 +60,12 @@ export default function TeamChallengesPage() {
   const [loading, setLoading] = useState(true);
   const [newTeamName, setNewTeamName] = useState('');
   const [newTeamDesc, setNewTeamDesc] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const { toast } = useToast();
+  const chatScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadData();
@@ -61,12 +77,70 @@ export default function TeamChallengesPage() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members' }, () => loadData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'team_challenges' }, () => loadData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'team_challenge_progress' }, () => loadData())
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'team_chat_messages' }, (payload) => {
+        if (payload.new && myTeam && payload.new.team_id === myTeam.id) {
+          setChatMessages(prev => [...prev, payload.new as ChatMessage]);
+          setTimeout(() => {
+            chatScrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        }
+      })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [myTeam]);
+
+  // Setup presence tracking when user joins a team
+  useEffect(() => {
+    if (!myTeam) return;
+
+    const setupPresence = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const presenceChannel = supabase.channel(`team-${myTeam.id}-presence`)
+        .on('presence', { event: 'sync' }, () => {
+          const state = presenceChannel.presenceState();
+          const online = new Set<string>();
+          Object.values(state).forEach((presences: any) => {
+            presences.forEach((presence: any) => {
+              online.add(presence.user_id);
+            });
+          });
+          setOnlineUsers(online);
+        })
+        .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+          setOnlineUsers(prev => {
+            const updated = new Set(prev);
+            newPresences.forEach((p: any) => updated.add(p.user_id));
+            return updated;
+          });
+        })
+        .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+          setOnlineUsers(prev => {
+            const updated = new Set(prev);
+            leftPresences.forEach((p: any) => updated.delete(p.user_id));
+            return updated;
+          });
+        })
+        .subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            await presenceChannel.track({
+              user_id: user.id,
+              online_at: new Date().toISOString(),
+            });
+          }
+        });
+
+      return () => {
+        presenceChannel.unsubscribe();
+      };
+    };
+
+    setupPresence();
+  }, [myTeam]);
 
   const loadData = async () => {
     try {
@@ -114,6 +188,16 @@ export default function TeamChallengesPage() {
             }));
 
             setTeamMembers(membersWithAvatars);
+
+            // Load chat messages
+            const { data: messages } = await supabase
+              .from('team_chat_messages')
+              .select('*')
+              .eq('team_id', myTeamData.id)
+              .order('created_at', { ascending: true })
+              .limit(100);
+
+            setChatMessages(messages || []);
           }
 
           // Load challenge progress
@@ -124,6 +208,11 @@ export default function TeamChallengesPage() {
 
           setChallengeProgress(progress || []);
         }
+      } else {
+        setMyTeam(null);
+        setTeamMembers([]);
+        setChallengeProgress([]);
+        setChatMessages([]);
       }
 
       // Load all challenges
@@ -140,7 +229,7 @@ export default function TeamChallengesPage() {
     }
   };
 
-  const createTeam = async () => {
+   const createTeam = async () => {
     if (!newTeamName.trim()) {
       toast({ title: 'Team name required', variant: 'destructive' });
       return;
@@ -157,6 +246,10 @@ export default function TeamChallengesPage() {
         .eq('id', user.id)
         .single();
 
+      // Generate invite code
+      const { data: codeData } = await supabase.rpc('generate_team_invite_code');
+      const generatedCode = codeData as string;
+
       // Create team
       const { data: team, error: teamError } = await supabase
         .from('teams')
@@ -164,6 +257,7 @@ export default function TeamChallengesPage() {
           name: newTeamName,
           description: newTeamDesc,
           created_by: user.id,
+          invite_code: generatedCode,
         }])
         .select()
         .single();
@@ -189,6 +283,100 @@ export default function TeamChallengesPage() {
     } catch (error) {
       console.error('Error creating team:', error);
       toast({ title: 'Failed to create team', variant: 'destructive' });
+    }
+  };
+
+  const joinTeamByCode = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Find team by invite code
+      const { data: team, error: teamError } = await supabase
+        .from('teams')
+        .select('*')
+        .eq('invite_code', inviteCode.toUpperCase())
+        .single();
+
+      if (teamError || !team) {
+        toast({
+          title: 'Invalid code',
+          description: 'No team found with this invite code.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+
+      const { error } = await supabase.from('team_members').insert({
+        team_id: team.id,
+        user_id: user.id,
+        user_name: profile?.full_name || 'User',
+        role: 'member',
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Joined team!',
+        description: `You've successfully joined ${team.name}.`,
+      });
+
+      setInviteCode('');
+      loadData();
+    } catch (error: any) {
+      console.error('Error joining team:', error);
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to join team. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const copyInviteCode = () => {
+    if (myTeam?.invite_code) {
+      navigator.clipboard.writeText(myTeam.invite_code);
+      toast({
+        title: 'Copied!',
+        description: 'Invite code copied to clipboard.',
+      });
+    }
+  };
+
+  const sendMessage = async () => {
+    if (!newMessage.trim() || !myTeam) return;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+
+      await supabase.from('team_chat_messages').insert({
+        team_id: myTeam.id,
+        user_id: user.id,
+        user_name: profile?.full_name || 'User',
+        message: newMessage,
+      });
+
+      setNewMessage('');
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to send message.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -288,41 +476,81 @@ export default function TeamChallengesPage() {
                 <p className="text-muted-foreground mb-4">
                   Team up with other students to complete challenges together
                 </p>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create Team
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Create a New Team</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Team Name</label>
-                        <Input
-                          placeholder="Enter team name"
-                          value={newTeamName}
-                          onChange={(e) => setNewTeamName(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Description</label>
-                        <Textarea
-                          placeholder="Describe your team..."
-                          value={newTeamDesc}
-                          onChange={(e) => setNewTeamDesc(e.target.value)}
-                          rows={3}
-                        />
-                      </div>
-                      <Button onClick={createTeam} className="w-full">
+                <div className="flex flex-col gap-3 max-w-xs mx-auto">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <Plus className="w-4 h-4 mr-2" />
                         Create Team
                       </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Create a New Team</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">Team Name</label>
+                          <Input
+                            placeholder="Enter team name"
+                            value={newTeamName}
+                            onChange={(e) => setNewTeamName(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">Description</label>
+                          <Textarea
+                            placeholder="Describe your team..."
+                            value={newTeamDesc}
+                            onChange={(e) => setNewTeamDesc(e.target.value)}
+                            rows={3}
+                          />
+                        </div>
+                        <Button onClick={createTeam} className="w-full">
+                          Create Team
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
                     </div>
-                  </DialogContent>
-                </Dialog>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">Or</span>
+                    </div>
+                  </div>
+
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline">
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Join with Code
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Join Team</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">Invite Code</label>
+                          <Input
+                            value={inviteCode}
+                            onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                            placeholder="Enter 6-character code"
+                            maxLength={6}
+                            className="font-mono text-center text-lg"
+                          />
+                        </div>
+                        <Button onClick={joinTeamByCode} className="w-full">
+                          Join Team
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
             </Card>
           ) : (
@@ -345,6 +573,19 @@ export default function TeamChallengesPage() {
                   </div>
                 </div>
 
+                {myTeam?.invite_code && (
+                  <div className="mb-4 p-3 bg-muted/50 rounded-lg flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium mb-1">Invite Code</p>
+                      <p className="font-mono text-lg">{myTeam.invite_code}</p>
+                    </div>
+                    <Button size="sm" variant="outline" onClick={copyInviteCode}>
+                      <Copy className="h-4 w-4 mr-1" />
+                      Copy
+                    </Button>
+                  </div>
+                )}
+
                 <div className="mb-4">
                   <h3 className="font-semibold mb-3">Team Members ({teamMembers.length})</h3>
                   <div className="grid gap-3">
@@ -355,7 +596,9 @@ export default function TeamChallengesPage() {
                             <AvatarImage src={member.avatar_url} />
                             <AvatarFallback>{member.user_name.charAt(0).toUpperCase()}</AvatarFallback>
                           </Avatar>
-                          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
+                          {onlineUsers.has(member.user_id) && (
+                            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
+                          )}
                         </div>
                         <div className="flex-1">
                           <p className="font-medium">{member.user_name}</p>
@@ -366,6 +609,55 @@ export default function TeamChallengesPage() {
                       </div>
                     ))}
                   </div>
+                </div>
+
+                <div className="mt-6">
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <MessageCircle className="h-5 w-5" />
+                    Team Chat
+                  </h3>
+                  <Card className="p-4">
+                    <ScrollArea className="h-[300px] mb-4">
+                      <div className="space-y-3">
+                        {chatMessages.length === 0 ? (
+                          <p className="text-center text-muted-foreground text-sm py-8">
+                            No messages yet. Start the conversation!
+                          </p>
+                        ) : (
+                          chatMessages.map((msg) => (
+                            <div key={msg.id} className="flex gap-2">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="font-medium text-sm">{msg.user_name}</span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {new Date(msg.created_at).toLocaleTimeString()}
+                                  </span>
+                                </div>
+                                <p className="text-sm bg-muted p-2 rounded">{msg.message}</p>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                        <div ref={chatScrollRef} />
+                      </div>
+                    </ScrollArea>
+                    <div className="flex gap-2">
+                      <Input
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="Type a message..."
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            sendMessage();
+                          }
+                        }}
+                      />
+                      <Button onClick={sendMessage} size="icon" disabled={!newMessage.trim()}>
+                        <Send className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </Card>
                 </div>
               </Card>
 
