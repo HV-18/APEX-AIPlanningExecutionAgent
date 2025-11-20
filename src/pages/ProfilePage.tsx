@@ -6,6 +6,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
+import { ProfileEditor } from "@/components/ProfileEditor";
+import { DataExport } from "@/components/DataExport";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ChatMessage {
   id: string;
@@ -24,7 +27,15 @@ interface StudyStats {
 }
 
 const ProfilePage = () => {
-  const [profile, setProfile] = useState({ full_name: "", email: "" });
+  const [profile, setProfile] = useState({ 
+    full_name: "", 
+    email: "",
+    avatar_url: "",
+    bio: "",
+    study_goals: [] as string[],
+    preferred_subjects: [] as string[],
+  });
+  const [userId, setUserId] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [studyStats, setStudyStats] = useState<StudyStats>({
     totalSessions: 0,
@@ -45,16 +56,22 @@ const ProfilePage = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      setUserId(user.id);
+
       // Load profile
       const { data: profileData } = await supabase
         .from("profiles")
-        .select("full_name")
+        .select("*")
         .eq("id", user.id)
         .single();
 
       setProfile({
         full_name: profileData?.full_name || "Student",
         email: user.email || "",
+        avatar_url: profileData?.avatar_url || "",
+        bio: profileData?.bio || "",
+        study_goals: profileData?.study_goals || [],
+        preferred_subjects: profileData?.preferred_subjects || [],
       });
 
       // Load chat history (last 50 messages)
@@ -144,12 +161,18 @@ const ProfilePage = () => {
       <Card className="border-2">
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-              <User className="w-10 h-10 text-primary" />
-            </div>
+            <Avatar className="w-20 h-20">
+              <AvatarImage src={profile.avatar_url} />
+              <AvatarFallback>
+                <User className="w-10 h-10" />
+              </AvatarFallback>
+            </Avatar>
             <div className="flex-1">
               <h2 className="text-2xl font-bold">{profile.full_name}</h2>
               <p className="text-muted-foreground">{profile.email}</p>
+              {profile.bio && (
+                <p className="text-sm text-muted-foreground mt-1">{profile.bio}</p>
+              )}
               <div className="flex gap-2 mt-2">
                 <Badge variant="secondary">
                   <Trophy className="w-3 h-3 mr-1" />
@@ -161,8 +184,48 @@ const ProfilePage = () => {
               </div>
             </div>
           </div>
+
+          {/* Study Goals and Subjects */}
+          {(profile.study_goals.length > 0 || profile.preferred_subjects.length > 0) && (
+            <div className="mt-4 pt-4 border-t space-y-3">
+              {profile.study_goals.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium mb-2">Study Goals:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {profile.study_goals.map((goal, i) => (
+                      <Badge key={i} variant="secondary">
+                        {goal}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {profile.preferred_subjects.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium mb-2">Preferred Subjects:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {profile.preferred_subjects.map((subject, i) => (
+                      <Badge key={i} variant="outline">
+                        {subject}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
+
+      {/* Profile Editor */}
+      <ProfileEditor 
+        profile={profile} 
+        userId={userId}
+        onUpdate={loadProfileData}
+      />
+
+      {/* Data Export */}
+      <DataExport />
 
       {/* Study Statistics */}
       <div className="grid gap-4 md:grid-cols-3">

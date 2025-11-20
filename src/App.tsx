@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { supabase } from "@/integrations/supabase/client";
+import { ThemeProvider } from "next-themes";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import ChatPage from "./pages/ChatPage";
@@ -82,12 +83,13 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <NotificationProvider>
-          <Routes>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <NotificationProvider>
+            <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<ProtectedLayout><Dashboard /></ProtectedLayout>} />
             <Route path="/chat" element={<ProtectedLayout><ChatPage /></ProtectedLayout>} />
@@ -109,10 +111,11 @@ const App = () => (
             <Route path="/profile" element={<ProtectedLayout><ProfilePage /></ProtectedLayout>} />
             <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </NotificationProvider>
-      </BrowserRouter>
-    </TooltipProvider>
+            </Routes>
+          </NotificationProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

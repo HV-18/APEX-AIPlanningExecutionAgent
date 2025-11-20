@@ -19,6 +19,7 @@ import {
   CalendarDays,
   User,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   Sidebar,
   SidebarContent,
@@ -130,7 +131,11 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t p-4">
+      <SidebarFooter className="border-t p-4 space-y-2">
+        <div className="flex items-center justify-between px-2">
+          {!collapsed && <span className="text-sm text-muted-foreground">Theme</span>}
+          <ThemeToggle />
+        </div>
         <Button
           variant="ghost"
           onClick={handleSignOut}
