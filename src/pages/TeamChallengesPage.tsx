@@ -4,12 +4,13 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Users, Trophy, Target, Plus } from 'lucide-react';
+import { Users, Trophy, Target, Plus, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface Team {
   id: string;
@@ -32,8 +33,11 @@ interface Challenge {
 
 interface TeamMember {
   id: string;
+  user_id: string;
   user_name: string;
   role: string;
+  avatar_url?: string;
+  isOnline?: boolean;
 }
 
 export default function TeamChallengesPage() {
@@ -90,13 +94,27 @@ export default function TeamChallengesPage() {
         if (myTeamData) {
           setMyTeam(myTeamData);
 
-          // Load team members
+          // Load team members with profiles
           const { data: members } = await supabase
             .from('team_members')
             .select('*')
             .eq('team_id', myTeamData.id);
 
-          setTeamMembers(members || []);
+          if (members) {
+            // Fetch profiles for avatars
+            const memberIds = members.map(m => m.user_id);
+            const { data: profiles } = await supabase
+              .from('profiles')
+              .select('id, avatar_url')
+              .in('id', memberIds);
+
+            const membersWithAvatars = members.map(member => ({
+              ...member,
+              avatar_url: profiles?.find(p => p.id === member.user_id)?.avatar_url
+            }));
+
+            setTeamMembers(membersWithAvatars);
+          }
 
           // Load challenge progress
           const { data: progress } = await supabase
@@ -216,6 +234,28 @@ export default function TeamChallengesPage() {
     }
   };
 
+  const leaveTeam = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !myTeam) return;
+
+      await supabase
+        .from('team_members')
+        .delete()
+        .eq('team_id', myTeam.id)
+        .eq('user_id', user.id);
+
+      toast({ title: 'Left team successfully!' });
+      setMyTeam(null);
+      setTeamMembers([]);
+      setChallengeProgress([]);
+      loadData();
+    } catch (error) {
+      console.error('Error leaving team:', error);
+      toast({ title: 'Failed to leave team', variant: 'destructive' });
+    }
+  };
+
   if (loading) {
     return <div className="container mx-auto p-6">Loading...</div>;
   }
@@ -225,10 +265,10 @@ export default function TeamChallengesPage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
           <Users className="w-8 h-8 text-primary" />
-          Team Challenges
+          Team Competitions
         </h1>
         <p className="text-muted-foreground mt-1">
-          Compete with your team and earn bonus rewards
+          Join forces with your team and complete challenges together for exclusive rewards
         </p>
       </div>
 
@@ -293,18 +333,33 @@ export default function TeamChallengesPage() {
                     <h2 className="text-2xl font-bold">{myTeam.name}</h2>
                     <p className="text-muted-foreground">{myTeam.description}</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-muted-foreground">Team Points</p>
-                    <p className="text-3xl font-bold text-primary">{myTeam.team_points}</p>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <p className="text-sm text-muted-foreground">Team Points</p>
+                      <p className="text-3xl font-bold text-primary">{myTeam.team_points}</p>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={leaveTeam}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Leave Team
+                    </Button>
                   </div>
                 </div>
 
                 <div className="mb-4">
-                  <h3 className="font-semibold mb-2">Team Members ({teamMembers.length})</h3>
-                  <div className="space-y-2">
+                  <h3 className="font-semibold mb-3">Team Members ({teamMembers.length})</h3>
+                  <div className="grid gap-3">
                     {teamMembers.map((member) => (
-                      <div key={member.id} className="flex items-center justify-between p-2 bg-muted/50 rounded">
-                        <span>{member.user_name}</span>
+                      <div key={member.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                        <div className="relative">
+                          <Avatar className="w-10 h-10">
+                            <AvatarImage src={member.avatar_url} />
+                            <AvatarFallback>{member.user_name.charAt(0).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium">{member.user_name}</p>
+                        </div>
                         <Badge variant={member.role === 'leader' ? 'default' : 'secondary'}>
                           {member.role}
                         </Badge>
