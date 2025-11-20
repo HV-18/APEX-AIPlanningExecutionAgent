@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Settings, User, Bell, Shield, Trash2 } from "lucide-react";
+import { Settings, User, Bell, Shield, Trash2, Keyboard, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const SettingsPage = () => {
@@ -349,6 +350,30 @@ const SettingsPage = () => {
                 }
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Keyboard Shortcuts */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Keyboard className="w-5 h-5" />
+              Keyboard Shortcuts
+            </CardTitle>
+            <CardDescription>
+              Customize shortcuts to match your workflow
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link to="/settings/keyboard-shortcuts">
+              <Button variant="outline" className="w-full justify-between">
+                Configure Shortcuts
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </Link>
+            <p className="text-sm text-muted-foreground mt-3">
+              Press <kbd className="px-2 py-1 bg-muted rounded text-xs">?</kbd> anywhere to view all shortcuts
+            </p>
           </CardContent>
         </Card>
 

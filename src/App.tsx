@@ -8,7 +8,10 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { NavigationHistory } from "@/components/NavigationHistory";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { KeyboardShortcutsModal } from "@/components/KeyboardShortcutsModal";
+import { CommandPalette } from "@/components/CommandPalette";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { useGestureNavigation } from "@/hooks/useGestureNavigation";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeProvider } from "next-themes";
 import Auth from "./pages/Auth";
@@ -32,6 +35,7 @@ import MealPlannerPage from "./pages/MealPlannerPage";
 import StudyBuddyPage from "./pages/StudyBuddyPage";
 import GamificationPage from "./pages/GamificationPage";
 import TeamChallengesPage from "./pages/TeamChallengesPage";
+import KeyboardShortcutsSettings from "./pages/KeyboardShortcutsSettings";
 import NotFound from "./pages/NotFound";
 import { NotificationProvider } from "./components/NotificationProvider";
 
@@ -40,9 +44,13 @@ const queryClient = new QueryClient();
 const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   
-  // Enable keyboard shortcuts
-  useKeyboardShortcuts();
+  // Enable keyboard shortcuts with help modal
+  useKeyboardShortcuts(() => setShowShortcutsModal(true));
+  
+  // Enable gesture navigation
+  useGestureNavigation();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -86,6 +94,8 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
           </main>
         </div>
       </div>
+      <KeyboardShortcutsModal open={showShortcutsModal} onOpenChange={setShowShortcutsModal} />
+      <CommandPalette />
     </SidebarProvider>
   );
 };
@@ -120,6 +130,7 @@ const App = () => (
             <Route path="/profile" element={<ProtectedLayout><ProfilePage /></ProtectedLayout>} />
             <Route path="/profile/:userId" element={<PublicProfilePage />} />
             <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
+            <Route path="/settings/keyboard-shortcuts" element={<ProtectedLayout><KeyboardShortcutsSettings /></ProtectedLayout>} />
             <Route path="*" element={<NotFound />} />
             </Routes>
           </NotificationProvider>
