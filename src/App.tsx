@@ -25,13 +25,16 @@ import WellnessReportsPage from "./pages/WellnessReportsPage";
 import MealPlannerPage from "./pages/MealPlannerPage";
 import StudyBuddyPage from "./pages/StudyBuddyPage";
 import GamificationPage from "./pages/GamificationPage";
+import TeamChallengesPage from "./pages/TeamChallengesPage";
 import NotFound from "./pages/NotFound";
+import { useNotifications } from "./hooks/useNotifications";
 
 const queryClient = new QueryClient();
 
 const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { NotificationPortal } = useNotifications();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -73,6 +76,7 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
           </main>
         </div>
       </div>
+      {NotificationPortal}
     </SidebarProvider>
   );
 };
@@ -101,6 +105,7 @@ const App = () => (
           <Route path="/meal-planner" element={<ProtectedLayout><MealPlannerPage /></ProtectedLayout>} />
           <Route path="/study-buddy" element={<ProtectedLayout><StudyBuddyPage /></ProtectedLayout>} />
           <Route path="/rewards" element={<ProtectedLayout><GamificationPage /></ProtectedLayout>} />
+          <Route path="/team-challenges" element={<ProtectedLayout><TeamChallengesPage /></ProtectedLayout>} />
           <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>

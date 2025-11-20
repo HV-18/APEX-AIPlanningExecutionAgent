@@ -51,6 +51,7 @@ const mainItems = [
   { title: "Meal Planner", url: "/meal-planner", icon: CalendarDays },
   { title: "AI Study Buddy", url: "/study-buddy", icon: Brain },
   { title: "Rewards", url: "/rewards", icon: BarChart3 },
+  { title: "Team Challenges", url: "/team-challenges", icon: Users },
 ];
 
 export function AppSidebar() {
