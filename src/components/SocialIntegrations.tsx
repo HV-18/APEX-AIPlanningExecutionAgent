@@ -122,14 +122,6 @@ export const SocialIntegrations = ({ userId, userName, studyStats }: SocialInteg
       connected: false,
     },
     {
-      name: "MyFitnessPal",
-      description: "Track nutrition and wellness data",
-      icon: Heart,
-      category: "Health",
-      action: () => toast.info("MyFitnessPal integration coming soon!"),
-      connected: false,
-    },
-    {
       name: "Carbon Footprint",
       description: "Track environmental impact",
       icon: Leaf,
