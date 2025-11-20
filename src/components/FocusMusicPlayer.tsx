@@ -7,20 +7,20 @@ import { Slider } from '@/components/ui/slider';
 
 const musicCategories = {
   binaural: [
-    { name: 'Deep Focus 40Hz', videoId: 'WPni755-Krg' },
-    { name: 'Study & Concentration', videoId: 'kJww__6CgNU' },
+    { name: 'Deep Focus - Alpha Waves', videoId: 'WPni755-Krg' },
+    { name: 'Beta Waves - Concentration', videoId: 'qsxFSUrxRhg' },
   ],
   lofi: [
-    { name: 'Lofi Hip Hop', videoId: 'jfKfPfyJRdk' },
-    { name: 'Chill Beats', videoId: '5qap5aO4i9A' },
+    { name: 'Lofi Hip Hop Radio', videoId: 'jfKfPfyJRdk' },
+    { name: 'Jazz Lofi Beats', videoId: 'DWcJFNfaw9c' },
   ],
   nature: [
-    { name: 'Rain Sounds', videoId: 'nDq6TstdEi8' },
-    { name: 'Forest Ambience', videoId: 'WEW0NpGdGLY' },
+    { name: 'Rain & Thunder Sounds', videoId: 'mPZkdNFkNps' },
+    { name: 'Ocean Waves', videoId: 'WHPYKLQB-9g' },
   ],
   whitenoise: [
-    { name: 'Pure White Noise', videoId: 'nMfPqeZjc2c' },
-    { name: 'Brown Noise', videoId: 'RqzGzwTY-6w' },
+    { name: 'White Noise for Studying', videoId: 'nMfPqeZjc2c' },
+    { name: 'Pink Noise - Deep Focus', videoId: 'ZXtimhT-ff4' },
   ],
 };
 
