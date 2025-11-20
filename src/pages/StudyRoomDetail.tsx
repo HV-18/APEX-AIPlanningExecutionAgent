@@ -6,13 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, MessageSquare, CheckSquare, FileText, Palette, Video, Monitor, ArrowLeft } from 'lucide-react';
+import { Users, MessageSquare, CheckSquare, FileText, Palette, Video, Monitor, ArrowLeft, Upload, Hand, VideoIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import Whiteboard from '@/components/Whiteboard';
 import VideoChat from '@/components/VideoChat';
 import ScreenShare from '@/components/ScreenShare';
 import TextChat from '@/components/TextChat';
+import FileSharing from '@/components/FileSharing';
+import HandRaise from '@/components/HandRaise';
+import SessionRecorder from '@/components/SessionRecorder';
 
 interface Task {
   id: string;
@@ -151,34 +154,46 @@ export default function StudyRoomDetail() {
         </div>
 
         <Tabs defaultValue="tasks" className="w-full">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10">
             <TabsTrigger value="tasks">
               <CheckSquare className="w-4 h-4 mr-2" />
-              Tasks
+              <span className="hidden lg:inline">Tasks</span>
             </TabsTrigger>
             <TabsTrigger value="notes">
               <FileText className="w-4 h-4 mr-2" />
-              Notes
+              <span className="hidden lg:inline">Notes</span>
             </TabsTrigger>
             <TabsTrigger value="whiteboard">
               <Palette className="w-4 h-4 mr-2" />
-              Whiteboard
+              <span className="hidden lg:inline">Whiteboard</span>
             </TabsTrigger>
             <TabsTrigger value="video">
               <Video className="w-4 h-4 mr-2" />
-              Video Call
+              <span className="hidden lg:inline">Video</span>
             </TabsTrigger>
             <TabsTrigger value="screen">
               <Monitor className="w-4 h-4 mr-2" />
-              Screen Share
+              <span className="hidden lg:inline">Screen</span>
             </TabsTrigger>
             <TabsTrigger value="chat">
               <MessageSquare className="w-4 h-4 mr-2" />
-              Chat
+              <span className="hidden lg:inline">Chat</span>
+            </TabsTrigger>
+            <TabsTrigger value="files">
+              <Upload className="w-4 h-4 mr-2" />
+              <span className="hidden lg:inline">Files</span>
+            </TabsTrigger>
+            <TabsTrigger value="hands">
+              <Hand className="w-4 h-4 mr-2" />
+              <span className="hidden lg:inline">Hands</span>
+            </TabsTrigger>
+            <TabsTrigger value="record">
+              <VideoIcon className="w-4 h-4 mr-2" />
+              <span className="hidden lg:inline">Record</span>
             </TabsTrigger>
             <TabsTrigger value="participants">
               <Users className="w-4 h-4 mr-2" />
-              Participants
+              <span className="hidden lg:inline">People</span>
             </TabsTrigger>
           </TabsList>
 
@@ -263,6 +278,18 @@ export default function StudyRoomDetail() {
 
           <TabsContent value="chat" className="space-y-4">
             {roomId && <TextChat roomId={roomId} />}
+          </TabsContent>
+
+          <TabsContent value="files" className="space-y-4">
+            {roomId && <FileSharing roomId={roomId} />}
+          </TabsContent>
+
+          <TabsContent value="hands" className="space-y-4">
+            {roomId && <HandRaise roomId={roomId} />}
+          </TabsContent>
+
+          <TabsContent value="record" className="space-y-4">
+            {roomId && <SessionRecorder roomId={roomId} />}
           </TabsContent>
 
           <TabsContent value="participants" className="space-y-2">
