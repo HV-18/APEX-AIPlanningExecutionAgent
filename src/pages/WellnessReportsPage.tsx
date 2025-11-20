@@ -101,8 +101,8 @@ export default function WellnessReportsPage() {
       if (sustainabilityScore < mealsLogged / 2) recommendations.push('Consider choosing more sustainable meal options');
       if (studyMinutes < 120 && type === 'daily') recommendations.push('Aim for at least 2 hours of focused study time');
 
-      // Save report
-      const { error } = await supabase.from('wellness_reports').insert({
+      // Save or update report using upsert to handle duplicates
+      const { error } = await supabase.from('wellness_reports').upsert({
         user_id: user.id,
         report_date: today,
         report_type: type,
@@ -118,6 +118,8 @@ export default function WellnessReportsPage() {
           wellness: avgMoodScore > 3.5 ? 'good' : 'needs attention',
           nutrition: avgNutrition === 'A' || avgNutrition === 'B' ? 'healthy' : 'could be better',
         },
+      }, {
+        onConflict: 'user_id,report_date,report_type'
       });
 
       if (error) throw error;

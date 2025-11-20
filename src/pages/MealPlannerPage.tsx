@@ -125,6 +125,18 @@ export default function MealPlannerPage() {
         throw new Error('No meal plans generated');
       }
 
+      // Delete existing plans for this week first to avoid duplicates
+      const { error: deleteError } = await supabase
+        .from('meal_plans')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('week_start', weekStart);
+
+      if (deleteError) {
+        console.error('Delete error:', deleteError);
+      }
+
+      // Insert new meal plans
       const { error: insertError } = await supabase.from('meal_plans').insert(plans);
       if (insertError) {
         console.error('Insert error:', insertError);
