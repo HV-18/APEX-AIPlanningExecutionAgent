@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, MessageSquare, CheckSquare, FileText, Palette, Mic } from 'lucide-react';
+import { Users, MessageSquare, CheckSquare, FileText, Palette, Mic, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import Whiteboard from '@/components/Whiteboard';
@@ -37,6 +37,7 @@ interface Participant {
 
 export default function StudyRoomDetail() {
   const { roomId } = useParams();
+  const navigate = useNavigate();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
@@ -131,7 +132,17 @@ export default function StudyRoomDetail() {
     <div className="container mx-auto p-6">
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Study Room</h1>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/study-rooms')}
+              className="hover:bg-muted"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h1 className="text-2xl font-bold text-foreground">Study Room</h1>
+          </div>
           <div className="flex items-center gap-2">
             <Users className="w-5 h-5 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">{participants.length} active</span>

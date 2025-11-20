@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { User, BookOpen, Trophy, Target } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { User, BookOpen, Trophy, Target, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -16,6 +17,7 @@ interface PublicProfile {
 
 const PublicProfilePage = () => {
   const { userId } = useParams();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<PublicProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -62,6 +64,16 @@ const PublicProfilePage = () => {
 
   return (
     <div className="container max-w-4xl mx-auto p-6 space-y-6">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate(-1)}
+        className="hover:bg-muted mb-4"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back
+      </Button>
+      
       <Card className="border-2">
         <CardContent className="pt-6">
           <div className="flex flex-col items-center text-center space-y-4">
