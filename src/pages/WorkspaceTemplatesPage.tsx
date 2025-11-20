@@ -66,37 +66,104 @@ const WorkspaceTemplatesPage = () => {
 
   const getTemplateContent = (templateId: string) => {
     const content: Record<string, any> = {
-      "template-3": { // Language Learning
-        notes: [
-          { subject: "Vocabulary", topic: "Common Phrases", content: "Track new words and phrases you learn daily" },
-          { subject: "Grammar", topic: "Tenses", content: "Notes on verb conjugations and tense usage" },
-          { subject: "Pronunciation", topic: "Sounds", content: "Practice difficult sounds and phonetics" }
-        ],
-        projects: [
-          { title: "Speaking Practice", category: "Speaking", description: "Daily conversation practice goals", progress: 0 },
-          { title: "Reading Comprehension", category: "Reading", description: "Read articles and books in target language", progress: 0 }
-        ],
-        sessions: [
-          { subject: "Listening Practice", duration_minutes: 30 },
-          { subject: "Writing Exercise", duration_minutes: 45 }
-        ]
-      },
       "template-1": { // Computer Science Course
         notes: [
-          { subject: "Data Structures", topic: "Arrays & Lists", content: "Linear data structure basics" },
-          { subject: "Algorithms", topic: "Sorting", content: "Bubble sort, quick sort, merge sort" }
+          { subject: "Data Structures", topic: "Arrays & Lists", content: "Arrays are contiguous memory blocks. Lists can be singly or doubly linked." },
+          { subject: "Algorithms", topic: "Sorting", content: "Bubble sort O(n²), Quick sort O(n log n), Merge sort O(n log n)" },
+          { subject: "OOP", topic: "Fundamentals", content: "Encapsulation, Inheritance, Polymorphism, Abstraction" }
         ],
         projects: [
-          { title: "Final Project", category: "Programming", description: "Build a full-stack application", progress: 0 }
+          { title: "Final Project", category: "Programming", description: "Build a full-stack web application with database", progress: 0 },
+          { title: "Algorithm Assignments", category: "Assignments", description: "Weekly coding challenges", progress: 25 }
+        ],
+        sessions: [
+          { subject: "Lecture Notes", duration_minutes: 60 },
+          { subject: "Lab Work", duration_minutes: 90 }
         ]
       },
       "template-2": { // Research Project
         notes: [
-          { subject: "Literature Review", topic: "Key Papers", content: "Summary of related research" },
-          { subject: "Methodology", topic: "Approach", content: "Research methods and techniques" }
+          { subject: "Literature Review", topic: "Key Papers", content: "Summarize 10-15 relevant research papers in your field" },
+          { subject: "Methodology", topic: "Research Design", content: "Qualitative vs Quantitative approaches, sampling methods" },
+          { subject: "Data Analysis", topic: "Statistical Tools", content: "SPSS, R, Python for data analysis" }
         ],
         projects: [
-          { title: "Data Collection", category: "Research", description: "Gather experimental data", progress: 0 }
+          { title: "Data Collection Phase", category: "Research", description: "Survey design and participant recruitment", progress: 0 },
+          { title: "Paper Writing", category: "Writing", description: "Draft chapters and manuscript", progress: 10 }
+        ],
+        sessions: [
+          { subject: "Reading & Review", duration_minutes: 120 },
+          { subject: "Data Processing", duration_minutes: 90 }
+        ]
+      },
+      "template-3": { // Language Learning
+        notes: [
+          { subject: "Vocabulary", topic: "Essential Words", content: "Start with 100 most common words. Track daily: hello, goodbye, thank you, please, yes, no..." },
+          { subject: "Grammar", topic: "Present Tense", content: "Subject + Verb conjugation. Practice regular and irregular verbs daily." },
+          { subject: "Grammar", topic: "Past Tense", content: "Formation rules and common irregular verbs. Practice with storytelling." },
+          { subject: "Pronunciation", topic: "Difficult Sounds", content: "Record yourself, compare with native speakers. Focus on challenging phonemes." },
+          { subject: "Conversation", topic: "Common Phrases", content: "How are you? Where is...? I would like... Can you help me?" }
+        ],
+        projects: [
+          { title: "30-Day Speaking Challenge", category: "Speaking", description: "Practice speaking 15 minutes daily with language partner or tutor", progress: 0 },
+          { title: "Reading Milestone", category: "Reading", description: "Read 5 short stories or articles per week in target language", progress: 0 },
+          { title: "Vocabulary Builder", category: "Vocabulary", description: "Learn 20 new words daily using spaced repetition", progress: 0 }
+        ],
+        sessions: [
+          { subject: "Listening Practice", duration_minutes: 30 },
+          { subject: "Speaking Practice", duration_minutes: 30 },
+          { subject: "Writing Exercise", duration_minutes: 45 },
+          { subject: "Grammar Study", duration_minutes: 25 }
+        ]
+      },
+      "template-4": { // Exam Preparation
+        notes: [
+          { subject: "Study Schedule", topic: "Timeline", content: "Break down syllabus by weeks. Allocate more time to weak areas." },
+          { subject: "Key Concepts", topic: "Must Know", content: "List critical topics, formulas, definitions for quick revision" },
+          { subject: "Practice Tests", topic: "Mock Exams", content: "Track scores and identify patterns in mistakes" }
+        ],
+        projects: [
+          { title: "Revision Plan", category: "Planning", description: "Systematic coverage of all exam topics", progress: 0 },
+          { title: "Practice Papers", category: "Practice", description: "Complete 10 full-length mock tests", progress: 0 }
+        ],
+        sessions: [
+          { subject: "Topic Review", duration_minutes: 60 },
+          { subject: "Practice Questions", duration_minutes: 45 },
+          { subject: "Mock Test", duration_minutes: 120 }
+        ]
+      },
+      "template-5": { // Thesis Writing
+        notes: [
+          { subject: "Chapter 1", topic: "Introduction", content: "Background, research questions, significance of study" },
+          { subject: "Chapter 2", topic: "Literature Review", content: "Theoretical framework and previous research" },
+          { subject: "Chapter 3", topic: "Methodology", content: "Research design, data collection methods, analysis plan" },
+          { subject: "References", topic: "Bibliography", content: "Track all sources in proper citation format" }
+        ],
+        projects: [
+          { title: "Chapter Drafts", category: "Writing", description: "Complete first draft of all chapters", progress: 15 },
+          { title: "Research & Analysis", category: "Research", description: "Conduct experiments and analyze results", progress: 30 },
+          { title: "Revisions", category: "Editing", description: "Incorporate advisor feedback and polish manuscript", progress: 0 }
+        ],
+        sessions: [
+          { subject: "Writing", duration_minutes: 120 },
+          { subject: "Research", duration_minutes: 90 },
+          { subject: "Advisor Meeting Prep", duration_minutes: 60 }
+        ]
+      },
+      "template-6": { // Group Study Project
+        notes: [
+          { subject: "Project Plan", topic: "Overview", content: "Goals, deliverables, timeline, and team member roles" },
+          { subject: "Meeting Notes", topic: "Team Discussions", content: "Document decisions, action items, and next steps from meetings" },
+          { subject: "Resources", topic: "Shared Materials", content: "Links to useful articles, videos, and reference documents" }
+        ],
+        projects: [
+          { title: "Team Deliverable", category: "Collaboration", description: "Main project output - assign tasks to members", progress: 0 },
+          { title: "Presentation", category: "Communication", description: "Prepare slides and practice group presentation", progress: 0 }
+        ],
+        sessions: [
+          { subject: "Team Meeting", duration_minutes: 60 },
+          { subject: "Individual Work", duration_minutes: 90 },
+          { subject: "Review Session", duration_minutes: 45 }
         ]
       }
     };
