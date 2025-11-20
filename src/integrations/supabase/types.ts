@@ -38,6 +38,36 @@ export type Database = {
         }
         Relationships: []
       }
+      badges: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          icon: string
+          id: string
+          name: string
+          points_required: number
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          icon: string
+          id?: string
+          name: string
+          points_required: number
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          icon?: string
+          id?: string
+          name?: string
+          points_required?: number
+        }
+        Relationships: []
+      }
       budget_entries: {
         Row: {
           amount: number
@@ -91,6 +121,33 @@ export type Database = {
           created_at?: string | null
           id?: string
           role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      custom_quizzes: {
+        Row: {
+          created_at: string | null
+          difficulty: string
+          id: string
+          questions: Json
+          subject: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          difficulty: string
+          id?: string
+          questions: Json
+          subject: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          difficulty?: string
+          id?: string
+          questions?: Json
+          subject?: string
           user_id?: string
         }
         Relationships: []
@@ -164,6 +221,39 @@ export type Database = {
           subject?: string | null
           type?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      leaderboard_entries: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          period_end: string
+          period_start: string
+          points: number
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          id?: string
+          period_end: string
+          period_start: string
+          points: number
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          period_end?: string
+          period_start?: string
+          points?: number
+          user_id?: string
+          user_name?: string
         }
         Relationships: []
       }
@@ -539,6 +629,45 @@ export type Database = {
         }
         Relationships: []
       }
+      study_patterns: {
+        Row: {
+          avg_focus_duration: number | null
+          best_study_hour: number | null
+          created_at: string | null
+          id: string
+          last_study_date: string | null
+          preferred_subjects: string[] | null
+          streak_days: number | null
+          updated_at: string | null
+          user_id: string
+          weak_areas: string[] | null
+        }
+        Insert: {
+          avg_focus_duration?: number | null
+          best_study_hour?: number | null
+          created_at?: string | null
+          id?: string
+          last_study_date?: string | null
+          preferred_subjects?: string[] | null
+          streak_days?: number | null
+          updated_at?: string | null
+          user_id: string
+          weak_areas?: string[] | null
+        }
+        Update: {
+          avg_focus_duration?: number | null
+          best_study_hour?: number | null
+          created_at?: string | null
+          id?: string
+          last_study_date?: string | null
+          preferred_subjects?: string[] | null
+          streak_days?: number | null
+          updated_at?: string | null
+          user_id?: string
+          weak_areas?: string[] | null
+        }
+        Relationships: []
+      }
       study_rooms: {
         Row: {
           created_at: string | null
@@ -598,6 +727,33 @@ export type Database = {
           id?: string
           notes?: string | null
           subject?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      study_tips: {
+        Row: {
+          generated_at: string | null
+          id: string
+          is_read: boolean | null
+          tip_text: string
+          tip_type: string
+          user_id: string
+        }
+        Insert: {
+          generated_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          tip_text: string
+          tip_type: string
+          user_id: string
+        }
+        Update: {
+          generated_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          tip_text?: string
+          tip_type?: string
           user_id?: string
         }
         Relationships: []
@@ -667,6 +823,62 @@ export type Database = {
           duration_minutes?: number | null
           id?: string
           mode?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_points: {
+        Row: {
+          created_at: string | null
+          id: string
+          level: number | null
+          total_points: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          level?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          level?: number | null
+          total_points?: number | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []

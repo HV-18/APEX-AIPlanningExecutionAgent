@@ -109,7 +109,7 @@ export default function MealPlannerPage() {
   };
 
   const generateMealSuggestions = async (pastMeals: any[]) => {
-    // Budget-friendly, sustainable meal database
+    // Budget-friendly, sustainable meal database with day assignments
     const mealDatabase = {
       breakfast: [
         { meal_name: 'Oatmeal with Banana', calories: 300, cost: 1.5, is_sustainable: true, ingredients: ['oats', 'banana', 'honey'], recipe_notes: 'Cook oats with water, top with sliced banana' },

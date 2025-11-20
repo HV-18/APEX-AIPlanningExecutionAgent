@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import Whiteboard from '@/components/Whiteboard';
 import VoiceChat from '@/components/VoiceChat';
+import ScreenShare from '@/components/ScreenShare';
 
 interface Task {
   id: string;
@@ -228,7 +229,12 @@ export default function StudyRoomDetail() {
           </TabsContent>
 
           <TabsContent value="voice" className="space-y-4">
-            {roomId && <VoiceChat roomId={roomId} participants={participants} />}
+            {roomId && (
+              <>
+                <VoiceChat roomId={roomId} participants={participants} />
+                <ScreenShare roomId={roomId} onStreamChange={(stream) => console.log('Screen share stream:', stream)} />
+              </>
+            )}
           </TabsContent>
 
           <TabsContent value="participants" className="space-y-2">

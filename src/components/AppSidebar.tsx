@@ -49,6 +49,8 @@ const mainItems = [
   { title: "Meal Analyzer", url: "/meal-analyzer", icon: Camera },
   { title: "Wellness Reports", url: "/wellness-reports", icon: FileText },
   { title: "Meal Planner", url: "/meal-planner", icon: CalendarDays },
+  { title: "AI Study Buddy", url: "/study-buddy", icon: Brain },
+  { title: "Rewards", url: "/rewards", icon: BarChart3 },
 ];
 
 export function AppSidebar() {
