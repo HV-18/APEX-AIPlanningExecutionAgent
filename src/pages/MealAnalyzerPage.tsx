@@ -190,7 +190,7 @@ export default function MealAnalyzerPage() {
             </div>
           </Card>
 
-          {analysis.healthierAlternatives.length > 0 && (
+          {analysis.healthierAlternatives?.length > 0 && (
             <Card className="p-6">
               <h3 className="text-lg font-semibold text-foreground mb-3">
                 Healthier Budget-Friendly Alternatives
