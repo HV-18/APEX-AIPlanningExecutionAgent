@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, BookOpen, CheckCircle, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { BackButton } from "@/components/BackButton";
 
 interface Question {
   question: string;
@@ -198,6 +199,7 @@ const QuizPage = () => {
   if (questions.length === 0) {
     return (
       <div className="space-y-6">
+        <BackButton to="/dashboard" />
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
             <BookOpen className="w-8 h-8" />
@@ -217,6 +219,7 @@ const QuizPage = () => {
     const score = calculateScore();
     return (
       <div className="space-y-6">
+        <BackButton to="/dashboard" />
         <div>
           <h1 className="text-3xl font-bold">Quiz Results</h1>
           <p className="text-muted-foreground mt-1">
@@ -295,6 +298,7 @@ const QuizPage = () => {
 
   return (
     <div className="space-y-6">
+      <BackButton to="/dashboard" />
       <div>
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <BookOpen className="w-8 h-8" />
