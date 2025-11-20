@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FolderKanban, Plus, Edit, Trash2 } from "lucide-react";
+import { FolderKanban, Plus, Edit, Trash2, Copy, BarChart3, Upload } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { useNavigate } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +17,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { WorkspaceAnalytics } from "@/components/WorkspaceAnalytics";
+import { WorkspaceSharingModal } from "@/components/WorkspaceSharingModal";
+import { FileUploadZone } from "@/components/FileUploadZone";
 
 const emojiOptions = ["📚", "💼", "🎓", "🔬", "🎨", "💻", "📊", "🏆", "🌟", "🚀"];
 const colorOptions = [
@@ -31,8 +36,10 @@ const WorkspacesPage = () => {
   });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null);
   const { toast } = useToast();
   const { refreshWorkspaces } = useWorkspace();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadWorkspaces();
@@ -139,16 +146,21 @@ const WorkspacesPage = () => {
           </p>
         </div>
 
-        <Dialog open={dialogOpen} onOpenChange={(open) => {
-          setDialogOpen(open);
-          if (!open) resetForm();
-        }}>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <Plus className="w-4 h-4" />
-              New Workspace
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => navigate("/workspace-templates")} className="gap-2">
+            <Copy className="w-4 h-4" />
+            Templates
+          </Button>
+          <Dialog open={dialogOpen} onOpenChange={(open) => {
+            setDialogOpen(open);
+            if (!open) resetForm();
+          }}>
+            <DialogTrigger asChild>
+              <Button className="gap-2">
+                <Plus className="w-4 h-4" />
+                New Workspace
+              </Button>
+            </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
@@ -216,6 +228,7 @@ const WorkspacesPage = () => {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -238,6 +251,44 @@ const WorkspacesPage = () => {
                   {workspace.description}
                 </p>
               )}
+              <div className="flex flex-wrap gap-2 mb-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedWorkspace(workspace.id)}
+                >
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Analytics
+                </Button>
+                <WorkspaceSharingModal
+                  workspaceId={workspace.id}
+                  workspaceName={workspace.name}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedWorkspace(workspace.id === selectedWorkspace ? null : workspace.id)}
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Files
+                </Button>
+              </div>
+              
+              {selectedWorkspace === workspace.id && (
+                <Tabs defaultValue="analytics" className="mb-4">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                    <TabsTrigger value="files">Files</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="analytics" className="mt-4">
+                    <WorkspaceAnalytics workspaceId={workspace.id} />
+                  </TabsContent>
+                  <TabsContent value="files" className="mt-4">
+                    <FileUploadZone workspaceId={workspace.id} />
+                  </TabsContent>
+                </Tabs>
+              )}
+
               <div className="flex gap-2">
                 <Button
                   variant="outline"
