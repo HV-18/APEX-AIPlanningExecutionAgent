@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, BookOpen, MessageSquare, Trophy, TrendingUp, Calendar, QrCode, Share2 } from "lucide-react";
-import { QRCodeSVG } from "qrcode.react";
+import { User, BookOpen, MessageSquare, Trophy, TrendingUp, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,6 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { ProfileEditor } from "@/components/ProfileEditor";
 import { DataExport } from "@/components/DataExport";
+import { QRCodeCustomizer } from "@/components/QRCodeCustomizer";
+import { RecentStudyPartners } from "@/components/RecentStudyPartners";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ChatMessage {
@@ -228,41 +229,11 @@ const ProfilePage = () => {
       {/* Data Export */}
       <DataExport />
 
-      {/* Profile Sharing QR Code */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <QrCode className="w-5 h-5" />
-            Share Profile
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center space-y-4">
-            <p className="text-sm text-muted-foreground text-center">
-              Share your profile with study room participants by letting them scan this QR code
-            </p>
-            <div className="bg-white p-4 rounded-lg">
-              <QRCodeSVG
-                value={`${window.location.origin}/profile/${userId}`}
-                size={200}
-                level="H"
-              />
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(`${window.location.origin}/profile/${userId}`);
-                  alert("Profile link copied to clipboard!");
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-              >
-                <Share2 className="w-4 h-4" />
-                Copy Link
-              </button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Recent Study Partners */}
+      <RecentStudyPartners />
+
+      {/* QR Code Customizer */}
+      <QRCodeCustomizer userId={userId} userName={profile.full_name} />
 
       {/* Study Statistics */}
       <div className="grid gap-4 md:grid-cols-3">
