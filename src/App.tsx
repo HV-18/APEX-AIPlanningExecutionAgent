@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import ChatPage from "./pages/ChatPage";
+import TimetablePage from "./pages/TimetablePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -83,6 +84,14 @@ const App = () => (
             element={
               <ProtectedLayout>
                 <ChatPage />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/timetable"
+            element={
+              <ProtectedLayout>
+                <TimetablePage />
               </ProtectedLayout>
             }
           />

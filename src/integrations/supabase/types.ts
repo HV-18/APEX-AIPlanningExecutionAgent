@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_modes: {
+        Row: {
+          context: string | null
+          created_at: string | null
+          id: string
+          mode: string
+          user_id: string
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string | null
+          id?: string
+          mode: string
+          user_id: string
+        }
+        Update: {
+          context?: string | null
+          created_at?: string | null
+          id?: string
+          mode?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
@@ -34,6 +58,42 @@ export type Database = {
           created_at?: string | null
           id?: string
           role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      interview_sessions: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          feedback: string | null
+          id: string
+          questions_asked: number | null
+          score: number | null
+          subject: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          questions_asked?: number | null
+          score?: number | null
+          subject?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          questions_asked?: number | null
+          score?: number | null
+          subject?: string | null
+          type?: string
           user_id?: string
         }
         Relationships: []
@@ -80,6 +140,36 @@ export type Database = {
           created_at?: string | null
           full_name?: string | null
           id?: string
+        }
+        Relationships: []
+      }
+      study_notes: {
+        Row: {
+          ai_generated: boolean | null
+          content: string
+          created_at: string | null
+          id: string
+          subject: string
+          topic: string
+          user_id: string
+        }
+        Insert: {
+          ai_generated?: boolean | null
+          content: string
+          created_at?: string | null
+          id?: string
+          subject: string
+          topic: string
+          user_id: string
+        }
+        Update: {
+          ai_generated?: boolean | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          subject?: string
+          topic?: string
+          user_id?: string
         }
         Relationships: []
       }

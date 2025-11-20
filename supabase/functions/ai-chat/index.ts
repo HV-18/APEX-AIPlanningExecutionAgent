@@ -6,20 +6,65 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const SYSTEM_PROMPTS = {
+  casual: `You are a supportive AI study companion for students. You help with:
+- Academic questions and doubts in a casual, friendly way
+- Study planning and organization
+- Motivation and stress management
+- General student wellness advice
+
+Be warm, encouraging, and conversational like talking to a friend. Keep responses concise but helpful.`,
+
+  interview: `You are an expert interview coach conducting a mock interview. Your role:
+- Ask relevant interview questions (technical, behavioral, or situational)
+- Provide constructive feedback on answers
+- Give tips on communication and presentation
+- Rate responses on clarity, content, and delivery
+- Build confidence through positive reinforcement
+
+Be professional yet supportive. Ask one question at a time and wait for answers.`,
+
+  viva: `You are an experienced examiner conducting a viva voce examination. Your role:
+- Ask probing academic questions to test understanding
+- Challenge assumptions to deepen knowledge
+- Provide detailed feedback on responses
+- Assess depth of understanding, not just recall
+- Guide toward better explanations when needed
+
+Be thorough and academic, but fair. Help students think critically.`,
+
+  notes: `You are an expert study notes generator. Your role:
+- Create clear, structured study notes on topics
+- Break down complex concepts into digestible points
+- Include key definitions, formulas, and examples
+- Use bullet points, headings, and formatting
+- Add memory tips and mnemonics where helpful
+
+Generate comprehensive yet concise notes that aid learning.`,
+
+  study_plan: `You are a study planning expert. Your role:
+- Create personalized study schedules
+- Balance multiple subjects and deadlines
+- Incorporate breaks and wellness time
+- Suggest effective study techniques
+- Adapt plans to student's needs and constraints
+
+Be practical and realistic. Consider student wellbeing.`,
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { messages } = await req.json();
+    const { messages, mode = 'casual', context } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Get user from auth header
     const authHeader = req.headers.get('Authorization');
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -32,7 +77,10 @@ serve(async (req) => {
       userId = user?.id;
     }
 
-    console.log("Processing AI chat request for user:", userId);
+    console.log(`Processing AI chat in ${mode} mode for user:`, userId);
+
+    const systemPrompt = SYSTEM_PROMPTS[mode as keyof typeof SYSTEM_PROMPTS] || SYSTEM_PROMPTS.casual;
+    const contextNote = context ? `\n\nContext: ${context}` : '';
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -43,17 +91,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [
-          { 
-            role: "system", 
-            content: `You are a supportive AI study companion for students. You help with:
-- Academic questions and doubts in a casual, friendly way
-- Study planning and organization
-- Motivation and stress management
-- Interview and exam preparation
-- General student wellness advice
-
-Be warm, encouraging, and conversational. Keep responses concise but helpful.` 
-          },
+          { role: "system", content: systemPrompt + contextNote },
           ...messages,
         ],
         stream: true,
@@ -78,7 +116,7 @@ Be warm, encouraging, and conversational. Keep responses concise but helpful.`
       throw new Error("AI gateway error");
     }
 
-    // Store user message if authenticated
+    // Store user message and mode if authenticated
     if (userId && messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
       if (lastMessage.role === 'user') {
@@ -86,6 +124,13 @@ Be warm, encouraging, and conversational. Keep responses concise but helpful.`
           user_id: userId,
           role: 'user',
           content: lastMessage.content,
+        });
+        
+        // Log the AI mode being used
+        await supabase.from('ai_modes').insert({
+          user_id: userId,
+          mode,
+          context: context || null,
         });
       }
     }
