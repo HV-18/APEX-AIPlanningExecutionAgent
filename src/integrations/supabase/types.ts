@@ -304,6 +304,47 @@ export type Database = {
         }
         Relationships: []
       }
+      hand_raises: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          id: string
+          raised_at: string | null
+          room_id: string
+          status: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          id?: string
+          raised_at?: string | null
+          room_id: string
+          status?: string
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          id?: string
+          raised_at?: string | null
+          room_id?: string
+          status?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hand_raises_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "study_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       health_goals: {
         Row: {
           created_at: string | null
@@ -732,6 +773,50 @@ export type Database = {
         }
         Relationships: []
       }
+      room_files: {
+        Row: {
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string | null
+          id: string
+          room_id: string
+          uploaded_at: string | null
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type?: string | null
+          id?: string
+          room_id: string
+          uploaded_at?: string | null
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          file_type?: string | null
+          id?: string
+          room_id?: string
+          uploaded_at?: string | null
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_files_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "study_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       room_messages: {
         Row: {
           created_at: string | null
@@ -886,6 +971,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "room_tasks_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "study_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_recordings: {
+        Row: {
+          created_at: string | null
+          duration_seconds: number | null
+          file_size: number | null
+          id: string
+          recorded_by: string
+          recorded_by_name: string
+          recording_path: string
+          room_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          duration_seconds?: number | null
+          file_size?: number | null
+          id?: string
+          recorded_by: string
+          recorded_by_name: string
+          recording_path: string
+          room_id: string
+        }
+        Update: {
+          created_at?: string | null
+          duration_seconds?: number | null
+          file_size?: number | null
+          id?: string
+          recorded_by?: string
+          recorded_by_name?: string
+          recording_path?: string
+          room_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_recordings_room_id_fkey"
             columns: ["room_id"]
             isOneToOne: false
             referencedRelation: "study_rooms"
