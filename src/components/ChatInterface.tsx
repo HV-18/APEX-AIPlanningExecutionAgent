@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { Send, Loader2, Paperclip, X, History } from "lucide-react";
+import { Send, Loader2, Paperclip, X, History, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { AIModeSelector } from "./AIModeSelector";
@@ -31,6 +31,7 @@ export const ChatInterface = () => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -109,6 +110,64 @@ export const ChatInterface = () => {
 
   const removeFile = (index: number) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const generateImage = async () => {
+    if (!input.trim()) {
+      toast({
+        title: "Prompt required",
+        description: "Please describe the image you want to generate",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGeneratingImage(true);
+    const prompt = input;
+    setInput("");
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` })
+        },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: `Generate an image: ${prompt}` }],
+          mode: "image_generation",
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to generate image");
+
+      const data = await response.json();
+      
+      if (data.imageUrl) {
+        const imageMessage: Message = {
+          role: "assistant",
+          content: `Generated image: ${prompt}`,
+          images: [data.imageUrl]
+        };
+        setMessages(prev => [...prev, { role: "user", content: `Generate: ${prompt}` }, imageMessage]);
+        
+        toast({
+          title: "Image generated!",
+          description: "Your study diagram is ready",
+        });
+      }
+    } catch (error) {
+      console.error('Error generating image:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingImage(false);
+    }
   };
 
   const loadHistoryMessages = (historyMessages: any[]) => {
@@ -392,7 +451,7 @@ export const ChatInterface = () => {
           disabled={isLoading}
         />
         
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-2">
           <div className="flex gap-2">
             <input
               ref={fileInputRef}
@@ -410,6 +469,20 @@ export const ChatInterface = () => {
             >
               <Paperclip className="w-4 h-4 mr-2" />
               {uploadedFiles.length > 0 ? `${uploadedFiles.length} Image${uploadedFiles.length > 1 ? 's' : ''}` : 'Add Images'}
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={generateImage}
+              disabled={isLoading || isGeneratingImage || !input.trim()}
+            >
+              {isGeneratingImage ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Sparkles className="w-4 h-4 mr-2" />
+              )}
+              Generate Image
             </Button>
           </div>
           
