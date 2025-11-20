@@ -1318,6 +1318,118 @@ export type Database = {
           },
         ]
       }
+      workspace_files: {
+        Row: {
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string | null
+          id: string
+          uploaded_at: string | null
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type?: string | null
+          id?: string
+          uploaded_at?: string | null
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          file_type?: string | null
+          id?: string
+          uploaded_at?: string | null
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_files_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_members: {
+        Row: {
+          id: string
+          joined_at: string | null
+          role: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string | null
+          role: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string | null
+          role?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_members_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_templates: {
+        Row: {
+          category: string
+          color: string | null
+          created_at: string | null
+          created_by: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_public: boolean | null
+          name: string
+          template_data: Json | null
+        }
+        Insert: {
+          category: string
+          color?: string | null
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_public?: boolean | null
+          name: string
+          template_data?: Json | null
+        }
+        Update: {
+          category?: string
+          color?: string | null
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          template_data?: Json | null
+        }
+        Relationships: []
+      }
       workspaces: {
         Row: {
           color: string | null
@@ -1356,7 +1468,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_workspace_role: {
+        Args: { user_uuid: string; workspace_uuid: string }
+        Returns: string
+      }
+      is_workspace_member: {
+        Args: { user_uuid: string; workspace_uuid: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
