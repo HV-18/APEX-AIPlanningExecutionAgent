@@ -27,14 +27,13 @@ import StudyBuddyPage from "./pages/StudyBuddyPage";
 import GamificationPage from "./pages/GamificationPage";
 import TeamChallengesPage from "./pages/TeamChallengesPage";
 import NotFound from "./pages/NotFound";
-import { useNotifications } from "./hooks/useNotifications";
+import { NotificationProvider } from "./components/NotificationProvider";
 
 const queryClient = new QueryClient();
 
 const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const { NotificationPortal } = useNotifications();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -76,7 +75,6 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
           </main>
         </div>
       </div>
-      {NotificationPortal}
     </SidebarProvider>
   );
 };
@@ -87,28 +85,30 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/" element={<ProtectedLayout><Dashboard /></ProtectedLayout>} />
-          <Route path="/chat" element={<ProtectedLayout><ChatPage /></ProtectedLayout>} />
-          <Route path="/mood" element={<ProtectedLayout><MoodPage /></ProtectedLayout>} />
-          <Route path="/study" element={<ProtectedLayout><StudyPage /></ProtectedLayout>} />
-          <Route path="/timetable" element={<ProtectedLayout><TimetablePage /></ProtectedLayout>} />
-          <Route path="/sustainability" element={<ProtectedLayout><SustainabilityPage /></ProtectedLayout>} />
-          <Route path="/projects" element={<ProtectedLayout><ProjectsPage /></ProtectedLayout>} />
-          <Route path="/health" element={<ProtectedLayout><HealthPage /></ProtectedLayout>} />
-          <Route path="/study-rooms" element={<ProtectedLayout><StudyRoomsPage /></ProtectedLayout>} />
-          <Route path="/study-room/:roomId" element={<ProtectedLayout><StudyRoomDetail /></ProtectedLayout>} />
-          <Route path="/meal-analyzer" element={<ProtectedLayout><MealAnalyzerPage /></ProtectedLayout>} />
-          <Route path="/focus" element={<ProtectedLayout><FocusPage /></ProtectedLayout>} />
-          <Route path="/wellness-reports" element={<ProtectedLayout><WellnessReportsPage /></ProtectedLayout>} />
-          <Route path="/meal-planner" element={<ProtectedLayout><MealPlannerPage /></ProtectedLayout>} />
-          <Route path="/study-buddy" element={<ProtectedLayout><StudyBuddyPage /></ProtectedLayout>} />
-          <Route path="/rewards" element={<ProtectedLayout><GamificationPage /></ProtectedLayout>} />
-          <Route path="/team-challenges" element={<ProtectedLayout><TeamChallengesPage /></ProtectedLayout>} />
-          <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <NotificationProvider>
+          <Routes>
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/" element={<ProtectedLayout><Dashboard /></ProtectedLayout>} />
+            <Route path="/chat" element={<ProtectedLayout><ChatPage /></ProtectedLayout>} />
+            <Route path="/mood" element={<ProtectedLayout><MoodPage /></ProtectedLayout>} />
+            <Route path="/study" element={<ProtectedLayout><StudyPage /></ProtectedLayout>} />
+            <Route path="/timetable" element={<ProtectedLayout><TimetablePage /></ProtectedLayout>} />
+            <Route path="/sustainability" element={<ProtectedLayout><SustainabilityPage /></ProtectedLayout>} />
+            <Route path="/projects" element={<ProtectedLayout><ProjectsPage /></ProtectedLayout>} />
+            <Route path="/health" element={<ProtectedLayout><HealthPage /></ProtectedLayout>} />
+            <Route path="/study-rooms" element={<ProtectedLayout><StudyRoomsPage /></ProtectedLayout>} />
+            <Route path="/study-room/:roomId" element={<ProtectedLayout><StudyRoomDetail /></ProtectedLayout>} />
+            <Route path="/meal-analyzer" element={<ProtectedLayout><MealAnalyzerPage /></ProtectedLayout>} />
+            <Route path="/focus" element={<ProtectedLayout><FocusPage /></ProtectedLayout>} />
+            <Route path="/wellness-reports" element={<ProtectedLayout><WellnessReportsPage /></ProtectedLayout>} />
+            <Route path="/meal-planner" element={<ProtectedLayout><MealPlannerPage /></ProtectedLayout>} />
+            <Route path="/study-buddy" element={<ProtectedLayout><StudyBuddyPage /></ProtectedLayout>} />
+            <Route path="/rewards" element={<ProtectedLayout><GamificationPage /></ProtectedLayout>} />
+            <Route path="/team-challenges" element={<ProtectedLayout><TeamChallengesPage /></ProtectedLayout>} />
+            <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </NotificationProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
