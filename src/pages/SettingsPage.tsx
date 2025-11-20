@@ -13,7 +13,16 @@ const SettingsPage = () => {
   const [notifications, setNotifications] = useState({
     moodReminders: true,
     studyReminders: true,
-    weeklyReports: false,
+    weeklyReports: true,
+    achievements: true,
+    studyStreaks: true,
+    mealReminders: false,
+  });
+  const [advanced, setAdvanced] = useState({
+    autoBackup: true,
+    dataSync: true,
+    aiPersonalization: true,
+    darkMode: false,
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -155,7 +164,7 @@ const SettingsPage = () => {
           </CardContent>
         </Card>
 
-        {/* Notification Settings */}
+        {/* Notifications */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -163,43 +172,180 @@ const SettingsPage = () => {
               Notifications
             </CardTitle>
             <CardDescription>
-              Configure your notification preferences
+              Manage how you receive notifications and reminders
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">Mood Check-in Reminders</p>
-                <p className="text-sm text-muted-foreground">Daily reminders to log your mood</p>
+                <Label htmlFor="mood-reminders">Mood Check Reminders</Label>
+                <p className="text-sm text-muted-foreground">
+                  Get daily reminders to log your mood
+                </p>
               </div>
               <Switch
+                id="mood-reminders"
                 checked={notifications.moodReminders}
                 onCheckedChange={(checked) =>
                   setNotifications({ ...notifications, moodReminders: checked })
                 }
               />
             </div>
+
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">Study Session Reminders</p>
-                <p className="text-sm text-muted-foreground">Notifications for scheduled study time</p>
+                <Label htmlFor="study-reminders">Study Reminders</Label>
+                <p className="text-sm text-muted-foreground">
+                  Reminders for scheduled study sessions
+                </p>
               </div>
               <Switch
+                id="study-reminders"
                 checked={notifications.studyReminders}
                 onCheckedChange={(checked) =>
                   setNotifications({ ...notifications, studyReminders: checked })
                 }
               />
             </div>
+
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">Weekly Progress Reports</p>
-                <p className="text-sm text-muted-foreground">Get weekly insights on your progress</p>
+                <Label htmlFor="weekly-reports">Weekly Progress Reports</Label>
+                <p className="text-sm text-muted-foreground">
+                  Receive weekly summaries of your progress
+                </p>
               </div>
               <Switch
+                id="weekly-reports"
                 checked={notifications.weeklyReports}
                 onCheckedChange={(checked) =>
                   setNotifications({ ...notifications, weeklyReports: checked })
+                }
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="achievements">Achievement Notifications</Label>
+                <p className="text-sm text-muted-foreground">
+                  Get notified when you earn badges and rewards
+                </p>
+              </div>
+              <Switch
+                id="achievements"
+                checked={notifications.achievements}
+                onCheckedChange={(checked) =>
+                  setNotifications({ ...notifications, achievements: checked })
+                }
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="study-streaks">Study Streak Alerts</Label>
+                <p className="text-sm text-muted-foreground">
+                  Notifications when your study streak is at risk
+                </p>
+              </div>
+              <Switch
+                id="study-streaks"
+                checked={notifications.studyStreaks}
+                onCheckedChange={(checked) =>
+                  setNotifications({ ...notifications, studyStreaks: checked })
+                }
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="meal-reminders">Meal Planning Reminders</Label>
+                <p className="text-sm text-muted-foreground">
+                  Reminders to log meals and plan nutrition
+                </p>
+              </div>
+              <Switch
+                id="meal-reminders"
+                checked={notifications.mealReminders}
+                onCheckedChange={(checked) =>
+                  setNotifications({ ...notifications, mealReminders: checked })
+                }
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Advanced Settings */}
+        <Card className="border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="w-5 h-5" />
+              Advanced Settings
+            </CardTitle>
+            <CardDescription>
+              Configure advanced features and preferences
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="auto-backup">Auto Backup</Label>
+                <p className="text-sm text-muted-foreground">
+                  Automatically backup your data daily
+                </p>
+              </div>
+              <Switch
+                id="auto-backup"
+                checked={advanced.autoBackup}
+                onCheckedChange={(checked) =>
+                  setAdvanced({ ...advanced, autoBackup: checked })
+                }
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="data-sync">Real-time Data Sync</Label>
+                <p className="text-sm text-muted-foreground">
+                  Sync data across devices in real-time
+                </p>
+              </div>
+              <Switch
+                id="data-sync"
+                checked={advanced.dataSync}
+                onCheckedChange={(checked) =>
+                  setAdvanced({ ...advanced, dataSync: checked })
+                }
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="ai-personalization">AI Personalization</Label>
+                <p className="text-sm text-muted-foreground">
+                  Allow AI to learn from your patterns for better recommendations
+                </p>
+              </div>
+              <Switch
+                id="ai-personalization"
+                checked={advanced.aiPersonalization}
+                onCheckedChange={(checked) =>
+                  setAdvanced({ ...advanced, aiPersonalization: checked })
+                }
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="dark-mode">Force Dark Mode</Label>
+                <p className="text-sm text-muted-foreground">
+                  Override system theme preference
+                </p>
+              </div>
+              <Switch
+                id="dark-mode"
+                checked={advanced.darkMode}
+                onCheckedChange={(checked) =>
+                  setAdvanced({ ...advanced, darkMode: checked })
                 }
               />
             </div>
@@ -217,29 +363,35 @@ const SettingsPage = () => {
               Manage your data and privacy settings
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <h4 className="font-medium mb-2">Clear All Data</h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                Permanently delete all your chat history, mood logs, study sessions, and other data. This action cannot be undone.
-              </p>
-              <Button variant="destructive" onClick={clearAllData}>
-                <Trash2 className="w-4 h-4 mr-2" />
-                Clear All Data
-              </Button>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-medium mb-2">Clear All Data</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Permanently delete all your study sessions, mood logs, and other data.
+                  This action cannot be undone.
+                </p>
+                <Button
+                  variant="destructive"
+                  onClick={clearAllData}
+                  className="gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete All Data
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* App Info */}
+        {/* About */}
         <Card>
           <CardHeader>
             <CardTitle>About</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <p>Student Wellness Hub v1.0</p>
-            <p>Your AI-powered companion for academic success and wellness</p>
-            <p className="pt-4 text-xs">© 2025 All rights reserved</p>
+          <CardContent className="text-sm text-muted-foreground space-y-2">
+            <p>Wellness Hub - Student AI Platform v1.0</p>
+            <p>© 2024 All rights reserved</p>
           </CardContent>
         </Card>
       </div>

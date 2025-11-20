@@ -17,6 +17,7 @@ import {
   Music,
   FileText,
   CalendarDays,
+  User,
 } from "lucide-react";
 import {
   Sidebar,
@@ -52,6 +53,7 @@ const mainItems = [
   { title: "AI Study Buddy", url: "/study-buddy", icon: Brain },
   { title: "Rewards", url: "/rewards", icon: BarChart3 },
   { title: "Team Challenges", url: "/team-challenges", icon: Users },
+  { title: "My Profile", url: "/profile", icon: User },
 ];
 
 export function AppSidebar() {

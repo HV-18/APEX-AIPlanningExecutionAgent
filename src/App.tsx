@@ -17,6 +17,7 @@ import SustainabilityPage from "./pages/SustainabilityPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import HealthPage from "./pages/HealthPage";
 import SettingsPage from "./pages/SettingsPage";
+import ProfilePage from "./pages/ProfilePage";
 import StudyRoomsPage from "./pages/StudyRoomsPage";
 import StudyRoomDetail from "./pages/StudyRoomDetail";
 import MealAnalyzerPage from "./pages/MealAnalyzerPage";
@@ -105,6 +106,7 @@ const App = () => (
             <Route path="/study-buddy" element={<ProtectedLayout><StudyBuddyPage /></ProtectedLayout>} />
             <Route path="/rewards" element={<ProtectedLayout><GamificationPage /></ProtectedLayout>} />
             <Route path="/team-challenges" element={<ProtectedLayout><TeamChallengesPage /></ProtectedLayout>} />
+            <Route path="/profile" element={<ProtectedLayout><ProfilePage /></ProtectedLayout>} />
             <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
