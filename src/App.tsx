@@ -10,7 +10,10 @@ import { supabase } from "@/integrations/supabase/client";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import ChatPage from "./pages/ChatPage";
+import MoodPage from "./pages/MoodPage";
+import StudyPage from "./pages/StudyPage";
 import TimetablePage from "./pages/TimetablePage";
+import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -88,10 +91,34 @@ const App = () => (
             }
           />
           <Route
+            path="/mood"
+            element={
+              <ProtectedLayout>
+                <MoodPage />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/study"
+            element={
+              <ProtectedLayout>
+                <StudyPage />
+              </ProtectedLayout>
+            }
+          />
+          <Route
             path="/timetable"
             element={
               <ProtectedLayout>
                 <TimetablePage />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedLayout>
+                <SettingsPage />
               </ProtectedLayout>
             }
           />
