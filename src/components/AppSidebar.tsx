@@ -12,6 +12,9 @@ import {
   Leaf,
   Lightbulb,
   Heart,
+  Users,
+  Camera,
+  Music,
 } from "lucide-react";
 import {
   Sidebar,
@@ -39,6 +42,9 @@ const mainItems = [
   { title: "Sustainability", url: "/sustainability", icon: Leaf },
   { title: "Real Projects", url: "/projects", icon: Lightbulb },
   { title: "Health Goals", url: "/health", icon: Heart },
+  { title: "Study Rooms", url: "/study-rooms", icon: Users },
+  { title: "Focus Zone", url: "/focus", icon: Music },
+  { title: "Meal Analyzer", url: "/meal-analyzer", icon: Camera },
 ];
 
 export function AppSidebar() {

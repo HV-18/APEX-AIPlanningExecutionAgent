@@ -287,6 +287,39 @@ export type Database = {
         }
         Relationships: []
       }
+      pomodoro_sessions: {
+        Row: {
+          break_minutes: number
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          duration_minutes: number
+          focus_topic: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          break_minutes?: number
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          duration_minutes?: number
+          focus_topic?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          break_minutes?: number
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          duration_minutes?: number
+          focus_topic?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -304,6 +337,132 @@ export type Database = {
           id?: string
         }
         Relationships: []
+      }
+      room_notes: {
+        Row: {
+          content: string
+          created_at: string | null
+          created_by: string
+          created_by_name: string
+          id: string
+          room_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          created_by: string
+          created_by_name: string
+          id?: string
+          room_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          created_by?: string
+          created_by_name?: string
+          id?: string
+          room_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_notes_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "study_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      room_participants: {
+        Row: {
+          id: string
+          is_active: boolean | null
+          joined_at: string | null
+          room_id: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean | null
+          joined_at?: string | null
+          room_id: string
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          id?: string
+          is_active?: boolean | null
+          joined_at?: string | null
+          room_id?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_participants_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "study_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      room_tasks: {
+        Row: {
+          assigned_to: string | null
+          assigned_to_name: string | null
+          completed_at: string | null
+          created_at: string | null
+          created_by: string
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: string | null
+          room_id: string
+          status: string | null
+          title: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          assigned_to_name?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string | null
+          room_id: string
+          status?: string | null
+          title: string
+        }
+        Update: {
+          assigned_to?: string | null
+          assigned_to_name?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string | null
+          room_id?: string
+          status?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_tasks_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "study_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       study_notes: {
         Row: {
@@ -332,6 +491,39 @@ export type Database = {
           subject?: string
           topic?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      study_rooms: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          max_participants: number | null
+          name: string
+          topic: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_participants?: number | null
+          name: string
+          topic?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_participants?: number | null
+          name?: string
+          topic?: string | null
         }
         Relationships: []
       }

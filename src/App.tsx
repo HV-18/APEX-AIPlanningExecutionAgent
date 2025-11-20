@@ -17,6 +17,10 @@ import SustainabilityPage from "./pages/SustainabilityPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import HealthPage from "./pages/HealthPage";
 import SettingsPage from "./pages/SettingsPage";
+import StudyRoomsPage from "./pages/StudyRoomsPage";
+import StudyRoomDetail from "./pages/StudyRoomDetail";
+import MealAnalyzerPage from "./pages/MealAnalyzerPage";
+import FocusPage from "./pages/FocusPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -85,6 +89,10 @@ const App = () => (
           <Route path="/sustainability" element={<ProtectedLayout><SustainabilityPage /></ProtectedLayout>} />
           <Route path="/projects" element={<ProtectedLayout><ProjectsPage /></ProtectedLayout>} />
           <Route path="/health" element={<ProtectedLayout><HealthPage /></ProtectedLayout>} />
+          <Route path="/study-rooms" element={<ProtectedLayout><StudyRoomsPage /></ProtectedLayout>} />
+          <Route path="/study-room/:roomId" element={<ProtectedLayout><StudyRoomDetail /></ProtectedLayout>} />
+          <Route path="/meal-analyzer" element={<ProtectedLayout><MealAnalyzerPage /></ProtectedLayout>} />
+          <Route path="/focus" element={<ProtectedLayout><FocusPage /></ProtectedLayout>} />
           <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
