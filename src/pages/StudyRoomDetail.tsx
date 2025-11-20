@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, MessageSquare, CheckSquare, FileText, Palette, Video, Monitor, ArrowLeft, Upload, Hand, VideoIcon } from 'lucide-react';
+import { Users, MessageSquare, CheckSquare, FileText, Palette, Video, Monitor, ArrowLeft, Upload, Hand, VideoIcon, Smile, Clock, Code2, DoorOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import Whiteboard from '@/components/Whiteboard';
@@ -16,6 +16,10 @@ import TextChat from '@/components/TextChat';
 import FileSharing from '@/components/FileSharing';
 import HandRaise from '@/components/HandRaise';
 import SessionRecorder from '@/components/SessionRecorder';
+import LiveReactions from '@/components/LiveReactions';
+import AttendanceTracker from '@/components/AttendanceTracker';
+import CodeEditor from '@/components/CodeEditor';
+import BreakoutRooms from '@/components/BreakoutRooms';
 
 interface Task {
   id: string;
@@ -154,45 +158,61 @@ export default function StudyRoomDetail() {
         </div>
 
         <Tabs defaultValue="tasks" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10">
+          <TabsList className="grid w-full grid-cols-7 lg:grid-cols-14 overflow-x-auto">
             <TabsTrigger value="tasks">
-              <CheckSquare className="w-4 h-4 mr-2" />
+              <CheckSquare className="w-4 h-4 lg:mr-2" />
               <span className="hidden lg:inline">Tasks</span>
             </TabsTrigger>
             <TabsTrigger value="notes">
-              <FileText className="w-4 h-4 mr-2" />
+              <FileText className="w-4 h-4 lg:mr-2" />
               <span className="hidden lg:inline">Notes</span>
             </TabsTrigger>
             <TabsTrigger value="whiteboard">
-              <Palette className="w-4 h-4 mr-2" />
-              <span className="hidden lg:inline">Whiteboard</span>
+              <Palette className="w-4 h-4 lg:mr-2" />
+              <span className="hidden lg:inline">Board</span>
             </TabsTrigger>
             <TabsTrigger value="video">
-              <Video className="w-4 h-4 mr-2" />
+              <Video className="w-4 h-4 lg:mr-2" />
               <span className="hidden lg:inline">Video</span>
             </TabsTrigger>
             <TabsTrigger value="screen">
-              <Monitor className="w-4 h-4 mr-2" />
+              <Monitor className="w-4 h-4 lg:mr-2" />
               <span className="hidden lg:inline">Screen</span>
             </TabsTrigger>
             <TabsTrigger value="chat">
-              <MessageSquare className="w-4 h-4 mr-2" />
+              <MessageSquare className="w-4 h-4 lg:mr-2" />
               <span className="hidden lg:inline">Chat</span>
             </TabsTrigger>
             <TabsTrigger value="files">
-              <Upload className="w-4 h-4 mr-2" />
+              <Upload className="w-4 h-4 lg:mr-2" />
               <span className="hidden lg:inline">Files</span>
             </TabsTrigger>
             <TabsTrigger value="hands">
-              <Hand className="w-4 h-4 mr-2" />
+              <Hand className="w-4 h-4 lg:mr-2" />
               <span className="hidden lg:inline">Hands</span>
             </TabsTrigger>
             <TabsTrigger value="record">
-              <VideoIcon className="w-4 h-4 mr-2" />
+              <VideoIcon className="w-4 h-4 lg:mr-2" />
               <span className="hidden lg:inline">Record</span>
             </TabsTrigger>
+            <TabsTrigger value="reactions">
+              <Smile className="w-4 h-4 lg:mr-2" />
+              <span className="hidden lg:inline">React</span>
+            </TabsTrigger>
+            <TabsTrigger value="attendance">
+              <Clock className="w-4 h-4 lg:mr-2" />
+              <span className="hidden lg:inline">Attend</span>
+            </TabsTrigger>
+            <TabsTrigger value="code">
+              <Code2 className="w-4 h-4 lg:mr-2" />
+              <span className="hidden lg:inline">Code</span>
+            </TabsTrigger>
+            <TabsTrigger value="breakout">
+              <DoorOpen className="w-4 h-4 lg:mr-2" />
+              <span className="hidden lg:inline">Breakout</span>
+            </TabsTrigger>
             <TabsTrigger value="participants">
-              <Users className="w-4 h-4 mr-2" />
+              <Users className="w-4 h-4 lg:mr-2" />
               <span className="hidden lg:inline">People</span>
             </TabsTrigger>
           </TabsList>
@@ -290,6 +310,22 @@ export default function StudyRoomDetail() {
 
           <TabsContent value="record" className="space-y-4">
             {roomId && <SessionRecorder roomId={roomId} />}
+          </TabsContent>
+
+          <TabsContent value="reactions" className="space-y-4">
+            {roomId && <LiveReactions roomId={roomId} />}
+          </TabsContent>
+
+          <TabsContent value="attendance" className="space-y-4">
+            {roomId && <AttendanceTracker roomId={roomId} />}
+          </TabsContent>
+
+          <TabsContent value="code" className="space-y-4">
+            {roomId && <CodeEditor roomId={roomId} />}
+          </TabsContent>
+
+          <TabsContent value="breakout" className="space-y-4">
+            {roomId && <BreakoutRooms roomId={roomId} participants={participants} />}
           </TabsContent>
 
           <TabsContent value="participants" className="space-y-2">
