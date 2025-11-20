@@ -10,6 +10,9 @@ import { NavigationHistory } from "@/components/NavigationHistory";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { KeyboardShortcutsModal } from "@/components/KeyboardShortcutsModal";
 import { CommandPalette } from "@/components/CommandPalette";
+import { QuickActionsButton } from "@/components/QuickActionsButton";
+import { VoiceCommandsButton } from "@/components/VoiceCommandsButton";
+import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useGestureNavigation } from "@/hooks/useGestureNavigation";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,6 +39,7 @@ import StudyBuddyPage from "./pages/StudyBuddyPage";
 import GamificationPage from "./pages/GamificationPage";
 import TeamChallengesPage from "./pages/TeamChallengesPage";
 import KeyboardShortcutsSettings from "./pages/KeyboardShortcutsSettings";
+import WorkspacesPage from "./pages/WorkspacesPage";
 import NotFound from "./pages/NotFound";
 import { NotificationProvider } from "./components/NotificationProvider";
 
@@ -86,7 +90,10 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="flex-1 flex flex-col">
           <header className="h-14 border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10 flex items-center justify-between px-4">
             <SidebarTrigger />
-            <NavigationHistory />
+            <div className="flex items-center gap-2">
+              <VoiceCommandsButton />
+              <NavigationHistory />
+            </div>
           </header>
           <main className="flex-1 overflow-auto p-6">
             <Breadcrumbs />
@@ -96,6 +103,7 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
       </div>
       <KeyboardShortcutsModal open={showShortcutsModal} onOpenChange={setShowShortcutsModal} />
       <CommandPalette />
+      <QuickActionsButton />
     </SidebarProvider>
   );
 };
@@ -107,8 +115,9 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <NotificationProvider>
-            <Routes>
+          <WorkspaceProvider>
+            <NotificationProvider>
+              <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<ProtectedLayout><Dashboard /></ProtectedLayout>} />
             <Route path="/chat" element={<ProtectedLayout><ChatPage /></ProtectedLayout>} />
@@ -131,9 +140,11 @@ const App = () => (
             <Route path="/profile/:userId" element={<PublicProfilePage />} />
             <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
             <Route path="/settings/keyboard-shortcuts" element={<ProtectedLayout><KeyboardShortcutsSettings /></ProtectedLayout>} />
+            <Route path="/workspaces" element={<ProtectedLayout><WorkspacesPage /></ProtectedLayout>} />
             <Route path="*" element={<NotFound />} />
             </Routes>
           </NotificationProvider>
+          </WorkspaceProvider>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>

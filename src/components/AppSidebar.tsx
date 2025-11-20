@@ -1,5 +1,6 @@
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
+import { WorkspaceSwitcher } from "@/components/WorkspaceSwitcher";
 import {
   Brain,
   MessageSquare,
@@ -35,7 +36,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const mainItems = [
   { title: "Dashboard", url: "/", icon: BarChart3 },
@@ -85,6 +86,10 @@ export function AppSidebar() {
             </div>
           )}
         </div>
+      </SidebarHeader>
+
+      <SidebarHeader className="border-b p-4">
+        <WorkspaceSwitcher />
       </SidebarHeader>
 
       <SidebarContent>

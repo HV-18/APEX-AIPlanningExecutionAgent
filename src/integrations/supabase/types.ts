@@ -133,6 +133,7 @@ export type Database = {
           questions: Json
           subject: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -141,6 +142,7 @@ export type Database = {
           questions: Json
           subject: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -149,8 +151,17 @@ export type Database = {
           questions?: Json
           subject?: string
           user_id?: string
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "custom_quizzes_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       health_goals: {
         Row: {
@@ -273,6 +284,7 @@ export type Database = {
           skills_learned: string[] | null
           title: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           category: string
@@ -289,6 +301,7 @@ export type Database = {
           skills_learned?: string[] | null
           title: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           category?: string
@@ -305,8 +318,17 @@ export type Database = {
           skills_learned?: string[] | null
           title?: string
           user_id?: string
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "learning_projects_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       meal_plans: {
         Row: {
@@ -653,6 +675,7 @@ export type Database = {
           subject: string
           topic: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           ai_generated?: boolean | null
@@ -662,6 +685,7 @@ export type Database = {
           subject: string
           topic: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           ai_generated?: boolean | null
@@ -671,8 +695,17 @@ export type Database = {
           subject?: string
           topic?: string
           user_id?: string
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "study_notes_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       study_patterns: {
         Row: {
@@ -755,6 +788,7 @@ export type Database = {
           notes: string | null
           subject: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           completed?: boolean | null
@@ -764,6 +798,7 @@ export type Database = {
           notes?: string | null
           subject: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           completed?: boolean | null
@@ -773,8 +808,17 @@ export type Database = {
           notes?: string | null
           subject?: string
           user_id?: string
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "study_sessions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       study_tips: {
         Row: {
@@ -956,6 +1000,7 @@ export type Database = {
           start_time: string
           title: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           category?: string | null
@@ -966,6 +1011,7 @@ export type Database = {
           start_time: string
           title: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           category?: string | null
@@ -976,8 +1022,17 @@ export type Database = {
           start_time?: string
           title?: string
           user_id?: string
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "timetable_events_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       transport_logs: {
         Row: {
@@ -1070,6 +1125,38 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_workspace_settings: {
+        Row: {
+          active_workspace_id: string | null
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_workspace_id?: string | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_workspace_id?: string | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_workspace_settings_active_workspace_id_fkey"
+            columns: ["active_workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       voice_signals: {
         Row: {
@@ -1230,6 +1317,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      workspaces: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
