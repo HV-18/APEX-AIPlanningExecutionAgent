@@ -38,13 +38,19 @@ export const ChatInterface = () => {
       const { data: { session } } = await supabase.auth.getSession();
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`;
 
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      // Only add Authorization header if session exists
+      if (session?.access_token) {
+        headers.Authorization = `Bearer ${session.access_token}`;
+      }
+
       const response = await fetch(CHAT_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.access_token}`,
-        },
-        body: JSON.stringify({ 
+        headers,
+        body: JSON.stringify({
           messages: [...messages, userMessage],
           mode,
         }),
