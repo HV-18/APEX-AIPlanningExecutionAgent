@@ -20,6 +20,10 @@ import {
 import { WorkspaceAnalytics } from "@/components/WorkspaceAnalytics";
 import { WorkspaceSharingModal } from "@/components/WorkspaceSharingModal";
 import { FileUploadZone } from "@/components/FileUploadZone";
+import { WorkspacePermissionsManager } from "@/components/WorkspacePermissionsManager";
+import { WorkspaceSearch } from "@/components/WorkspaceSearch";
+import { WorkspaceExportImport } from "@/components/WorkspaceExportImport";
+import { WorkspaceNotifications } from "@/components/WorkspaceNotifications";
 
 const emojiOptions = ["📚", "💼", "🎓", "🔬", "🎨", "💻", "📊", "🏆", "🌟", "🚀"];
 const colorOptions = [
@@ -276,15 +280,34 @@ const WorkspacesPage = () => {
               
               {selectedWorkspace === workspace.id && (
                 <Tabs defaultValue="analytics" className="mb-4">
-                  <TabsList className="grid w-full grid-cols-2">
+                  <TabsList className="grid w-full grid-cols-6">
                     <TabsTrigger value="analytics">Analytics</TabsTrigger>
                     <TabsTrigger value="files">Files</TabsTrigger>
+                    <TabsTrigger value="search">Search</TabsTrigger>
+                    <TabsTrigger value="permissions">Permissions</TabsTrigger>
+                    <TabsTrigger value="backup">Backup</TabsTrigger>
+                    <TabsTrigger value="notifications">Notifications</TabsTrigger>
                   </TabsList>
                   <TabsContent value="analytics" className="mt-4">
                     <WorkspaceAnalytics workspaceId={workspace.id} />
                   </TabsContent>
                   <TabsContent value="files" className="mt-4">
                     <FileUploadZone workspaceId={workspace.id} />
+                  </TabsContent>
+                  <TabsContent value="search" className="mt-4">
+                    <WorkspaceSearch workspaceId={workspace.id} />
+                  </TabsContent>
+                  <TabsContent value="permissions" className="mt-4">
+                    <WorkspacePermissionsManager workspaceId={workspace.id} />
+                  </TabsContent>
+                  <TabsContent value="backup" className="mt-4">
+                    <WorkspaceExportImport
+                      workspaceId={workspace.id}
+                      workspaceName={workspace.name}
+                    />
+                  </TabsContent>
+                  <TabsContent value="notifications" className="mt-4">
+                    <WorkspaceNotifications workspaceId={workspace.id} />
                   </TabsContent>
                 </Tabs>
               )}
