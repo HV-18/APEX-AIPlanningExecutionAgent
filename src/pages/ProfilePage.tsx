@@ -10,6 +10,7 @@ import { ProfileEditor } from "@/components/ProfileEditor";
 import { DataExport } from "@/components/DataExport";
 import { QRCodeCustomizer } from "@/components/QRCodeCustomizer";
 import { RecentStudyPartners } from "@/components/RecentStudyPartners";
+import { SocialIntegrations } from "@/components/SocialIntegrations";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ChatMessage {
@@ -234,6 +235,17 @@ const ProfilePage = () => {
 
       {/* QR Code Customizer */}
       <QRCodeCustomizer userId={userId} userName={profile.full_name} />
+
+      {/* Social Integrations */}
+      <SocialIntegrations 
+        userId={userId}
+        userName={profile.full_name}
+        studyStats={{
+          totalSessions: studyStats.totalSessions,
+          totalMinutes: studyStats.totalMinutes,
+          studyStreak: studyStats.studyStreak,
+        }}
+      />
 
       {/* Study Statistics */}
       <div className="grid gap-4 md:grid-cols-3">
