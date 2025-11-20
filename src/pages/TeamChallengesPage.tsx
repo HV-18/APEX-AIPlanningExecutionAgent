@@ -179,6 +179,19 @@ export default function TeamChallengesPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Check if already a member
+      const { data: existingMembership } = await supabase
+        .from('team_members')
+        .select('id')
+        .eq('team_id', teamId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (existingMembership) {
+        toast({ title: 'You are already a member of this team' });
+        return;
+      }
+
       const { data: profile } = await supabase
         .from('profiles')
         .select('full_name')
