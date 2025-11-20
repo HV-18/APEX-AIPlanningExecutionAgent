@@ -28,6 +28,16 @@ export default function WellnessReportsPage() {
 
   useEffect(() => {
     loadReports();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('wellness-reports-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'wellness_reports' }, () => loadReports())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadReports = async () => {

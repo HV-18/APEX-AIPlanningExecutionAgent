@@ -28,6 +28,16 @@ const HealthPage = () => {
 
   useEffect(() => {
     loadGoals();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('health-goals-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'health_goals' }, () => loadGoals())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadGoals = async () => {

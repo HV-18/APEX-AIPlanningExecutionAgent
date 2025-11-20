@@ -30,6 +30,16 @@ export default function MealPlannerPage() {
 
   useEffect(() => {
     loadMealPlans();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('meal-plans-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'meal_plans' }, () => loadMealPlans())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [weekStart]);
 
   function getMonday(date: Date) {

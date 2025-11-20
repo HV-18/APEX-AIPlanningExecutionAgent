@@ -17,6 +17,17 @@ export const RecentActivity = () => {
 
   useEffect(() => {
     loadActivities();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('recent-activity-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'mood_logs' }, () => loadActivities())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'study_sessions' }, () => loadActivities())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadActivities = async () => {

@@ -37,6 +37,18 @@ export default function GamificationPage() {
 
   useEffect(() => {
     loadGamificationData();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('gamification-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_points' }, () => loadGamificationData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_badges' }, () => loadGamificationData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'leaderboard_entries' }, () => loadGamificationData())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadGamificationData = async () => {

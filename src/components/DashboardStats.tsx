@@ -15,6 +15,19 @@ export const DashboardStats = () => {
 
   useEffect(() => {
     loadStats();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('dashboard-stats-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'mood_logs' }, () => loadStats())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'study_sessions' }, () => loadStats())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'transport_logs' }, () => loadStats())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_messages' }, () => loadStats())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadStats = async () => {

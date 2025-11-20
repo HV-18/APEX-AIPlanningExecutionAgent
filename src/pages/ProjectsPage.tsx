@@ -37,6 +37,16 @@ const ProjectsPage = () => {
 
   useEffect(() => {
     loadProjects();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('learning-projects-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'learning_projects' }, () => loadProjects())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadProjects = async () => {
