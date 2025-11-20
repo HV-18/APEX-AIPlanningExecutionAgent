@@ -64,25 +64,103 @@ const WorkspaceTemplatesPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const getTemplateContent = (templateId: string) => {
+    const content: Record<string, any> = {
+      "template-3": { // Language Learning
+        notes: [
+          { subject: "Vocabulary", topic: "Common Phrases", content: "Track new words and phrases you learn daily" },
+          { subject: "Grammar", topic: "Tenses", content: "Notes on verb conjugations and tense usage" },
+          { subject: "Pronunciation", topic: "Sounds", content: "Practice difficult sounds and phonetics" }
+        ],
+        projects: [
+          { title: "Speaking Practice", category: "Speaking", description: "Daily conversation practice goals", progress: 0 },
+          { title: "Reading Comprehension", category: "Reading", description: "Read articles and books in target language", progress: 0 }
+        ],
+        sessions: [
+          { subject: "Listening Practice", duration_minutes: 30 },
+          { subject: "Writing Exercise", duration_minutes: 45 }
+        ]
+      },
+      "template-1": { // Computer Science Course
+        notes: [
+          { subject: "Data Structures", topic: "Arrays & Lists", content: "Linear data structure basics" },
+          { subject: "Algorithms", topic: "Sorting", content: "Bubble sort, quick sort, merge sort" }
+        ],
+        projects: [
+          { title: "Final Project", category: "Programming", description: "Build a full-stack application", progress: 0 }
+        ]
+      },
+      "template-2": { // Research Project
+        notes: [
+          { subject: "Literature Review", topic: "Key Papers", content: "Summary of related research" },
+          { subject: "Methodology", topic: "Approach", content: "Research methods and techniques" }
+        ],
+        projects: [
+          { title: "Data Collection", category: "Research", description: "Gather experimental data", progress: 0 }
+        ]
+      }
+    };
+    return content[templateId] || {};
+  };
+
   const handleCreateFromTemplate = async (template: any) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase.from("workspaces").insert({
-        user_id: user.id,
-        name: template.name,
-        description: template.description,
-        icon: template.icon,
-        color: template.color,
-      });
+      // Create workspace
+      const { data: workspace, error: workspaceError } = await supabase
+        .from("workspaces")
+        .insert({
+          user_id: user.id,
+          name: template.name,
+          description: template.description,
+          icon: template.icon,
+          color: template.color,
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (workspaceError) throw workspaceError;
+
+      // Get template content
+      const content = getTemplateContent(template.id);
+
+      // Add notes
+      if (content.notes && content.notes.length > 0) {
+        const notesWithWorkspace = content.notes.map((note: any) => ({
+          ...note,
+          user_id: user.id,
+          workspace_id: workspace.id,
+          ai_generated: false,
+        }));
+        await supabase.from("study_notes").insert(notesWithWorkspace);
+      }
+
+      // Add projects
+      if (content.projects && content.projects.length > 0) {
+        const projectsWithWorkspace = content.projects.map((project: any) => ({
+          ...project,
+          user_id: user.id,
+          workspace_id: workspace.id,
+        }));
+        await supabase.from("learning_projects").insert(projectsWithWorkspace);
+      }
+
+      // Add study sessions
+      if (content.sessions && content.sessions.length > 0) {
+        const sessionsWithWorkspace = content.sessions.map((session: any) => ({
+          ...session,
+          user_id: user.id,
+          workspace_id: workspace.id,
+        }));
+        await supabase.from("study_sessions").insert(sessionsWithWorkspace);
+      }
 
       await refreshWorkspaces();
       toast({
-        title: "Workspace created",
-        description: `Created workspace from ${template.name} template`,
+        title: "Workspace created! 🎉",
+        description: `${template.name} workspace with starter content is ready`,
       });
       navigate("/workspaces");
     } catch (error) {
