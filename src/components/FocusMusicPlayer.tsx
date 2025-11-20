@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,20 +7,20 @@ import { Slider } from '@/components/ui/slider';
 
 const musicCategories = {
   binaural: [
-    { name: 'Deep Focus 40Hz', url: 'https://www.youtube.com/embed/WPni755-Krg?autoplay=1' },
-    { name: 'Study & Concentration', url: 'https://www.youtube.com/embed/kJww__6CgNU?autoplay=1' },
+    { name: 'Deep Focus 40Hz', videoId: 'WPni755-Krg' },
+    { name: 'Study & Concentration', videoId: 'kJww__6CgNU' },
   ],
   lofi: [
-    { name: 'Lofi Hip Hop', url: 'https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1' },
-    { name: 'Chill Beats', url: 'https://www.youtube.com/embed/5qap5aO4i9A?autoplay=1' },
+    { name: 'Lofi Hip Hop', videoId: 'jfKfPfyJRdk' },
+    { name: 'Chill Beats', videoId: '5qap5aO4i9A' },
   ],
   nature: [
-    { name: 'Rain Sounds', url: 'https://www.youtube.com/embed/nDq6TstdEi8?autoplay=1' },
-    { name: 'Forest Ambience', url: 'https://www.youtube.com/embed/WEW0NpGdGLY?autoplay=1' },
+    { name: 'Rain Sounds', videoId: 'nDq6TstdEi8' },
+    { name: 'Forest Ambience', videoId: 'WEW0NpGdGLY' },
   ],
   whitenoise: [
-    { name: 'Pure White Noise', url: 'https://www.youtube.com/embed/nMfPqeZjc2c?autoplay=1' },
-    { name: 'Brown Noise', url: 'https://www.youtube.com/embed/RqzGzwTY-6w?autoplay=1' },
+    { name: 'Pure White Noise', videoId: 'nMfPqeZjc2c' },
+    { name: 'Brown Noise', videoId: 'RqzGzwTY-6w' },
   ],
 };
 
@@ -29,10 +29,75 @@ export default function FocusMusicPlayer() {
   const [volume, setVolume] = useState([70]);
   const [currentTrack, setCurrentTrack] = useState(musicCategories.binaural[0]);
   const [category, setCategory] = useState('binaural');
+  const playerRef = useRef<any>(null);
+  const iframeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+
+    (window as any).onYouTubeIframeAPIReady = () => {
+      if (iframeRef.current) {
+        playerRef.current = new (window as any).YT.Player('youtube-player', {
+          videoId: currentTrack.videoId,
+          playerVars: {
+            autoplay: 0,
+            controls: 0,
+            loop: 1,
+            playlist: currentTrack.videoId,
+          },
+          events: {
+            onReady: (event: any) => {
+              event.target.setVolume(volume[0]);
+            },
+          },
+        });
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (playerRef.current && playerRef.current.loadVideoById) {
+      playerRef.current.loadVideoById({
+        videoId: currentTrack.videoId,
+        startSeconds: 0,
+      });
+      playerRef.current.setLoop(true);
+      if (isPlaying) {
+        playerRef.current.playVideo();
+      }
+    }
+  }, [currentTrack]);
+
+  useEffect(() => {
+    if (playerRef.current && playerRef.current.setVolume) {
+      playerRef.current.setVolume(volume[0]);
+    }
+  }, [volume]);
 
   const handleTrackChange = (track: typeof currentTrack) => {
     setCurrentTrack(track);
     setIsPlaying(true);
+  };
+
+  const togglePlayPause = () => {
+    if (playerRef.current) {
+      if (isPlaying) {
+        playerRef.current.pauseVideo();
+      } else {
+        playerRef.current.playVideo();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleSkip = () => {
+    const tracks = musicCategories[category as keyof typeof musicCategories];
+    const currentIndex = tracks.findIndex(t => t.videoId === currentTrack.videoId);
+    const nextIndex = (currentIndex + 1) % tracks.length;
+    setCurrentTrack(tracks[nextIndex]);
   };
 
   return (
@@ -80,11 +145,11 @@ export default function FocusMusicPlayer() {
           <Button
             variant="outline"
             size="icon"
-            onClick={() => setIsPlaying(!isPlaying)}
+            onClick={togglePlayPause}
           >
             {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
           </Button>
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" onClick={handleSkip}>
             <SkipForward className="w-4 h-4" />
           </Button>
         </div>
@@ -102,20 +167,10 @@ export default function FocusMusicPlayer() {
         </div>
       </div>
 
-      {/* Embedded Player */}
-      {isPlaying && (
-        <div className="mt-4 rounded-lg overflow-hidden">
-          <iframe
-            width="100%"
-            height="60"
-            src={currentTrack.url}
-            title={currentTrack.name}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="border-0"
-          />
-        </div>
-      )}
+      {/* Embedded Player (Hidden but functional) */}
+      <div ref={iframeRef} className="mt-4">
+        <div id="youtube-player" className="w-full h-0" />
+      </div>
     </Card>
   );
 }
