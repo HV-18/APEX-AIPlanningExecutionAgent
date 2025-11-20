@@ -5,13 +5,16 @@ import { Card } from "@/components/ui/card";
 import { Send, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { AIModeSelector } from "./AIModeSelector";
 
 type Message = { role: "user" | "assistant"; content: string };
+type AIMode = "casual" | "interview" | "viva" | "notes" | "study_plan";
 
 export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [mode, setMode] = useState<AIMode>("casual");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -41,7 +44,10 @@ export const ChatInterface = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session?.access_token}`,
         },
-        body: JSON.stringify({ messages: [...messages, userMessage] }),
+        body: JSON.stringify({ 
+          messages: [...messages, userMessage],
+          mode,
+        }),
       });
 
       if (!response.ok || !response.body) {
@@ -116,13 +122,29 @@ export const ChatInterface = () => {
     }
   };
 
+  const getModeDescription = () => {
+    const descriptions = {
+      casual: "Chat casually about anything!",
+      interview: "Practice interview questions with feedback",
+      viva: "Prepare for viva with challenging questions",
+      notes: "Ask me to generate study notes on any topic",
+      study_plan: "Create a personalized study schedule",
+    };
+    return descriptions[mode];
+  };
+
   return (
     <Card className="flex flex-col h-[600px] border-2">
+      <div className="p-4 border-b bg-muted/30">
+        <AIModeSelector selectedMode={mode} onModeChange={setMode} />
+        <p className="text-sm text-muted-foreground text-center">{getModeDescription()}</p>
+      </div>
+
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && (
           <div className="text-center text-muted-foreground py-12">
             <p className="text-lg mb-2">👋 Hi! I'm your AI study companion</p>
-            <p className="text-sm">Ask me anything about your studies, exams, or just chat!</p>
+            <p className="text-sm">Select a mode above and start chatting!</p>
           </div>
         )}
         {messages.map((message, index) => (
@@ -162,7 +184,7 @@ export const ChatInterface = () => {
                 sendMessage();
               }
             }}
-            placeholder="Ask me anything..."
+            placeholder={mode === "notes" ? "E.g., Generate notes on Photosynthesis" : "Ask me anything..."}
             className="resize-none"
             rows={2}
           />
