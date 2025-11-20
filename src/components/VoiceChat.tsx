@@ -59,21 +59,21 @@ export default function VoiceChat({ roomId, participants }: VoiceChatProps) {
 
     try {
       if (signal.signal_type === 'offer') {
-        await pc.setRemoteDescription(new RTCSessionDescription(signal.signal_data));
+        await pc.setRemoteDescription(new RTCSessionDescription(signal.signal_data as RTCSessionDescriptionInit));
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
 
         await supabase.from('voice_signals').insert([{
           room_id: roomId,
-          from_user_id: user?.id,
+          from_user_id: user?.id || '',
           to_user_id: fromUserId,
           signal_type: 'answer',
-          signal_data: answer,
+          signal_data: JSON.parse(JSON.stringify(answer)),
         }]);
       } else if (signal.signal_type === 'answer') {
-        await pc.setRemoteDescription(new RTCSessionDescription(signal.signal_data));
+        await pc.setRemoteDescription(new RTCSessionDescription(signal.signal_data as RTCSessionDescriptionInit));
       } else if (signal.signal_type === 'ice-candidate') {
-        await pc.addIceCandidate(new RTCIceCandidate(signal.signal_data));
+        await pc.addIceCandidate(new RTCIceCandidate(signal.signal_data as RTCIceCandidateInit));
       }
     } catch (error) {
       console.error('Error handling signal:', error);
@@ -83,16 +83,18 @@ export default function VoiceChat({ roomId, participants }: VoiceChatProps) {
   const createPeerConnection = (userId: string): RTCPeerConnection => {
     const pc = new RTCPeerConnection(configuration);
 
+    pc.onicecandidate = async (event: RTCPeerConnectionIceEvent) => {
       if (event.candidate) {
         const { data: { user } } = await supabase.auth.getUser();
         await supabase.from('voice_signals').insert([{
           room_id: roomId,
-          from_user_id: user?.id,
+          from_user_id: user?.id || '',
           to_user_id: userId,
           signal_type: 'ice-candidate',
-          signal_data: event.candidate.toJSON(),
+          signal_data: JSON.parse(JSON.stringify(event.candidate)),
         }]);
       }
+    };
 
     pc.ontrack = (event) => {
       const audio = new Audio();
@@ -132,15 +134,16 @@ export default function VoiceChat({ roomId, participants }: VoiceChatProps) {
       const otherParticipants = participants.filter((p) => p.user_id !== user?.id);
 
       for (const participant of otherParticipants) {
+        const pc = createPeerConnection(participant.user_id);
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
 
         await supabase.from('voice_signals').insert([{
           room_id: roomId,
-          from_user_id: user?.id,
+          from_user_id: user?.id || '',
           to_user_id: participant.user_id,
           signal_type: 'offer',
-          signal_data: offer,
+          signal_data: JSON.parse(JSON.stringify(offer)),
         }]);
       }
 
