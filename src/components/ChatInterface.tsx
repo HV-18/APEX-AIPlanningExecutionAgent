@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { Send, Loader2, Mic, StopCircle, Paperclip, X, History } from "lucide-react";
+import { Send, Loader2, Paperclip, X, History } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { AIModeSelector } from "./AIModeSelector";
@@ -24,13 +24,10 @@ export const ChatInterface = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<AIMode>("casual");
-  const [isRecording, setIsRecording] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -77,105 +74,6 @@ export const ChatInterface = () => {
     }
   };
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: {
-          sampleRate: 24000,
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
-        }
-      });
-      
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        await transcribeAudio(audioBlob);
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-      
-      toast({
-        title: "Recording started",
-        description: "Speak your message...",
-      });
-    } catch (error) {
-      console.error('Error starting recording:', error);
-      toast({
-        title: "Error",
-        description: "Failed to access microphone",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  };
-
-  const transcribeAudio = async (audioBlob: Blob) => {
-    try {
-      setIsLoading(true);
-      
-      // Get session first
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session?.access_token) {
-        throw new Error('Please sign in to use voice transcription');
-      }
-      
-      const reader = new FileReader();
-      
-      reader.onloadend = async () => {
-        const base64Audio = (reader.result as string).split(',')[1];
-        
-        const { data, error } = await supabase.functions.invoke('voice-to-text', {
-          body: { audio: base64Audio },
-        });
-
-        if (error) {
-          throw error;
-        }
-
-        if (!data?.text) {
-          throw new Error('No transcription received');
-        }
-
-        setInput(data.text);
-        
-        toast({
-          title: "Transcription complete",
-          description: "Your speech has been converted to text",
-        });
-      };
-
-      reader.readAsDataURL(audioBlob);
-    } catch (error) {
-      console.error('Error transcribing audio:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to transcribe audio",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -262,8 +160,24 @@ export const ChatInterface = () => {
         }),
       });
 
-      if (!response.ok || !response.body) {
-        throw new Error("Failed to get response");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        // Check for quota exceeded error
+        if (response.status === 402 || errorData.error?.includes('quota') || errorData.error?.includes('insufficient_quota')) {
+          throw new Error('AI quota exceeded. Please add credits to your OpenAI account or check your billing settings.');
+        }
+        
+        // Check for rate limit error
+        if (response.status === 429) {
+          throw new Error('Rate limit exceeded. Please wait a moment and try again.');
+        }
+        
+        throw new Error(errorData.error || "Failed to get response");
+      }
+
+      if (!response.body) {
+        throw new Error("Failed to get response stream");
       }
 
       const reader = response.body.getReader();
@@ -326,9 +240,11 @@ export const ChatInterface = () => {
       loadChatHistory();
     } catch (error) {
       console.error("Error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to send message. Please try again.";
+      
       toast({
         title: "Error",
-        description: "Failed to send message. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
       setMessages((prev) => prev.slice(0, -1));
@@ -388,7 +304,7 @@ export const ChatInterface = () => {
         {messages.length === 0 && (
           <div className="text-center text-muted-foreground py-12">
             <p className="text-lg mb-2">👋 Hi! I'm your AI study companion</p>
-            <p className="text-sm">Start chatting or use voice/file upload!</p>
+            <p className="text-sm">Start chatting or use file upload to share documents!</p>
           </div>
         )}
         {messages.map((message, index) => (
@@ -438,7 +354,7 @@ export const ChatInterface = () => {
           }}
           placeholder="Type your message..."
           className="min-h-[80px]"
-          disabled={isLoading || isRecording}
+          disabled={isLoading}
         />
         
         <div className="flex justify-between items-center">
@@ -460,28 +376,9 @@ export const ChatInterface = () => {
               <Paperclip className="w-4 h-4 mr-2" />
               Attach
             </Button>
-            
-            <Button
-              variant={isRecording ? "destructive" : "outline"}
-              size="sm"
-              onClick={isRecording ? stopRecording : startRecording}
-              disabled={isLoading}
-            >
-              {isRecording ? (
-                <>
-                  <StopCircle className="w-4 h-4 mr-2" />
-                  Stop
-                </>
-              ) : (
-                <>
-                  <Mic className="w-4 h-4 mr-2" />
-                  Record
-                </>
-              )}
-            </Button>
           </div>
           
-          <Button onClick={sendMessage} disabled={isLoading || !input.trim() || isRecording}>
+          <Button onClick={sendMessage} disabled={isLoading || !input.trim()}>
             {isLoading ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             ) : (
