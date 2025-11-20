@@ -11,6 +11,7 @@ const SustainabilityPage = () => {
   const [stats, setStats] = useState({
     totalCO2Saved: 0,
     moneySaved: 0,
+    totalSpent: 0,
     greenTrips: 0,
   });
   const [transportLog, setTransportLog] = useState({
@@ -57,15 +58,30 @@ const SustainabilityPage = () => {
         .select("*")
         .eq("user_id", user.id);
 
-      if (transports) {
+      if (transports && transports.length > 0) {
         const totalCO2 = transports.reduce((sum, t) => sum + (Number(t.co2_saved) || 0), 0);
         const totalCost = transports.reduce((sum, t) => sum + (Number(t.cost) || 0), 0);
+        
+        // Calculate money saved: compare actual cost vs if all trips were by car
+        // Average car cost: $0.50/km (fuel + maintenance)
+        const totalDistance = transports.reduce((sum, t) => sum + (Number(t.distance_km) || 0), 0);
+        const carCost = totalDistance * 0.5;
+        const moneySaved = Math.max(0, carCost - totalCost);
+        
         const greenModes = transports.filter(t => ['walk', 'bike', 'bus', 'train'].includes(t.mode));
 
         setStats({
           totalCO2Saved: Math.round(totalCO2 * 10) / 10,
-          moneySaved: Math.round((50 - totalCost) * 10) / 10,
+          moneySaved: Math.round(moneySaved * 10) / 10,
+          totalSpent: Math.round(totalCost * 10) / 10,
           greenTrips: greenModes.length,
+        });
+      } else {
+        setStats({
+          totalCO2Saved: 0,
+          moneySaved: 0,
+          totalSpent: 0,
+          greenTrips: 0,
         });
       }
     } catch (error) {
@@ -176,7 +192,7 @@ const SustainabilityPage = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="border-secondary/50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -206,7 +222,24 @@ const SustainabilityPage = () => {
               ${stats.moneySaved}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              on transport this month
+              vs driving ($0.50/km)
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-accent/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Spent
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold flex items-center gap-2 text-accent">
+              <DollarSign className="w-5 h-5" />
+              ${stats.totalSpent}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              actual transport costs
             </p>
           </CardContent>
         </Card>
