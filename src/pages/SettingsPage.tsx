@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { BackButton } from "@/components/BackButton";
 
 type SettingsSection = 'profile' | 'notifications' | 'security' | 'keyboard' | 'appearance' | 'advanced';
 

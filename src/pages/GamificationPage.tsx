@@ -5,6 +5,7 @@ import { Trophy, Award, Star, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { BackButton } from "@/components/BackButton";
 
 interface UserPoints {
   total_points: number;
