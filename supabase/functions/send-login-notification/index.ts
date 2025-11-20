@@ -129,12 +129,17 @@ Respond with a JSON object containing:
       minute: "2-digit"
     });
 
+    // Format recommendations array to string
+    const recommendationsText = Array.isArray(aiContent.recommendations) 
+      ? aiContent.recommendations.join('\n')
+      : aiContent.recommendations;
+
     // Render email template
     const html = await renderAsync(
       React.createElement(LoginNotificationEmail, {
         userName,
         aiGreeting: aiContent.greeting,
-        aiRecommendations: aiContent.recommendations,
+        aiRecommendations: recommendationsText,
         aiMotivation: aiContent.motivation,
         loginTime,
       })
