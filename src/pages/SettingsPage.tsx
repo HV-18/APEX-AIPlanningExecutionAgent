@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { Settings, User, Bell, Shield, Trash2, Keyboard, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Settings, User, Bell, Shield, Trash2, Keyboard, Palette, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +7,21 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
+
+type SettingsSection = 'profile' | 'notifications' | 'security' | 'keyboard' | 'appearance' | 'advanced';
+
+const settingsSections = [
+  { id: 'profile' as SettingsSection, label: 'Profile', icon: User },
+  { id: 'notifications' as SettingsSection, label: 'Notifications', icon: Bell },
+  { id: 'security' as SettingsSection, label: 'Security & Privacy', icon: Shield },
+  { id: 'keyboard' as SettingsSection, label: 'Keyboard Shortcuts', icon: Keyboard },
+  { id: 'appearance' as SettingsSection, label: 'Appearance', icon: Palette },
+  { id: 'advanced' as SettingsSection, label: 'Advanced', icon: Zap },
+];
 
 const SettingsPage = () => {
+  const [activeSection, setActiveSection] = useState<SettingsSection>('profile');
   const [profile, setProfile] = useState({ full_name: "", email: "" });
   const [notifications, setNotifications] = useState({
     moodReminders: true,
@@ -66,8 +78,8 @@ const SettingsPage = () => {
       if (error) throw error;
 
       toast({
-        title: "Profile updated! ✅",
-        description: "Your changes have been saved",
+        title: "Profile updated",
+        description: "Your changes have been saved successfully",
       });
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -115,310 +127,360 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold flex items-center gap-2">
-          <Settings className="w-8 h-8" />
-          Settings
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Manage your account and preferences
-        </p>
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
+      {/* Sidebar Navigation */}
+      <div className="w-64 border-r border-border bg-muted/30 p-4 space-y-1 overflow-y-auto">
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold flex items-center gap-2 px-3 py-2 text-foreground">
+            <Settings className="w-5 h-5" />
+            Settings
+          </h2>
+        </div>
+        
+        {settingsSections.map((section) => {
+          const Icon = section.icon;
+          return (
+            <button
+              key={section.id}
+              onClick={() => setActiveSection(section.id)}
+              className={cn(
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                activeSection === section.id
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              <Icon className="w-4 h-4" />
+              {section.label}
+            </button>
+          );
+        })}
       </div>
 
-      <div className="grid gap-6 max-w-2xl">
-        {/* Profile Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="w-5 h-5" />
-              Profile Information
-            </CardTitle>
-            <CardDescription>
-              Update your personal information
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                value={profile.full_name}
-                onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-                placeholder="Enter your full name"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={profile.email}
-                disabled
-                className="bg-muted"
-              />
-              <p className="text-xs text-muted-foreground">Email cannot be changed</p>
-            </div>
-            <Button onClick={updateProfile} disabled={loading}>
-              {loading ? "Saving..." : "Save Changes"}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Notifications */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bell className="w-5 h-5" />
-              Notifications
-            </CardTitle>
-            <CardDescription>
-              Manage how you receive notifications and reminders
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="mood-reminders">Mood Check Reminders</Label>
-                <p className="text-sm text-muted-foreground">
-                  Get daily reminders to log your mood
-                </p>
-              </div>
-              <Switch
-                id="mood-reminders"
-                checked={notifications.moodReminders}
-                onCheckedChange={(checked) =>
-                  setNotifications({ ...notifications, moodReminders: checked })
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="study-reminders">Study Reminders</Label>
-                <p className="text-sm text-muted-foreground">
-                  Reminders for scheduled study sessions
-                </p>
-              </div>
-              <Switch
-                id="study-reminders"
-                checked={notifications.studyReminders}
-                onCheckedChange={(checked) =>
-                  setNotifications({ ...notifications, studyReminders: checked })
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="weekly-reports">Weekly Progress Reports</Label>
-                <p className="text-sm text-muted-foreground">
-                  Receive weekly summaries of your progress
-                </p>
-              </div>
-              <Switch
-                id="weekly-reports"
-                checked={notifications.weeklyReports}
-                onCheckedChange={(checked) =>
-                  setNotifications({ ...notifications, weeklyReports: checked })
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="achievements">Achievement Notifications</Label>
-                <p className="text-sm text-muted-foreground">
-                  Get notified when you earn badges and rewards
-                </p>
-              </div>
-              <Switch
-                id="achievements"
-                checked={notifications.achievements}
-                onCheckedChange={(checked) =>
-                  setNotifications({ ...notifications, achievements: checked })
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="study-streaks">Study Streak Alerts</Label>
-                <p className="text-sm text-muted-foreground">
-                  Notifications when your study streak is at risk
-                </p>
-              </div>
-              <Switch
-                id="study-streaks"
-                checked={notifications.studyStreaks}
-                onCheckedChange={(checked) =>
-                  setNotifications({ ...notifications, studyStreaks: checked })
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="meal-reminders">Meal Planning Reminders</Label>
-                <p className="text-sm text-muted-foreground">
-                  Reminders to log meals and plan nutrition
-                </p>
-              </div>
-              <Switch
-                id="meal-reminders"
-                checked={notifications.mealReminders}
-                onCheckedChange={(checked) =>
-                  setNotifications({ ...notifications, mealReminders: checked })
-                }
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Advanced Settings */}
-        <Card className="border-primary/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="w-5 h-5" />
-              Advanced Settings
-            </CardTitle>
-            <CardDescription>
-              Configure advanced features and preferences
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="auto-backup">Auto Backup</Label>
-                <p className="text-sm text-muted-foreground">
-                  Automatically backup your data daily
-                </p>
-              </div>
-              <Switch
-                id="auto-backup"
-                checked={advanced.autoBackup}
-                onCheckedChange={(checked) =>
-                  setAdvanced({ ...advanced, autoBackup: checked })
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="data-sync">Real-time Data Sync</Label>
-                <p className="text-sm text-muted-foreground">
-                  Sync data across devices in real-time
-                </p>
-              </div>
-              <Switch
-                id="data-sync"
-                checked={advanced.dataSync}
-                onCheckedChange={(checked) =>
-                  setAdvanced({ ...advanced, dataSync: checked })
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="ai-personalization">AI Personalization</Label>
-                <p className="text-sm text-muted-foreground">
-                  Allow AI to learn from your patterns for better recommendations
-                </p>
-              </div>
-              <Switch
-                id="ai-personalization"
-                checked={advanced.aiPersonalization}
-                onCheckedChange={(checked) =>
-                  setAdvanced({ ...advanced, aiPersonalization: checked })
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="dark-mode">Force Dark Mode</Label>
-                <p className="text-sm text-muted-foreground">
-                  Override system theme preference
-                </p>
-              </div>
-              <Switch
-                id="dark-mode"
-                checked={advanced.darkMode}
-                onCheckedChange={(checked) =>
-                  setAdvanced({ ...advanced, darkMode: checked })
-                }
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Keyboard Shortcuts */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Keyboard className="w-5 h-5" />
-              Keyboard Shortcuts
-            </CardTitle>
-            <CardDescription>
-              Customize shortcuts to match your workflow
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link to="/settings/keyboard-shortcuts">
-              <Button variant="outline" className="w-full justify-between">
-                Configure Shortcuts
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </Link>
-            <p className="text-sm text-muted-foreground mt-3">
-              Press <kbd className="px-2 py-1 bg-muted rounded text-xs">?</kbd> anywhere to view all shortcuts
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Data & Privacy */}
-        <Card className="border-destructive/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-destructive">
-              <Shield className="w-5 h-5" />
-              Data & Privacy
-            </CardTitle>
-            <CardDescription>
-              Manage your data and privacy settings
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-medium mb-2">Clear All Data</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Permanently delete all your study sessions, mood logs, and other data.
-                  This action cannot be undone.
-                </p>
-                <Button
-                  variant="destructive"
-                  onClick={clearAllData}
-                  className="gap-2"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Delete All Data
+      {/* Main Content */}
+      <div className="flex-1 overflow-y-auto p-6 bg-background">
+        <div className="max-w-3xl mx-auto space-y-6">
+          {activeSection === 'profile' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="w-5 h-5" />
+                  Profile Information
+                </CardTitle>
+                <CardDescription>
+                  Update your personal information and email preferences
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    value={profile.full_name}
+                    onChange={(e) =>
+                      setProfile({ ...profile, full_name: e.target.value })
+                    }
+                    placeholder="Enter your full name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={profile.email}
+                    disabled
+                    className="bg-muted"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Email cannot be changed here. Contact support if needed.
+                  </p>
+                </div>
+                <Button onClick={updateProfile} disabled={loading}>
+                  {loading ? "Saving..." : "Save Changes"}
                 </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          )}
 
-        {/* About */}
-        <Card>
-          <CardHeader>
-            <CardTitle>About</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-2">
-            <p>Wellness Hub - Student AI Platform v1.0</p>
-            <p>© 2024 All rights reserved</p>
-          </CardContent>
-        </Card>
+          {activeSection === 'notifications' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Bell className="w-5 h-5" />
+                  Notification Preferences
+                </CardTitle>
+                <CardDescription>
+                  Manage how and when you receive notifications
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Mood Check-in Reminders</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Daily reminders to log your mood
+                      </p>
+                    </div>
+                    <Switch
+                      checked={notifications.moodReminders}
+                      onCheckedChange={(checked) =>
+                        setNotifications({ ...notifications, moodReminders: checked })
+                      }
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Study Reminders</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Reminders for scheduled study sessions
+                      </p>
+                    </div>
+                    <Switch
+                      checked={notifications.studyReminders}
+                      onCheckedChange={(checked) =>
+                        setNotifications({ ...notifications, studyReminders: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Weekly Reports</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Summary of your weekly progress
+                      </p>
+                    </div>
+                    <Switch
+                      checked={notifications.weeklyReports}
+                      onCheckedChange={(checked) =>
+                        setNotifications({ ...notifications, weeklyReports: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Achievement Unlocked</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Celebrate your milestones and badges
+                      </p>
+                    </div>
+                    <Switch
+                      checked={notifications.achievements}
+                      onCheckedChange={(checked) =>
+                        setNotifications({ ...notifications, achievements: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Study Streaks</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Don't break the streak notifications
+                      </p>
+                    </div>
+                    <Switch
+                      checked={notifications.studyStreaks}
+                      onCheckedChange={(checked) =>
+                        setNotifications({ ...notifications, studyStreaks: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Meal Reminders</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Healthy eating reminders
+                      </p>
+                    </div>
+                    <Switch
+                      checked={notifications.mealReminders}
+                      onCheckedChange={(checked) =>
+                        setNotifications({ ...notifications, mealReminders: checked })
+                      }
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {activeSection === 'security' && (
+            <Card className="border-destructive/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-destructive">
+                  <Shield className="w-5 h-5" />
+                  Data & Privacy
+                </CardTitle>
+                <CardDescription>
+                  Manage your data and privacy settings
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-medium mb-2">Clear All Data</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Permanently delete all your study sessions, mood logs, and other data.
+                      This action cannot be undone.
+                    </p>
+                    <Button
+                      variant="destructive"
+                      onClick={clearAllData}
+                      className="gap-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete All Data
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {activeSection === 'keyboard' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Keyboard className="w-5 h-5" />
+                  Keyboard Shortcuts
+                </CardTitle>
+                <CardDescription>
+                  Quick access keys for faster navigation
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm font-medium">Go Home</span>
+                    <kbd className="px-3 py-1.5 bg-muted rounded-md text-xs font-semibold">Alt + H</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm font-medium">Open Chat</span>
+                    <kbd className="px-3 py-1.5 bg-muted rounded-md text-xs font-semibold">Alt + C</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm font-medium">Study Rooms</span>
+                    <kbd className="px-3 py-1.5 bg-muted rounded-md text-xs font-semibold">Alt + S</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm font-medium">Profile</span>
+                    <kbd className="px-3 py-1.5 bg-muted rounded-md text-xs font-semibold">Alt + P</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm font-medium">Timetable</span>
+                    <kbd className="px-3 py-1.5 bg-muted rounded-md text-xs font-semibold">Alt + T</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm font-medium">Command Palette</span>
+                    <kbd className="px-3 py-1.5 bg-muted rounded-md text-xs font-semibold">Ctrl + K</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-sm font-medium">View All Shortcuts</span>
+                    <kbd className="px-3 py-1.5 bg-muted rounded-md text-xs font-semibold">?</kbd>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {activeSection === 'appearance' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="w-5 h-5" />
+                  Appearance
+                </CardTitle>
+                <CardDescription>
+                  Customize the look and feel of your workspace
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Dark Mode</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Enable dark theme for reduced eye strain
+                    </p>
+                  </div>
+                  <Switch
+                    checked={advanced.darkMode}
+                    onCheckedChange={(checked) =>
+                      setAdvanced({ ...advanced, darkMode: checked })
+                    }
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {activeSection === 'advanced' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Zap className="w-5 h-5" />
+                  Advanced Settings
+                </CardTitle>
+                <CardDescription>
+                  Configure advanced features and integrations
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Automatic Backups</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Automatically backup your data daily
+                      </p>
+                    </div>
+                    <Switch
+                      checked={advanced.autoBackup}
+                      onCheckedChange={(checked) =>
+                        setAdvanced({ ...advanced, autoBackup: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Cloud Sync</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Sync data across all your devices
+                      </p>
+                    </div>
+                    <Switch
+                      checked={advanced.dataSync}
+                      onCheckedChange={(checked) =>
+                        setAdvanced({ ...advanced, dataSync: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>AI Personalization</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Let AI learn and adapt to your study patterns
+                      </p>
+                    </div>
+                    <Switch
+                      checked={advanced.aiPersonalization}
+                      onCheckedChange={(checked) =>
+                        setAdvanced({ ...advanced, aiPersonalization: checked })
+                      }
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );
