@@ -274,6 +274,36 @@ export type Database = {
           },
         ]
       }
+      generated_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          note_id: string | null
+          prompt: string
+          saved_to_notes: boolean | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          note_id?: string | null
+          prompt: string
+          saved_to_notes?: boolean | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          note_id?: string | null
+          prompt?: string
+          saved_to_notes?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       health_goals: {
         Row: {
           created_at: string | null

@@ -79,7 +79,8 @@ serve(async (req) => {
 
     // Handle image generation mode
     if (mode === 'image_generation') {
-      console.log('Generating image with prompt:', messages[0]?.content);
+      const prompt = messages[0]?.content || '';
+      console.log('Generating image with prompt:', prompt);
       
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -88,7 +89,7 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash-image",
+          model: "google/gemini-2.5-flash-image-preview",
           messages: messages,
           modalities: ["image", "text"]
         }),
@@ -97,7 +98,7 @@ serve(async (req) => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Image generation error:", response.status, errorText);
-        throw new Error("Failed to generate image");
+        throw new Error(`Failed to generate image: ${response.status}`);
       }
 
       const data = await response.json();
@@ -105,6 +106,47 @@ serve(async (req) => {
       
       if (!imageUrl) {
         throw new Error("No image generated");
+      }
+
+      // Save to database if user is authenticated
+      if (userId) {
+        try {
+          // Extract base64 data from data URL
+          const base64Data = imageUrl.split(',')[1];
+          const buffer = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+          
+          // Generate unique filename
+          const filename = `${userId}/${Date.now()}.png`;
+          
+          // Upload to storage
+          const { error: uploadError } = await supabase.storage
+            .from('generated-images')
+            .upload(filename, buffer, {
+              contentType: 'image/png',
+              upsert: false
+            });
+          
+          if (uploadError) {
+            console.error('Storage upload error:', uploadError);
+          } else {
+            // Get public URL
+            const { data: urlData } = supabase.storage
+              .from('generated-images')
+              .getPublicUrl(filename);
+            
+            // Save record to database
+            await supabase.from('generated_images').insert({
+              user_id: userId,
+              image_url: urlData.publicUrl,
+              prompt: prompt
+            });
+            
+            console.log('Image saved to storage and database');
+          }
+        } catch (saveError) {
+          console.error('Error saving image:', saveError);
+          // Don't fail the request if saving fails
+        }
       }
 
       return new Response(
