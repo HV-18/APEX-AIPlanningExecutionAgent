@@ -77,6 +77,42 @@ serve(async (req) => {
       userId = user?.id;
     }
 
+    // Handle image generation mode
+    if (mode === 'image_generation') {
+      console.log('Generating image with prompt:', messages[0]?.content);
+      
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-image",
+          messages: messages,
+          modalities: ["image", "text"]
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Image generation error:", response.status, errorText);
+        throw new Error("Failed to generate image");
+      }
+
+      const data = await response.json();
+      const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+      
+      if (!imageUrl) {
+        throw new Error("No image generated");
+      }
+
+      return new Response(
+        JSON.stringify({ imageUrl }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     console.log(`Processing AI chat in ${mode} mode for user:`, userId);
 
     const systemPrompt = SYSTEM_PROMPTS[mode as keyof typeof SYSTEM_PROMPTS] || SYSTEM_PROMPTS.casual;

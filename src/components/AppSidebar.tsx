@@ -19,6 +19,8 @@ import {
   FileText,
   CalendarDays,
   User,
+  ClipboardList,
+  Mic,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
@@ -41,6 +43,8 @@ import { useToast } from "@/hooks/use-toast";
 const mainItems = [
   { title: "Dashboard", url: "/", icon: BarChart3 },
   { title: "AI Chat", url: "/chat", icon: MessageSquare },
+  { title: "Quiz Generator", url: "/quiz", icon: ClipboardList },
+  { title: "Voice Assistant", url: "/voice-assistant", icon: Mic },
   { title: "Mood Tracker", url: "/mood", icon: Smile },
   { title: "Study Sessions", url: "/study", icon: BookOpen },
   { title: "Timetable", url: "/timetable", icon: Calendar },

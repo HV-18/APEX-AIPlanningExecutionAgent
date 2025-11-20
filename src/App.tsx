@@ -42,6 +42,8 @@ import KeyboardShortcutsSettings from "./pages/KeyboardShortcutsSettings";
 import WorkspacesPage from "@/pages/WorkspacesPage";
 import WorkspaceTemplatesPage from "@/pages/WorkspaceTemplatesPage";
 import WorkspaceDashboard from "@/pages/WorkspaceDashboard";
+import QuizPage from "@/pages/QuizPage";
+import VoiceAssistantPage from "@/pages/VoiceAssistantPage";
 import NotFound from "./pages/NotFound";
 import { NotificationProvider } from "./components/NotificationProvider";
 
@@ -123,6 +125,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<ProtectedLayout><Dashboard /></ProtectedLayout>} />
             <Route path="/chat" element={<ProtectedLayout><ChatPage /></ProtectedLayout>} />
+            <Route path="/quiz" element={<ProtectedLayout><QuizPage /></ProtectedLayout>} />
+            <Route path="/voice-assistant" element={<ProtectedLayout><VoiceAssistantPage /></ProtectedLayout>} />
             <Route path="/mood" element={<ProtectedLayout><MoodPage /></ProtectedLayout>} />
             <Route path="/study" element={<ProtectedLayout><StudyPage /></ProtectedLayout>} />
             <Route path="/timetable" element={<ProtectedLayout><TimetablePage /></ProtectedLayout>} />
