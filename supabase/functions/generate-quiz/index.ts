@@ -133,7 +133,10 @@ Format the response as a JSON array.`;
 
     if (quizError) throw quizError;
 
-    return new Response(JSON.stringify({ quiz }), {
+    return new Response(JSON.stringify({ 
+      quiz,
+      questions: quizData.questions 
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
