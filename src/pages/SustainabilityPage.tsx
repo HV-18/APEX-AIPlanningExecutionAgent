@@ -23,6 +23,28 @@ const SustainabilityPage = () => {
 
   useEffect(() => {
     loadStats();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('transport-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'transport_logs',
+        },
+        (payload) => {
+          console.log('New transport log:', payload);
+          // Reload stats when new transport is logged
+          loadStats();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadStats = async () => {
@@ -98,7 +120,7 @@ const SustainabilityPage = () => {
       });
 
       setTransportLog({ mode: "", distance_km: "", cost: "", destination: "" });
-      loadStats();
+      // Stats will auto-update via real-time subscription
     } catch (error) {
       console.error("Error logging transport:", error);
       toast({
