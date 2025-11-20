@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StudyTools } from "@/components/StudyTools";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { BackButton } from "@/components/BackButton";
 
 type StudySession = {
   id: string;

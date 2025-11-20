@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MoodTracker } from "@/components/MoodTracker";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { BackButton } from "@/components/BackButton";
 
 type MoodLog = {
   id: string;

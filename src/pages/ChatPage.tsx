@@ -1,9 +1,11 @@
 import { MessageSquare } from "lucide-react";
 import { ChatInterface } from "@/components/ChatInterface";
+import { BackButton } from "@/components/BackButton";
 
 const ChatPage = () => {
   return (
     <div className="space-y-6">
+      <BackButton to="/dashboard" />
       <div>
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <MessageSquare className="w-8 h-8" />

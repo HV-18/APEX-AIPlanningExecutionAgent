@@ -6,6 +6,7 @@ import { StudyTools } from "@/components/StudyTools";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { BackButton } from "@/components/BackButton";
 
 const Dashboard = () => {
   const navigate = useNavigate();
