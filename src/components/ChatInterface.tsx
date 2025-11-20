@@ -16,7 +16,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-type Message = { role: "user" | "assistant"; content: string };
+type Message = { 
+  role: "user" | "assistant"; 
+  content: string;
+  images?: string[]; // base64 encoded images
+};
 type AIMode = "casual" | "interview" | "viva" | "notes" | "study_plan";
 
 export const ChatInterface = () => {
@@ -86,11 +90,16 @@ export const ChatInterface = () => {
       return;
     }
     
-    const validFiles = files.filter(file => file.size <= 10 * 1024 * 1024);
+    const validFiles = files.filter(file => {
+      const isImage = file.type.startsWith('image/');
+      const isValidSize = file.size <= 10 * 1024 * 1024;
+      return isImage && isValidSize;
+    });
+    
     if (validFiles.length !== files.length) {
       toast({
-        title: "File too large",
-        description: "Maximum file size is 10MB",
+        title: "Invalid files",
+        description: "Only images under 10MB are supported",
         variant: "destructive",
       });
     }
@@ -127,11 +136,27 @@ export const ChatInterface = () => {
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+    if ((!input.trim() && uploadedFiles.length === 0) || isLoading) return;
 
-    const userMessage: Message = { role: "user", content: input };
+    // Convert images to base64
+    const imagePromises = uploadedFiles.map(file => {
+      return new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
+    });
+
+    const images = await Promise.all(imagePromises);
+    const userMessage: Message = { 
+      role: "user", 
+      content: input || "What do you see in these images?",
+      images: images.length > 0 ? images : undefined
+    };
+    
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setUploadedFiles([]);
     setIsLoading(true);
 
     try {
@@ -146,16 +171,11 @@ export const ChatInterface = () => {
         headers.Authorization = `Bearer ${session.access_token}`;
       }
 
-      let fileContext = "";
-      if (uploadedFiles.length > 0) {
-        fileContext = `\n\nAttached files: ${uploadedFiles.map(f => f.name).join(', ')}`;
-      }
-
       const response = await fetch(CHAT_URL, {
         method: "POST",
         headers,
         body: JSON.stringify({
-          messages: [...messages, { ...userMessage, content: userMessage.content + fileContext }],
+          messages: [...messages, userMessage],
           mode,
         }),
       });
@@ -236,7 +256,6 @@ export const ChatInterface = () => {
         });
       }
       
-      setUploadedFiles([]);
       loadChatHistory();
     } catch (error) {
       console.error("Error:", error);
@@ -304,7 +323,7 @@ export const ChatInterface = () => {
         {messages.length === 0 && (
           <div className="text-center text-muted-foreground py-12">
             <p className="text-lg mb-2">👋 Hi! I'm your AI study companion</p>
-            <p className="text-sm">Start chatting or use file upload to share documents!</p>
+            <p className="text-sm">Start chatting or upload images for analysis!</p>
           </div>
         )}
         {messages.map((message, index) => (
@@ -319,6 +338,18 @@ export const ChatInterface = () => {
                   : "bg-muted"
               }`}
             >
+              {message.images && message.images.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  {message.images.map((img, idx) => (
+                    <img 
+                      key={idx} 
+                      src={img} 
+                      alt={`Uploaded ${idx + 1}`}
+                      className="rounded max-h-40 object-cover"
+                    />
+                  ))}
+                </div>
+              )}
               <p className="whitespace-pre-wrap">{message.content}</p>
             </div>
           </div>
@@ -328,17 +359,21 @@ export const ChatInterface = () => {
 
       <div className="p-4 border-t space-y-2">
         {uploadedFiles.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-2">
+          <div className="grid grid-cols-4 gap-2 mb-2">
             {uploadedFiles.map((file, idx) => (
-              <Badge key={idx} variant="secondary" className="pr-1">
-                {file.name}
+              <div key={idx} className="relative group">
+                <img 
+                  src={URL.createObjectURL(file)} 
+                  alt={file.name}
+                  className="rounded w-full h-20 object-cover"
+                />
                 <button
                   onClick={() => removeFile(idx)}
-                  className="ml-2 hover:bg-destructive/20 rounded-full p-0.5"
+                  className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <X className="w-3 h-3" />
                 </button>
-              </Badge>
+              </div>
             ))}
           </div>
         )}
@@ -352,7 +387,7 @@ export const ChatInterface = () => {
               sendMessage();
             }
           }}
-          placeholder="Type your message..."
+          placeholder={uploadedFiles.length > 0 ? "Ask about the images..." : "Type your message..."}
           className="min-h-[80px]"
           disabled={isLoading}
         />
@@ -365,7 +400,7 @@ export const ChatInterface = () => {
               multiple
               onChange={handleFileUpload}
               className="hidden"
-              accept="image/*,.pdf,.doc,.docx,.txt"
+              accept="image/*"
             />
             <Button
               variant="outline"
@@ -374,11 +409,11 @@ export const ChatInterface = () => {
               disabled={isLoading || uploadedFiles.length >= 5}
             >
               <Paperclip className="w-4 h-4 mr-2" />
-              Attach
+              {uploadedFiles.length > 0 ? `${uploadedFiles.length} Image${uploadedFiles.length > 1 ? 's' : ''}` : 'Add Images'}
             </Button>
           </div>
           
-          <Button onClick={sendMessage} disabled={isLoading || !input.trim()}>
+          <Button onClick={sendMessage} disabled={isLoading || (!input.trim() && uploadedFiles.length === 0)}>
             {isLoading ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             ) : (

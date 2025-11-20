@@ -82,6 +82,23 @@ serve(async (req) => {
     const systemPrompt = SYSTEM_PROMPTS[mode as keyof typeof SYSTEM_PROMPTS] || SYSTEM_PROMPTS.casual;
     const contextNote = context ? `\n\nContext: ${context}` : '';
 
+    // Transform messages to support vision
+    const transformedMessages = messages.map((msg: any) => {
+      if (msg.images && msg.images.length > 0) {
+        return {
+          role: msg.role,
+          content: [
+            { type: 'text', text: msg.content },
+            ...msg.images.map((img: string) => ({
+              type: 'image_url',
+              image_url: { url: img }
+            }))
+          ]
+        };
+      }
+      return { role: msg.role, content: msg.content };
+    });
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -92,7 +109,7 @@ serve(async (req) => {
         model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt + contextNote },
-          ...messages,
+          ...transformedMessages,
         ],
         stream: true,
       }),
