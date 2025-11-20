@@ -6,6 +6,8 @@ import { Brain, Clock, Target, Sparkles, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useNavigate } from 'react-router-dom';
+import { BackButton } from '@/components/BackButton';
 
 interface StudyPattern {
   best_study_hour: number;
@@ -28,6 +30,7 @@ export default function StudyBuddyPage() {
   const [tips, setTips] = useState<StudyTip[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadStudyData();
@@ -241,11 +244,13 @@ export default function StudyBuddyPage() {
 
       toast({
         title: 'Quiz generated successfully!',
-        description: `Created ${data.quiz.questions.questions.length} questions for ${subject}`,
+        description: `Created ${data.questions.length} questions for ${subject}. Redirecting...`,
       });
 
-      // You can navigate to a quiz page or display the quiz here
-      console.log('Generated quiz:', data.quiz);
+      // Navigate to quiz page after a short delay
+      setTimeout(() => {
+        navigate('/quiz');
+      }, 1000);
     } catch (error) {
       console.error('Error generating quiz:', error);
       toast({
@@ -266,6 +271,7 @@ export default function StudyBuddyPage() {
 
   return (
     <div className="container mx-auto p-6">
+      <BackButton to="/dashboard" />
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
           <Brain className="w-8 h-8" />
