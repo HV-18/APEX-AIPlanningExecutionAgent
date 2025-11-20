@@ -227,12 +227,33 @@ export default function StudyBuddyPage() {
       description: 'This may take a moment',
     });
 
-    // Here you would integrate with Lovable AI to generate quiz questions
-    // For now, we'll show a placeholder
-    toast({
-      title: 'Quiz feature coming soon!',
-      description: 'This will generate personalized questions based on your study history',
-    });
+    try {
+      const subject = patterns.preferred_subjects[0];
+      const { data, error } = await supabase.functions.invoke('generate-quiz', {
+        body: {
+          subject,
+          difficulty: 'medium',
+          weakAreas: patterns.weak_areas,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Quiz generated successfully!',
+        description: `Created ${data.quiz.questions.questions.length} questions for ${subject}`,
+      });
+
+      // You can navigate to a quiz page or display the quiz here
+      console.log('Generated quiz:', data.quiz);
+    } catch (error) {
+      console.error('Error generating quiz:', error);
+      toast({
+        title: 'Failed to generate quiz',
+        description: error instanceof Error ? error.message : 'Please try again',
+        variant: 'destructive',
+      });
+    }
   };
 
   if (loading) {
