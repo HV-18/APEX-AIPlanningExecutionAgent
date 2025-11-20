@@ -21,6 +21,8 @@ import StudyRoomsPage from "./pages/StudyRoomsPage";
 import StudyRoomDetail from "./pages/StudyRoomDetail";
 import MealAnalyzerPage from "./pages/MealAnalyzerPage";
 import FocusPage from "./pages/FocusPage";
+import WellnessReportsPage from "./pages/WellnessReportsPage";
+import MealPlannerPage from "./pages/MealPlannerPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -93,6 +95,8 @@ const App = () => (
           <Route path="/study-room/:roomId" element={<ProtectedLayout><StudyRoomDetail /></ProtectedLayout>} />
           <Route path="/meal-analyzer" element={<ProtectedLayout><MealAnalyzerPage /></ProtectedLayout>} />
           <Route path="/focus" element={<ProtectedLayout><FocusPage /></ProtectedLayout>} />
+          <Route path="/wellness-reports" element={<ProtectedLayout><WellnessReportsPage /></ProtectedLayout>} />
+          <Route path="/meal-planner" element={<ProtectedLayout><MealPlannerPage /></ProtectedLayout>} />
           <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
