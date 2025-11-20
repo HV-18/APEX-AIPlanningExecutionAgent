@@ -44,6 +44,7 @@ import WorkspaceTemplatesPage from "@/pages/WorkspaceTemplatesPage";
 import WorkspaceDashboard from "@/pages/WorkspaceDashboard";
 import QuizPage from "@/pages/QuizPage";
 import VoiceAssistantPage from "@/pages/VoiceAssistantPage";
+import ImageGalleryPage from "@/pages/ImageGalleryPage";
 import NotFound from "./pages/NotFound";
 import { NotificationProvider } from "./components/NotificationProvider";
 
@@ -149,6 +150,9 @@ const App = () => (
             <Route path="/workspaces" element={<ProtectedLayout><WorkspacesPage /></ProtectedLayout>} />
             <Route path="/workspace-templates" element={<ProtectedLayout><WorkspaceTemplatesPage /></ProtectedLayout>} />
             <Route path="/workspace/:workspaceId/dashboard" element={<ProtectedLayout><WorkspaceDashboard /></ProtectedLayout>} />
+            <Route path="/quiz" element={<ProtectedLayout><QuizPage /></ProtectedLayout>} />
+            <Route path="/voice-assistant" element={<ProtectedLayout><VoiceAssistantPage /></ProtectedLayout>} />
+            <Route path="/image-gallery" element={<ProtectedLayout><ImageGalleryPage /></ProtectedLayout>} />
             <Route path="*" element={<NotFound />} />
             </Routes>
           </NotificationProvider>

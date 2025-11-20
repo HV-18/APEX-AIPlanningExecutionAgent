@@ -21,6 +21,7 @@ import {
   User,
   ClipboardList,
   Mic,
+  Image,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
@@ -45,6 +46,7 @@ const mainItems = [
   { title: "AI Chat", url: "/chat", icon: MessageSquare },
   { title: "Quiz Generator", url: "/quiz", icon: ClipboardList },
   { title: "Voice Assistant", url: "/voice-assistant", icon: Mic },
+  { title: "Image Gallery", url: "/image-gallery", icon: Image },
   { title: "Mood Tracker", url: "/mood", icon: Smile },
   { title: "Study Sessions", url: "/study", icon: BookOpen },
   { title: "Timetable", url: "/timetable", icon: Calendar },
