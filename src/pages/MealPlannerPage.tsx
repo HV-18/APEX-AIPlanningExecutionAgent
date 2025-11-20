@@ -66,15 +66,24 @@ export default function MealPlannerPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      console.log('Starting meal plan generation for user:', user.id);
+
       // Get user's meal history for preferences
-      const { data: pastMeals } = await supabase
+      const { data: pastMeals, error: mealsError } = await supabase
         .from('meals')
         .select('meal_name, nutrition_score, is_sustainable')
         .eq('user_id', user.id)
         .limit(20);
 
+      if (mealsError) {
+        console.error('Error fetching past meals:', mealsError);
+      }
+
+      console.log('Past meals fetched:', pastMeals?.length || 0);
+
       // Generate AI-powered meal suggestions
       const suggestions = await generateMealSuggestions(pastMeals || []);
+      console.log('Meal suggestions generated:', suggestions.length);
 
       // Create meal plans for the week
       const plans = [];
@@ -89,20 +98,38 @@ export default function MealPlannerPage() {
               week_start: weekStart,
               day_of_week: day,
               meal_type: mealType,
-              ...suggestion,
+              meal_name: suggestion.meal_name,
+              calories: suggestion.calories,
+              cost: suggestion.cost,
+              is_sustainable: suggestion.is_sustainable,
+              ingredients: suggestion.ingredients,
+              recipe_notes: suggestion.recipe_notes,
             });
           }
         }
       }
 
-      const { error } = await supabase.from('meal_plans').insert(plans);
-      if (error) throw error;
+      console.log('Plans to insert:', plans.length);
+
+      if (plans.length === 0) {
+        throw new Error('No meal plans generated');
+      }
+
+      const { error: insertError } = await supabase.from('meal_plans').insert(plans);
+      if (insertError) {
+        console.error('Insert error:', insertError);
+        throw insertError;
+      }
 
       toast({ title: 'Weekly meal plan generated!' });
       loadMealPlans();
     } catch (error) {
       console.error('Error generating plan:', error);
-      toast({ title: 'Failed to generate meal plan', variant: 'destructive' });
+      toast({ 
+        title: 'Failed to generate meal plan', 
+        description: error instanceof Error ? error.message : 'Please try again or upgrade your instance',
+        variant: 'destructive' 
+      });
     } finally {
       setGenerating(false);
     }
