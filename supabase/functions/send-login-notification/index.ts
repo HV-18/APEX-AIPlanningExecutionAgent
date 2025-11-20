@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@4.0.0";
-import React from 'https://esm.sh/react@18.3.1';
-import { renderAsync } from 'https://esm.sh/@react-email/components@0.0.22';
+import { render } from 'https://esm.sh/@react-email/render@1.0.1';
 import { LoginNotificationEmail } from './_templates/login-notification.tsx';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
@@ -135,8 +134,8 @@ Respond with a JSON object containing:
       : aiContent.recommendations;
 
     // Render email template
-    const html = await renderAsync(
-      React.createElement(LoginNotificationEmail, {
+    const html = await render(
+      LoginNotificationEmail({
         userName,
         aiGreeting: aiContent.greeting,
         aiRecommendations: recommendationsText,
