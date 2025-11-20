@@ -26,12 +26,14 @@ export const MoodTracker = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      await supabase.from("mood_logs").insert({
+      const { error } = await supabase.from("mood_logs").insert({
         user_id: user.id,
         mood_score: selectedMood,
         notes: notes || null,
         sentiment: selectedMood <= 2 ? "stressed" : selectedMood <= 3 ? "neutral" : "positive",
       });
+
+      if (error) throw error;
 
       toast({
         title: "Mood logged! 💚",
@@ -46,7 +48,7 @@ export const MoodTracker = () => {
       console.error("Error saving mood:", error);
       toast({
         title: "Error",
-        description: "Failed to save mood log",
+        description: error instanceof Error ? error.message : "Failed to save mood log",
         variant: "destructive",
       });
     }
