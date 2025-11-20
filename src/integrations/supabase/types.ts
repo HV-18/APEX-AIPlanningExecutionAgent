@@ -38,6 +38,39 @@ export type Database = {
         }
         Relationships: []
       }
+      budget_entries: {
+        Row: {
+          amount: number
+          carbon_impact: number | null
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_sustainable: boolean | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          carbon_impact?: number | null
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_sustainable?: boolean | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          carbon_impact?: number | null
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_sustainable?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
@@ -58,6 +91,42 @@ export type Database = {
           created_at?: string | null
           id?: string
           role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      health_goals: {
+        Row: {
+          created_at: string | null
+          current_value: number | null
+          goal_type: string
+          id: string
+          last_updated: string | null
+          streak_days: number | null
+          target_value: number
+          unit: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_value?: number | null
+          goal_type: string
+          id?: string
+          last_updated?: string | null
+          streak_days?: number | null
+          target_value: number
+          unit: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_value?: number | null
+          goal_type?: string
+          id?: string
+          last_updated?: string | null
+          streak_days?: number | null
+          target_value?: number
+          unit?: string
           user_id?: string
         }
         Relationships: []
@@ -94,6 +163,99 @@ export type Database = {
           score?: number | null
           subject?: string | null
           type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      learning_projects: {
+        Row: {
+          category: string
+          collaborators: string[] | null
+          completed: boolean | null
+          created_at: string | null
+          deadline: string | null
+          description: string | null
+          id: string
+          impact_goal: string | null
+          progress: number | null
+          real_world_problem: string | null
+          resources: string[] | null
+          skills_learned: string[] | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          collaborators?: string[] | null
+          completed?: boolean | null
+          created_at?: string | null
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          impact_goal?: string | null
+          progress?: number | null
+          real_world_problem?: string | null
+          resources?: string[] | null
+          skills_learned?: string[] | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          collaborators?: string[] | null
+          completed?: boolean | null
+          created_at?: string | null
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          impact_goal?: string | null
+          progress?: number | null
+          real_world_problem?: string | null
+          resources?: string[] | null
+          skills_learned?: string[] | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      meals: {
+        Row: {
+          calories: number | null
+          cost: number | null
+          created_at: string | null
+          id: string
+          is_sustainable: boolean | null
+          meal_name: string
+          meal_type: string | null
+          notes: string | null
+          nutrition_score: string | null
+          photo_url: string | null
+          user_id: string
+        }
+        Insert: {
+          calories?: number | null
+          cost?: number | null
+          created_at?: string | null
+          id?: string
+          is_sustainable?: boolean | null
+          meal_name: string
+          meal_type?: string | null
+          notes?: string | null
+          nutrition_score?: string | null
+          photo_url?: string | null
+          user_id: string
+        }
+        Update: {
+          calories?: number | null
+          cost?: number | null
+          created_at?: string | null
+          id?: string
+          is_sustainable?: boolean | null
+          meal_name?: string
+          meal_type?: string | null
+          notes?: string | null
+          nutrition_score?: string | null
+          photo_url?: string | null
           user_id?: string
         }
         Relationships: []
@@ -231,6 +393,81 @@ export type Database = {
           end_time?: string
           id?: string
           start_time?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transport_logs: {
+        Row: {
+          co2_saved: number | null
+          cost: number | null
+          created_at: string | null
+          destination: string | null
+          distance_km: number
+          duration_minutes: number | null
+          id: string
+          mode: string
+          user_id: string
+        }
+        Insert: {
+          co2_saved?: number | null
+          cost?: number | null
+          created_at?: string | null
+          destination?: string | null
+          distance_km: number
+          duration_minutes?: number | null
+          id?: string
+          mode: string
+          user_id: string
+        }
+        Update: {
+          co2_saved?: number | null
+          cost?: number | null
+          created_at?: string | null
+          destination?: string | null
+          distance_km?: number
+          duration_minutes?: number | null
+          id?: string
+          mode?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wellness_interventions: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          description: string | null
+          duration_minutes: number | null
+          effectiveness_rating: number | null
+          id: string
+          intervention_type: string
+          scheduled_for: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          effectiveness_rating?: number | null
+          id?: string
+          intervention_type: string
+          scheduled_for?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          effectiveness_rating?: number | null
+          id?: string
+          intervention_type?: string
+          scheduled_for?: string | null
           title?: string
           user_id?: string
         }
