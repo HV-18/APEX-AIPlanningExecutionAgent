@@ -271,7 +271,7 @@ const WorkspacesPage = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate(`/workspace/${workspace.id}/calendar`)}
+                  onClick={() => navigate(`/timetable`)}
                 >
                   <Copy className="w-4 h-4 mr-2" />
                   Calendar
