@@ -114,6 +114,29 @@ const WorkspaceTemplatesPage = () => {
           { subject: "Speaking Practice", duration_minutes: 30 },
           { subject: "Writing Exercise", duration_minutes: 45 },
           { subject: "Grammar Study", duration_minutes: 25 }
+        ],
+        events: [
+          { 
+            title: "Morning Vocabulary Review", 
+            category: "Study",
+            description: "Daily flashcard review session",
+            start_time: new Date(new Date().setHours(9, 0, 0, 0)).toISOString(),
+            end_time: new Date(new Date().setHours(9, 30, 0, 0)).toISOString()
+          },
+          { 
+            title: "Conversation Practice", 
+            category: "Speaking",
+            description: "Practice with language exchange partner",
+            start_time: new Date(new Date().setHours(14, 0, 0, 0)).toISOString(),
+            end_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString()
+          },
+          { 
+            title: "Grammar Lesson", 
+            category: "Study",
+            description: "Study verb conjugations and sentence structure",
+            start_time: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(),
+            end_time: new Date(new Date().setHours(20, 0, 0, 0)).toISOString()
+          }
         ]
       },
       "template-4": { // Exam Preparation
@@ -222,6 +245,16 @@ const WorkspaceTemplatesPage = () => {
           workspace_id: workspace.id,
         }));
         await supabase.from("study_sessions").insert(sessionsWithWorkspace);
+      }
+
+      // Add timetable events
+      if (content.events && content.events.length > 0) {
+        const eventsWithWorkspace = content.events.map((event: any) => ({
+          ...event,
+          user_id: user.id,
+          workspace_id: workspace.id,
+        }));
+        await supabase.from("timetable_events").insert(eventsWithWorkspace);
       }
 
       await refreshWorkspaces();
