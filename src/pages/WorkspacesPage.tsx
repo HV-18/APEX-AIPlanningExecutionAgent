@@ -27,6 +27,8 @@ import { WorkspaceNotifications } from "@/components/WorkspaceNotifications";
 import { WorkspaceTagsManager } from "@/components/WorkspaceTagsManager";
 import { WorkspaceActivityTimeline } from "@/components/WorkspaceActivityTimeline";
 import { WorkspaceIntegrations } from "@/components/WorkspaceIntegrations";
+import { WorkspaceAutomationRules } from "@/components/WorkspaceAutomationRules";
+import { WorkspaceAnalyticsReport } from "@/components/WorkspaceAnalyticsReport";
 
 const emojiOptions = ["📚", "💼", "🎓", "🔬", "🎨", "💻", "📊", "🏆", "🌟", "🚀"];
 const colorOptions = [
@@ -262,10 +264,18 @@ const WorkspacesPage = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setSelectedWorkspace(workspace.id)}
+                  onClick={() => navigate(`/workspace/${workspace.id}/dashboard`)}
                 >
                   <BarChart3 className="w-4 h-4 mr-2" />
-                  Analytics
+                  Dashboard
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate(`/workspace/${workspace.id}/calendar`)}
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Calendar
                 </Button>
                 <WorkspaceSharingModal
                   workspaceId={workspace.id}
@@ -277,13 +287,13 @@ const WorkspacesPage = () => {
                   onClick={() => setSelectedWorkspace(workspace.id === selectedWorkspace ? null : workspace.id)}
                 >
                   <Upload className="w-4 h-4 mr-2" />
-                  Files
+                  {selectedWorkspace === workspace.id ? "Hide" : "More"}
                 </Button>
               </div>
               
               {selectedWorkspace === workspace.id && (
                 <Tabs defaultValue="analytics" className="mb-4">
-                  <TabsList className="grid w-full grid-cols-6 lg:grid-cols-10">
+                  <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
                     <TabsTrigger value="analytics">Analytics</TabsTrigger>
                     <TabsTrigger value="files">Files</TabsTrigger>
                     <TabsTrigger value="search">Search</TabsTrigger>
@@ -291,12 +301,13 @@ const WorkspacesPage = () => {
                     <TabsTrigger value="backup">Backup</TabsTrigger>
                     <TabsTrigger value="notifications">Notifications</TabsTrigger>
                     <TabsTrigger value="tags">Tags</TabsTrigger>
-                    <TabsTrigger value="activity">Activity</TabsTrigger>
-                    <TabsTrigger value="integrations">Integrations</TabsTrigger>
-                    <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                    <TabsTrigger value="automation">Automation</TabsTrigger>
                   </TabsList>
                   <TabsContent value="analytics" className="mt-4">
-                    <WorkspaceAnalytics workspaceId={workspace.id} />
+                    <WorkspaceAnalyticsReport
+                      workspaceId={workspace.id}
+                      workspaceName={workspace.name}
+                    />
                   </TabsContent>
                   <TabsContent value="files" className="mt-4">
                     <FileUploadZone workspaceId={workspace.id} />
@@ -319,18 +330,8 @@ const WorkspacesPage = () => {
                   <TabsContent value="tags" className="mt-4">
                     <WorkspaceTagsManager workspaceId={workspace.id} />
                   </TabsContent>
-                  <TabsContent value="activity" className="mt-4">
-                    <WorkspaceActivityTimeline workspaceId={workspace.id} />
-                  </TabsContent>
-                  <TabsContent value="integrations" className="mt-4">
-                    <WorkspaceIntegrations workspaceId={workspace.id} />
-                  </TabsContent>
-                  <TabsContent value="dashboard" className="mt-4">
-                    <div className="text-center p-4">
-                      <Button onClick={() => navigate(`/workspace/${workspace.id}/dashboard`)}>
-                        Open Full Dashboard
-                      </Button>
-                    </div>
+                  <TabsContent value="automation" className="mt-4">
+                    <WorkspaceAutomationRules workspaceId={workspace.id} />
                   </TabsContent>
                 </Tabs>
               )}
