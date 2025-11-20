@@ -203,9 +203,11 @@ const SustainabilityPage = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Transport Mode</label>
+              <label className="text-sm font-medium mb-2 block">
+                Transport Mode <span className="text-destructive">*</span>
+              </label>
               <Select value={transportLog.mode} onValueChange={(val) => setTransportLog({ ...transportLog, mode: val })}>
-                <SelectTrigger>
+                <SelectTrigger className={!transportLog.mode ? "border-destructive/50" : ""}>
                   <SelectValue placeholder="Select mode" />
                 </SelectTrigger>
                 <SelectContent>
@@ -221,13 +223,17 @@ const SustainabilityPage = () => {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Distance (km)</label>
+              <label className="text-sm font-medium mb-2 block">
+                Distance (km) <span className="text-destructive">*</span>
+              </label>
               <Input
                 type="number"
                 step="0.1"
                 placeholder="e.g., 5.2"
                 value={transportLog.distance_km}
                 onChange={(e) => setTransportLog({ ...transportLog, distance_km: e.target.value })}
+                className={!transportLog.distance_km ? "border-destructive/50" : ""}
+                required
               />
             </div>
 
