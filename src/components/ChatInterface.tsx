@@ -131,29 +131,32 @@ export const ChatInterface = () => {
   const transcribeAudio = async (audioBlob: Blob) => {
     try {
       setIsLoading(true);
+      
+      // Get session first
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('Please sign in to use voice transcription');
+      }
+      
       const reader = new FileReader();
       
       reader.onloadend = async () => {
         const base64Audio = (reader.result as string).split(',')[1];
         
-        const { data: { session } } = await supabase.auth.getSession();
-        const VOICE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/voice-to-text`;
-
-        const response = await fetch(VOICE_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
-          },
-          body: JSON.stringify({ audio: base64Audio }),
+        const { data, error } = await supabase.functions.invoke('voice-to-text', {
+          body: { audio: base64Audio },
         });
 
-        if (!response.ok) {
-          throw new Error('Transcription failed');
+        if (error) {
+          throw error;
         }
 
-        const { text } = await response.json();
-        setInput(text);
+        if (!data?.text) {
+          throw new Error('No transcription received');
+        }
+
+        setInput(data.text);
         
         toast({
           title: "Transcription complete",
@@ -166,7 +169,7 @@ export const ChatInterface = () => {
       console.error('Error transcribing audio:', error);
       toast({
         title: "Error",
-        description: "Failed to transcribe audio",
+        description: error instanceof Error ? error.message : "Failed to transcribe audio",
         variant: "destructive",
       });
     } finally {
