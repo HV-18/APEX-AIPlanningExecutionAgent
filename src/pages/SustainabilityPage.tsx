@@ -89,10 +89,37 @@ const SustainabilityPage = () => {
   };
 
   const logTransport = async () => {
-    if (!transportLog.mode || !transportLog.distance_km) {
+    // Trim whitespace from inputs
+    const mode = transportLog.mode.trim();
+    const distanceStr = transportLog.distance_km.trim();
+
+    console.log("Transport log submission:", { mode, distanceStr, transportLog });
+
+    // Validate mode
+    if (!mode) {
       toast({
-        title: "Missing information",
-        description: "Please fill in transport mode and distance",
+        title: "Missing transport mode",
+        description: "Please select how you traveled",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate distance
+    if (!distanceStr) {
+      toast({
+        title: "Missing distance",
+        description: "Please enter the distance traveled",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const distance = parseFloat(distanceStr);
+    if (isNaN(distance) || distance <= 0) {
+      toast({
+        title: "Invalid distance",
+        description: "Please enter a valid distance greater than 0",
         variant: "destructive",
       });
       return;
@@ -102,12 +129,18 @@ const SustainabilityPage = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const distance = parseFloat(transportLog.distance_km);
-      const co2Saved = calculateCO2(transportLog.mode, distance);
+      const co2Saved = calculateCO2(mode, distance);
+
+      console.log("Inserting transport log:", {
+        user_id: user.id,
+        mode,
+        distance_km: distance,
+        co2_saved: co2Saved,
+      });
 
       await supabase.from("transport_logs").insert({
         user_id: user.id,
-        mode: transportLog.mode,
+        mode: mode,
         distance_km: distance,
         cost: transportLog.cost ? parseFloat(transportLog.cost) : null,
         co2_saved: co2Saved,
