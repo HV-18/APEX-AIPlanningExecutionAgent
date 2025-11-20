@@ -1,4 +1,4 @@
-import { Sparkles, Leaf, Lightbulb } from "lucide-react";
+import { Sparkles, Leaf, Lightbulb, MessageSquare, Settings as SettingsIcon } from "lucide-react";
 import { DashboardStats } from "@/components/DashboardStats";
 import { RecentActivity } from "@/components/RecentActivity";
 import { MoodTracker } from "@/components/MoodTracker";
@@ -40,6 +40,17 @@ const Dashboard = () => {
               <Button
                 variant="outline"
                 className="h-auto py-4 flex flex-col items-center gap-2"
+                onClick={() => navigate("/chat")}
+              >
+                <MessageSquare className="w-6 h-6 text-primary" />
+                <div className="text-center">
+                  <p className="font-semibold">AI Chat</p>
+                  <p className="text-xs text-muted-foreground">Ask questions</p>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center gap-2"
                 onClick={() => navigate("/sustainability")}
               >
                 <Leaf className="w-6 h-6 text-secondary" />
@@ -57,6 +68,17 @@ const Dashboard = () => {
                 <div className="text-center">
                   <p className="font-semibold">Start Project</p>
                   <p className="text-xs text-muted-foreground">Solve real problems</p>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center gap-2"
+                onClick={() => navigate("/settings")}
+              >
+                <SettingsIcon className="w-6 h-6 text-muted-foreground" />
+                <div className="text-center">
+                  <p className="font-semibold">Settings</p>
+                  <p className="text-xs text-muted-foreground">Customize app</p>
                 </div>
               </Button>
             </CardContent>

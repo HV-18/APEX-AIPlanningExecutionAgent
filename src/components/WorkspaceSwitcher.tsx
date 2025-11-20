@@ -50,7 +50,7 @@ export const WorkspaceSwitcher = () => {
           Manage Workspaces
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => navigate("/workspaces/new")}
+          onClick={() => navigate("/workspaces")}
           className="cursor-pointer"
         >
           <Plus className="w-4 h-4 mr-2" />

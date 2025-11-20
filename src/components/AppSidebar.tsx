@@ -108,7 +108,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink
                       to={item.url}
-                      end
+                      end={item.url === "/"}
                       className="flex items-center gap-3 hover:bg-sidebar-accent rounded-md"
                       activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
                     >
@@ -122,7 +122,8 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup className="mt-auto">
+        <SidebarGroup>
+          <SidebarGroupLabel>Settings</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
