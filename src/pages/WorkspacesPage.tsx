@@ -27,8 +27,6 @@ import { WorkspaceNotifications } from "@/components/WorkspaceNotifications";
 import { WorkspaceTagsManager } from "@/components/WorkspaceTagsManager";
 import { WorkspaceActivityTimeline } from "@/components/WorkspaceActivityTimeline";
 import { WorkspaceIntegrations } from "@/components/WorkspaceIntegrations";
-import { WorkspaceAutomationRules } from "@/components/WorkspaceAutomationRules";
-import { WorkspaceAnalyticsReport } from "@/components/WorkspaceAnalyticsReport";
 
 const emojiOptions = ["📚", "💼", "🎓", "🔬", "🎨", "💻", "📊", "🏆", "🌟", "🚀"];
 const colorOptions = [
@@ -292,23 +290,15 @@ const WorkspacesPage = () => {
               </div>
               
               {selectedWorkspace === workspace.id && (
-                <Tabs defaultValue="analytics" className="mb-4">
-                  <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
-                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                <Tabs defaultValue="files" className="mb-4">
+                  <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
                     <TabsTrigger value="files">Files</TabsTrigger>
                     <TabsTrigger value="search">Search</TabsTrigger>
                     <TabsTrigger value="permissions">Permissions</TabsTrigger>
                     <TabsTrigger value="backup">Backup</TabsTrigger>
                     <TabsTrigger value="notifications">Notifications</TabsTrigger>
                     <TabsTrigger value="tags">Tags</TabsTrigger>
-                    <TabsTrigger value="automation">Automation</TabsTrigger>
                   </TabsList>
-                  <TabsContent value="analytics" className="mt-4">
-                    <WorkspaceAnalyticsReport
-                      workspaceId={workspace.id}
-                      workspaceName={workspace.name}
-                    />
-                  </TabsContent>
                   <TabsContent value="files" className="mt-4">
                     <FileUploadZone workspaceId={workspace.id} />
                   </TabsContent>
@@ -329,9 +319,6 @@ const WorkspacesPage = () => {
                   </TabsContent>
                   <TabsContent value="tags" className="mt-4">
                     <WorkspaceTagsManager workspaceId={workspace.id} />
-                  </TabsContent>
-                  <TabsContent value="automation" className="mt-4">
-                    <WorkspaceAutomationRules workspaceId={workspace.id} />
                   </TabsContent>
                 </Tabs>
               )}

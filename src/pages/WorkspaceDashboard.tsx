@@ -5,10 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { WorkspaceAnalytics } from "@/components/WorkspaceAnalytics";
-import { WorkspaceActivityTimeline } from "@/components/WorkspaceActivityTimeline";
-import { FileUploadZone } from "@/components/FileUploadZone";
-import { WorkspaceSearch } from "@/components/WorkspaceSearch";
 import {
   Dialog,
   DialogContent,
@@ -25,13 +21,6 @@ interface Widget {
   is_visible: boolean;
   position: number;
 }
-
-const availableWidgets = [
-  { type: "analytics", label: "Analytics", component: WorkspaceAnalytics },
-  { type: "activity", label: "Activity Timeline", component: WorkspaceActivityTimeline },
-  { type: "files", label: "Quick Upload", component: FileUploadZone },
-  { type: "search", label: "Search", component: WorkspaceSearch },
-];
 
 const WorkspaceDashboard = () => {
   const { workspaceId } = useParams();
@@ -72,12 +61,15 @@ const WorkspaceDashboard = () => {
       setWidgets(data);
     } else {
       // Initialize with default widgets
-      const defaultWidgets = availableWidgets.map((w, i) => ({
+      const defaultWidgets = [
+        { widget_type: "analytics", position: 0, is_visible: true },
+        { widget_type: "activity", position: 1, is_visible: true },
+        { widget_type: "files", position: 2, is_visible: true },
+        { widget_type: "search", position: 3, is_visible: true },
+      ].map((w) => ({
         workspace_id: workspaceId!,
         user_id: user.id,
-        widget_type: w.type,
-        position: i,
-        is_visible: true,
+        ...w,
       }));
 
       const { data: created } = await supabase
@@ -126,94 +118,85 @@ const WorkspaceDashboard = () => {
     .sort((a, b) => a.position - b.position);
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={() => navigate("/workspaces")}
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
+            <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-2">
-              <span className="text-3xl">{workspace.icon}</span>
+              <span className="text-2xl">{workspace.icon}</span>
               {workspace.name}
             </h1>
-            <p className="text-muted-foreground mt-1">
-              {workspace.description || "Workspace dashboard"}
-            </p>
+            {workspace.description && (
+              <p className="text-muted-foreground">{workspace.description}</p>
+            )}
           </div>
         </div>
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Settings className="w-4 h-4 mr-2" />
+            <Button variant="outline">
+              <Settings className="mr-2 h-4 w-4" />
               Customize Widgets
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Customize Dashboard</DialogTitle>
+              <DialogTitle>Customize Dashboard Widgets</DialogTitle>
             </DialogHeader>
-            <div className="space-y-3">
-              {availableWidgets.map((widget) => {
-                const isVisible =
-                  widgets.find((w) => w.widget_type === widget.type)?.is_visible ?? true;
-
-                return (
-                  <div key={widget.type} className="flex items-center gap-2">
-                    <Checkbox
-                      id={widget.type}
-                      checked={isVisible}
-                      onCheckedChange={(checked) =>
-                        handleToggleWidget(widget.type, checked as boolean)
-                      }
-                    />
-                    <Label htmlFor={widget.type}>{widget.label}</Label>
-                  </div>
-                );
-              })}
+            <div className="space-y-4">
+              {["analytics", "activity", "files", "search"].map((type) => (
+                <div key={type} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={type}
+                    checked={widgets.some(
+                      (w) => w.widget_type === type && w.is_visible
+                    )}
+                    onCheckedChange={(checked) =>
+                      handleToggleWidget(type, checked as boolean)
+                    }
+                  />
+                  <Label htmlFor={type} className="capitalize">
+                    {type}
+                  </Label>
+                </div>
+              ))}
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {visibleWidgets.map((widget) => {
-          const config = availableWidgets.find((w) => w.type === widget.widget_type);
-          if (!config) return null;
+      <div className="grid gap-6">
+        {visibleWidgets.map((widget) => (
+          <Card key={widget.id}>
+            <CardHeader>
+              <CardTitle className="capitalize">{widget.widget_type}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                {widget.widget_type} widget content will be displayed here
+              </p>
+            </CardContent>
+          </Card>
+        ))}
 
-          const WidgetComponent = config.component;
-
-          return (
-            <div key={widget.id} className="col-span-1">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">{config.label}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <WidgetComponent workspaceId={workspaceId} />
-                </CardContent>
-              </Card>
-            </div>
-          );
-        })}
+        {visibleWidgets.length === 0 && (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <LayoutDashboard className="h-12 w-12 text-muted-foreground mb-4" />
+              <p className="text-muted-foreground text-center">
+                No widgets enabled. Click "Customize Widgets" to add some.
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
-
-      {visibleWidgets.length === 0 && (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <LayoutDashboard className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-            <p className="text-muted-foreground">
-              No widgets enabled. Click "Customize Widgets" to add some.
-            </p>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 };
