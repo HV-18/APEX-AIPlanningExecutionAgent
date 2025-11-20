@@ -35,6 +35,16 @@ const TimetablePage = () => {
 
   useEffect(() => {
     loadEvents();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('timetable-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'timetable_events' }, () => loadEvents())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadEvents = async () => {

@@ -20,6 +20,16 @@ const MoodPage = () => {
 
   useEffect(() => {
     loadMoodData();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('mood-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'mood_logs' }, () => loadMoodData())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadMoodData = async () => {

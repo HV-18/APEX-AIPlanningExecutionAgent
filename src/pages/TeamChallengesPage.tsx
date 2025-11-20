@@ -49,6 +49,19 @@ export default function TeamChallengesPage() {
 
   useEffect(() => {
     loadData();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('team-challenges-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'teams' }, () => loadData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members' }, () => loadData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_challenges' }, () => loadData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_challenge_progress' }, () => loadData())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadData = async () => {

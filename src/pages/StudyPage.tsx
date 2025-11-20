@@ -25,6 +25,16 @@ const StudyPage = () => {
 
   useEffect(() => {
     loadStudyData();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('study-sessions-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'study_sessions' }, () => loadStudyData())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadStudyData = async () => {
