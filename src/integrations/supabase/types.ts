@@ -1465,6 +1465,41 @@ export type Database = {
         }
         Relationships: []
       }
+      team_chat_messages: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          team_id: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          team_id: string
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          team_id?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_chat_messages_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       team_members: {
         Row: {
           id: string
@@ -1506,6 +1541,7 @@ export type Database = {
           created_by: string
           description: string | null
           id: string
+          invite_code: string | null
           is_active: boolean | null
           name: string
           team_points: number | null
@@ -1515,6 +1551,7 @@ export type Database = {
           created_by: string
           description?: string | null
           id?: string
+          invite_code?: string | null
           is_active?: boolean | null
           name: string
           team_points?: number | null
@@ -1524,6 +1561,7 @@ export type Database = {
           created_by?: string
           description?: string | null
           id?: string
+          invite_code?: string | null
           is_active?: boolean | null
           name?: string
           team_points?: number | null
@@ -2296,6 +2334,7 @@ export type Database = {
     }
     Functions: {
       cleanup_expired_reactions: { Args: never; Returns: undefined }
+      generate_team_invite_code: { Args: never; Returns: string }
       get_workspace_role: {
         Args: { user_uuid: string; workspace_uuid: string }
         Returns: string
