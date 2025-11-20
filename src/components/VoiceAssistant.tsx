@@ -66,7 +66,7 @@ export const VoiceAssistant = () => {
       if (error) throw error;
 
       if (data?.signedUrl) {
-        await conversation.startSession({ url: data.signedUrl });
+        await conversation.startSession({ signedUrl: data.signedUrl });
       }
     } catch (error) {
       console.error('Error starting conversation:', error);
