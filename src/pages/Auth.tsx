@@ -4,17 +4,42 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Brain } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session && event === "SIGNED_IN") {
+        // Send AI-powered login notification email
+        try {
+          console.log("Sending login notification email...");
+          const response = await supabase.functions.invoke("send-login-notification", {
+            body: {
+              userEmail: session.user.email,
+              userId: session.user.id,
+            },
+          });
+
+          if (response.error) {
+            console.error("Failed to send login notification:", response.error);
+          } else {
+            console.log("Login notification sent successfully");
+            toast({
+              title: "Welcome back! 📧",
+              description: "Check your email for a personalized AI message",
+            });
+          }
+        } catch (error) {
+          console.error("Error sending login notification:", error);
+        }
+
         navigate("/");
       }
     });
-  }, [navigate]);
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted to-accent/10 p-4">
