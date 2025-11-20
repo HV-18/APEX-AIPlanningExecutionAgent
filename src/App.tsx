@@ -6,6 +6,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { NavigationHistory } from "@/components/NavigationHistory";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeProvider } from "next-themes";
 import Auth from "./pages/Auth";
@@ -37,6 +40,9 @@ const queryClient = new QueryClient();
 const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Enable keyboard shortcuts
+  useKeyboardShortcuts();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -70,10 +76,12 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="h-14 border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10 flex items-center px-4">
+          <header className="h-14 border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10 flex items-center justify-between px-4">
             <SidebarTrigger />
+            <NavigationHistory />
           </header>
           <main className="flex-1 overflow-auto p-6">
+            <Breadcrumbs />
             {children}
           </main>
         </div>
