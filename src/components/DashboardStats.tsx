@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Smile, BookOpen, TrendingUp } from "lucide-react";
+import { Brain, Smile, BookOpen, TrendingUp, Leaf, DollarSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const DashboardStats = () => {
@@ -9,6 +9,8 @@ export const DashboardStats = () => {
     moodLogsToday: 0,
     studySessionsWeek: 0,
     avgMood: 0,
+    co2Saved: 0,
+    greenTrips: 0,
   });
 
   useEffect(() => {
@@ -57,11 +59,27 @@ export const DashboardStats = () => {
         ? Math.round(moodData.reduce((sum, log) => sum + log.mood_score, 0) / moodData.length)
         : 0;
 
+      // Get sustainability stats
+      const { data: transportData } = await supabase
+        .from("transport_logs")
+        .select("co2_saved, mode")
+        .eq("user_id", user.id);
+
+      const co2Saved = transportData
+        ? transportData.reduce((sum, t) => sum + (Number(t.co2_saved) || 0), 0)
+        : 0;
+
+      const greenTrips = transportData
+        ? transportData.filter(t => ['walk', 'bike', 'bus', 'train'].includes(t.mode)).length
+        : 0;
+
       setStats({
         totalChats: chatCount || 0,
         moodLogsToday: moodCount || 0,
         studySessionsWeek: studyCount || 0,
         avgMood,
+        co2Saved: Math.round(co2Saved * 10) / 10,
+        greenTrips,
       });
     } catch (error) {
       console.error("Error loading stats:", error);
@@ -77,7 +95,7 @@ export const DashboardStats = () => {
       bgColor: "bg-primary/10",
     },
     {
-      title: "Mood Check-ins Today",
+      title: "Mood Today",
       value: stats.moodLogsToday,
       icon: Smile,
       color: "text-secondary",
@@ -97,16 +115,30 @@ export const DashboardStats = () => {
       color: "text-secondary",
       bgColor: "bg-secondary/10",
     },
+    {
+      title: "CO₂ Saved",
+      value: `${stats.co2Saved}kg`,
+      icon: Leaf,
+      color: "text-secondary",
+      bgColor: "bg-secondary/10",
+    },
+    {
+      title: "Green Trips",
+      value: stats.greenTrips,
+      icon: DollarSign,
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
       {statCards.map((stat) => {
         const Icon = stat.icon;
         return (
           <Card key={stat.title} className="hover:shadow-card-hover transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs font-medium text-muted-foreground">
                 {stat.title}
               </CardTitle>
               <div className={`w-8 h-8 rounded-lg ${stat.bgColor} flex items-center justify-center`}>
@@ -114,7 +146,7 @@ export const DashboardStats = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className="text-xl font-bold">{stat.value}</div>
             </CardContent>
           </Card>
         );

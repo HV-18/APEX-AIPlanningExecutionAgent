@@ -13,6 +13,9 @@ import ChatPage from "./pages/ChatPage";
 import MoodPage from "./pages/MoodPage";
 import StudyPage from "./pages/StudyPage";
 import TimetablePage from "./pages/TimetablePage";
+import SustainabilityPage from "./pages/SustainabilityPage";
+import ProjectsPage from "./pages/ProjectsPage";
+import HealthPage from "./pages/HealthPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
@@ -74,54 +77,15 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedLayout>
-                <Dashboard />
-              </ProtectedLayout>
-            }
-          />
-          <Route
-            path="/chat"
-            element={
-              <ProtectedLayout>
-                <ChatPage />
-              </ProtectedLayout>
-            }
-          />
-          <Route
-            path="/mood"
-            element={
-              <ProtectedLayout>
-                <MoodPage />
-              </ProtectedLayout>
-            }
-          />
-          <Route
-            path="/study"
-            element={
-              <ProtectedLayout>
-                <StudyPage />
-              </ProtectedLayout>
-            }
-          />
-          <Route
-            path="/timetable"
-            element={
-              <ProtectedLayout>
-                <TimetablePage />
-              </ProtectedLayout>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedLayout>
-                <SettingsPage />
-              </ProtectedLayout>
-            }
-          />
+          <Route path="/" element={<ProtectedLayout><Dashboard /></ProtectedLayout>} />
+          <Route path="/chat" element={<ProtectedLayout><ChatPage /></ProtectedLayout>} />
+          <Route path="/mood" element={<ProtectedLayout><MoodPage /></ProtectedLayout>} />
+          <Route path="/study" element={<ProtectedLayout><StudyPage /></ProtectedLayout>} />
+          <Route path="/timetable" element={<ProtectedLayout><TimetablePage /></ProtectedLayout>} />
+          <Route path="/sustainability" element={<ProtectedLayout><SustainabilityPage /></ProtectedLayout>} />
+          <Route path="/projects" element={<ProtectedLayout><ProjectsPage /></ProtectedLayout>} />
+          <Route path="/health" element={<ProtectedLayout><HealthPage /></ProtectedLayout>} />
+          <Route path="/settings" element={<ProtectedLayout><SettingsPage /></ProtectedLayout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

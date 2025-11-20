@@ -1,10 +1,15 @@
-import { Sparkles } from "lucide-react";
+import { Sparkles, Leaf, Lightbulb } from "lucide-react";
 import { DashboardStats } from "@/components/DashboardStats";
 import { RecentActivity } from "@/components/RecentActivity";
 import { MoodTracker } from "@/components/MoodTracker";
 import { StudyTools } from "@/components/StudyTools";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -25,6 +30,37 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <RecentActivity />
+          
+          {/* Quick Actions */}
+          <Card className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5">
+            <CardHeader>
+              <CardTitle>🚀 Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-3">
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center gap-2"
+                onClick={() => navigate("/sustainability")}
+              >
+                <Leaf className="w-6 h-6 text-secondary" />
+                <div className="text-center">
+                  <p className="font-semibold">Log Green Trip</p>
+                  <p className="text-xs text-muted-foreground">Track eco-choices</p>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center gap-2"
+                onClick={() => navigate("/projects")}
+              >
+                <Lightbulb className="w-6 h-6 text-accent" />
+                <div className="text-center">
+                  <p className="font-semibold">Start Project</p>
+                  <p className="text-xs text-muted-foreground">Solve real problems</p>
+                </div>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="space-y-6">

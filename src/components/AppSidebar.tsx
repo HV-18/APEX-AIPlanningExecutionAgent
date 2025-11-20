@@ -9,6 +9,9 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  Leaf,
+  Lightbulb,
+  Heart,
 } from "lucide-react";
 import {
   Sidebar,
@@ -33,6 +36,9 @@ const mainItems = [
   { title: "Mood Tracker", url: "/mood", icon: Smile },
   { title: "Study Sessions", url: "/study", icon: BookOpen },
   { title: "Timetable", url: "/timetable", icon: Calendar },
+  { title: "Sustainability", url: "/sustainability", icon: Leaf },
+  { title: "Real Projects", url: "/projects", icon: Lightbulb },
+  { title: "Health Goals", url: "/health", icon: Heart },
 ];
 
 export function AppSidebar() {
