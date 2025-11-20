@@ -24,6 +24,9 @@ import { WorkspacePermissionsManager } from "@/components/WorkspacePermissionsMa
 import { WorkspaceSearch } from "@/components/WorkspaceSearch";
 import { WorkspaceExportImport } from "@/components/WorkspaceExportImport";
 import { WorkspaceNotifications } from "@/components/WorkspaceNotifications";
+import { WorkspaceTagsManager } from "@/components/WorkspaceTagsManager";
+import { WorkspaceActivityTimeline } from "@/components/WorkspaceActivityTimeline";
+import { WorkspaceIntegrations } from "@/components/WorkspaceIntegrations";
 
 const emojiOptions = ["📚", "💼", "🎓", "🔬", "🎨", "💻", "📊", "🏆", "🌟", "🚀"];
 const colorOptions = [
@@ -280,13 +283,17 @@ const WorkspacesPage = () => {
               
               {selectedWorkspace === workspace.id && (
                 <Tabs defaultValue="analytics" className="mb-4">
-                  <TabsList className="grid w-full grid-cols-6">
+                  <TabsList className="grid w-full grid-cols-6 lg:grid-cols-10">
                     <TabsTrigger value="analytics">Analytics</TabsTrigger>
                     <TabsTrigger value="files">Files</TabsTrigger>
                     <TabsTrigger value="search">Search</TabsTrigger>
                     <TabsTrigger value="permissions">Permissions</TabsTrigger>
                     <TabsTrigger value="backup">Backup</TabsTrigger>
                     <TabsTrigger value="notifications">Notifications</TabsTrigger>
+                    <TabsTrigger value="tags">Tags</TabsTrigger>
+                    <TabsTrigger value="activity">Activity</TabsTrigger>
+                    <TabsTrigger value="integrations">Integrations</TabsTrigger>
+                    <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
                   </TabsList>
                   <TabsContent value="analytics" className="mt-4">
                     <WorkspaceAnalytics workspaceId={workspace.id} />
@@ -308,6 +315,22 @@ const WorkspacesPage = () => {
                   </TabsContent>
                   <TabsContent value="notifications" className="mt-4">
                     <WorkspaceNotifications workspaceId={workspace.id} />
+                  </TabsContent>
+                  <TabsContent value="tags" className="mt-4">
+                    <WorkspaceTagsManager workspaceId={workspace.id} />
+                  </TabsContent>
+                  <TabsContent value="activity" className="mt-4">
+                    <WorkspaceActivityTimeline workspaceId={workspace.id} />
+                  </TabsContent>
+                  <TabsContent value="integrations" className="mt-4">
+                    <WorkspaceIntegrations workspaceId={workspace.id} />
+                  </TabsContent>
+                  <TabsContent value="dashboard" className="mt-4">
+                    <div className="text-center p-4">
+                      <Button onClick={() => navigate(`/workspace/${workspace.id}/dashboard`)}>
+                        Open Full Dashboard
+                      </Button>
+                    </div>
                   </TabsContent>
                 </Tabs>
               )}
