@@ -205,23 +205,14 @@ export const SocialIntegrations = ({ userId, userName, studyStats }: SocialInteg
         </CardHeader>
         <CardContent className="space-y-4">
           <Button 
-            onClick={handleLinkedInConnect}
-            disabled={linking}
+            onClick={() => toast.info("Please enable LinkedIn provider in backend auth settings first")}
+            disabled={true}
             variant="outline"
             className="w-full"
           >
             <Linkedin className="mr-2 h-4 w-4" />
-            {linkedInConnected ? "Connected to LinkedIn" : "Connect LinkedIn"}
+            LinkedIn (Enable in Auth Settings)
           </Button>
-          {linkedInConnected && (
-            <Button 
-              onClick={shareToLinkedIn}
-              className="w-full"
-            >
-              <Share2 className="mr-2 h-4 w-4" />
-              Share Progress to LinkedIn
-            </Button>
-          )}
         </CardContent>
       </Card>
 
