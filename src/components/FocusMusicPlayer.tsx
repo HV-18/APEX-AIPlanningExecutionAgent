@@ -92,11 +92,6 @@ export default function FocusMusicPlayer() {
         videoId: currentTrack.videoId,
         startSeconds: 0,
       });
-      if (isPlaying) {
-        setTimeout(() => {
-          playerRef.current.playVideo();
-        }, 500);
-      }
     }
   }, [currentTrack, playerReady]);
 
@@ -108,12 +103,6 @@ export default function FocusMusicPlayer() {
 
   const handleTrackChange = (track: typeof currentTrack) => {
     setCurrentTrack(track);
-    setTimeout(() => {
-      if (playerRef.current && playerReady) {
-        playerRef.current.playVideo();
-        setIsPlaying(true);
-      }
-    }, 500);
   };
 
   const togglePlayPause = () => {
