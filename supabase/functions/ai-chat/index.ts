@@ -59,10 +59,10 @@ serve(async (req) => {
 
   try {
     const { messages, mode = 'casual', context } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    if (!GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY is not configured");
     }
 
     const authHeader = req.headers.get('Authorization');
@@ -77,21 +77,28 @@ serve(async (req) => {
       userId = user?.id;
     }
 
-    // Handle image generation mode
+    // Handle image generation mode (using Gemini imagen API)
     if (mode === 'image_generation') {
       const prompt = messages[0]?.content || '';
       console.log('Generating image with prompt:', prompt);
       
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash-image-preview",
-          messages: messages,
-          modalities: ["image", "text"]
+          contents: [{
+            parts: [{
+              text: `Generate an image: ${prompt}`
+            }]
+          }],
+          generationConfig: {
+            temperature: 1,
+            topP: 0.95,
+            topK: 40,
+            maxOutputTokens: 8192,
+          }
         }),
       });
 
@@ -177,19 +184,36 @@ serve(async (req) => {
       return { role: msg.role, content: msg.content };
     });
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    // Convert messages to Gemini format
+    const geminiMessages = [
+      { role: "user", parts: [{ text: systemPrompt + contextNote }] },
+      ...transformedMessages.map((msg: any) => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: Array.isArray(msg.content) 
+          ? msg.content.map((c: any) => c.type === 'text' ? { text: c.text } : { inlineData: { mimeType: 'image/jpeg', data: c.image_url.url.split(',')[1] } })
+          : [{ text: msg.content }]
+      }))
+    ];
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:streamGenerateContent?alt=sse&key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt + contextNote },
-          ...transformedMessages,
+        contents: geminiMessages,
+        generationConfig: {
+          temperature: 0.7,
+          topP: 0.95,
+          topK: 40,
+          maxOutputTokens: 8192,
+        },
+        safetySettings: [
+          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+          { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+          { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
         ],
-        stream: true,
       }),
     });
 
@@ -200,15 +224,9 @@ serve(async (req) => {
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits depleted. Please add more credits." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      throw new Error("AI gateway error");
+      console.error("Gemini API error:", response.status, errorText);
+      throw new Error("Gemini API error");
     }
 
     // Store user message and mode if authenticated
@@ -230,7 +248,42 @@ serve(async (req) => {
       }
     }
 
-    return new Response(response.body, {
+    // Transform Gemini SSE format to OpenAI format for compatibility
+    if (!response.body) {
+      throw new Error("No response body from Gemini API");
+    }
+    
+    const transformedStream = new TransformStream({
+      transform(chunk, controller) {
+        const text = new TextDecoder().decode(chunk);
+        const lines = text.split('\n');
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const jsonStr = line.slice(6);
+              const data = JSON.parse(jsonStr);
+              
+              if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+                const content = data.candidates[0].content.parts[0].text;
+                const openaiFormat = {
+                  choices: [{
+                    delta: { content },
+                    index: 0,
+                    finish_reason: data.candidates[0].finishReason === 'STOP' ? 'stop' : null
+                  }]
+                };
+                controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(openaiFormat)}\n\n`));
+              }
+            } catch (e) {
+              console.error('Transform error:', e);
+            }
+          }
+        }
+      }
+    });
+
+    return new Response(response.body.pipeThrough(transformedStream), {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (error) {
