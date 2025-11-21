@@ -98,14 +98,20 @@ export const VoiceAssistant = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold flex items-center gap-2">
-          <Mic className="w-8 h-8" />
-          Voice Assistant
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Have natural conversations with your AI study companion
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center gap-2">
+            <Mic className="w-8 h-8" />
+            Voice Assistant
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Have natural conversations with your AI study companion
+          </p>
+        </div>
+        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+          <Volume2 className="w-3 h-3 mr-1" />
+          ElevenLabs AI
+        </Badge>
       </div>
 
       <Card className="p-6 space-y-6">

@@ -281,13 +281,21 @@ export default function StudyBuddyPage() {
     <div className="container mx-auto p-6">
       <BackButton to="/dashboard" />
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-          <Brain className="w-8 h-8" />
-          AI Study Buddy
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Personalized insights and recommendations based on your learning patterns
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+              <Brain className="w-8 h-8" />
+              AI Study Buddy
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Personalized insights and recommendations based on your learning patterns
+            </p>
+          </div>
+          <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+            <Sparkles className="w-3 h-3 mr-1" />
+            Google Gemini AI
+          </Badge>
+        </div>
       </div>
 
       <Tabs defaultValue="insights" className="space-y-4">

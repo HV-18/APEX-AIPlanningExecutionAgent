@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, BookOpen, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, BookOpen, CheckCircle, XCircle, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { BackButton } from "@/components/BackButton";
@@ -200,14 +200,20 @@ const QuizPage = () => {
     return (
       <div className="space-y-6">
         <BackButton to="/dashboard" />
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <BookOpen className="w-8 h-8" />
-            AI Quiz Generator
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Generate personalized quizzes on any subject
-          </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-2">
+              <BookOpen className="w-8 h-8" />
+              AI Quiz Generator
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Generate personalized quizzes on any subject
+            </p>
+          </div>
+          <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+            <Sparkles className="w-3 h-3 mr-1" />
+            Google Gemini AI
+          </Badge>
         </div>
 
         {quizGeneratorSection}

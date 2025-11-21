@@ -333,10 +333,11 @@ export const ChatInterface = () => {
 
   return (
     <Card className="flex flex-col h-[600px]">
-      <div className="p-4 border-b flex items-center justify-between">
-        <AIModeSelector selectedMode={mode} onModeChange={setMode} />
-        
-        <Dialog open={showHistory} onOpenChange={setShowHistory}>
+      <div className="p-4 border-b">
+        <div className="flex items-center justify-between mb-3">
+          <AIModeSelector selectedMode={mode} onModeChange={setMode} />
+          
+          <Dialog open={showHistory} onOpenChange={setShowHistory}>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
               <History className="w-4 h-4 mr-2" />
@@ -376,6 +377,14 @@ export const ChatInterface = () => {
             </ScrollArea>
           </DialogContent>
         </Dialog>
+        </div>
+        
+        <div className="flex items-center justify-center gap-2 py-2 px-3 bg-muted/30 rounded-lg">
+          <Sparkles className="w-4 h-4 text-primary" />
+          <span className="text-sm font-medium text-muted-foreground">
+            Powered by <span className="text-primary font-semibold">Google Gemini 2.5</span>
+          </span>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
