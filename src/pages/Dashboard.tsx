@@ -1,4 +1,4 @@
-import { Sparkles, Leaf, Lightbulb, MessageSquare, Settings as SettingsIcon, RefreshCw } from "lucide-react";
+import { Sparkles, Leaf, Lightbulb, MessageSquare, Settings as SettingsIcon, RefreshCw, Globe, Clock } from "lucide-react";
 import { DashboardStats } from "@/components/DashboardStats";
 import { RecentActivity } from "@/components/RecentActivity";
 import { MoodTracker } from "@/components/MoodTracker";
@@ -6,14 +6,32 @@ import { StudyTools } from "@/components/StudyTools";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SUPPORTED_LANGUAGES } from "@/hooks/useVoiceCommands";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [refreshKey, setRefreshKey] = useState(0);
   const { toast } = useToast();
+  const [selectedLanguage, setSelectedLanguage] = useState('en-US');
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const getTimeInTimezone = (timezone: string) => {
+    return currentTime.toLocaleTimeString('en-US', {
+      timeZone: timezone,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+  };
 
   const handleRefresh = () => {
     setRefreshKey(prev => prev + 1);
@@ -152,6 +170,55 @@ const Dashboard = () => {
 
         <div className="space-y-6">
           <MoodTracker />
+          
+          {/* Language & Timezone */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="w-5 h-5" />
+                Language & Time
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Language</label>
+                <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {Object.entries(SUPPORTED_LANGUAGES).map(([code, name]) => (
+                      <SelectItem key={code} value={code}>
+                        {name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-4 h-4" />
+                  <span className="text-sm font-medium">Time Zones</span>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between p-2 bg-muted rounded">
+                    <span className="font-medium">UTC:</span>
+                    <span className="font-mono">{getTimeInTimezone('UTC')}</span>
+                  </div>
+                  <div className="flex justify-between p-2 bg-muted rounded">
+                    <span className="font-medium">IST (India):</span>
+                    <span className="font-mono">{getTimeInTimezone('Asia/Kolkata')}</span>
+                  </div>
+                  <div className="flex justify-between p-2 bg-muted rounded">
+                    <span className="font-medium">Local:</span>
+                    <span className="font-mono">{currentTime.toLocaleTimeString()}</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
           <StudyTools />
         </div>
       </div>
