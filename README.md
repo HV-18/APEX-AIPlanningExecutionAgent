@@ -4,7 +4,7 @@ Welcome to APEX, your AI-powered companion for academic excellence and holistic 
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/650bb2e9-ca18-47f2-9534-a125176b46d6
+**URL**:http://10.0.14.9:8081/auth
 
 ## How can I edit this code?
 
