@@ -2,31 +2,17 @@ import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Brain, Users, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { AgeVerificationModal } from "@/components/AgeVerificationModal";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [showAgeVerification, setShowAgeVerification] = useState(false);
 
   useEffect(() => {
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (session && event === "SIGNED_IN") {
-        // Check if age verification is needed
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("age_verified")
-          .eq("id", session.user.id)
-          .single();
-
-        if (!profile?.age_verified) {
-          setShowAgeVerification(true);
-          return;
-        }
-
         // Send AI-powered login notification email
         try {
           console.log("Sending login notification email...");
@@ -55,19 +41,8 @@ const Auth = () => {
     });
   }, [navigate, toast]);
 
-  const handleAgeVerificationClose = () => {
-    setShowAgeVerification(false);
-    navigate("/");
-  };
-
   return (
-    <>
-      <AgeVerificationModal 
-        open={showAgeVerification} 
-        onClose={handleAgeVerificationClose}
-      />
-      
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-muted to-accent/10">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-muted to-accent/10">
       {/* Hero Section */}
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-6xl grid md:grid-cols-2 gap-12 items-center">
@@ -169,8 +144,7 @@ const Auth = () => {
           </div>
         </div>
       </div>
-      </div>
-    </>
+    </div>
   );
 };
 
