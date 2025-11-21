@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BackButton } from "@/components/BackButton";
 import {
   Dialog,
   DialogContent,
@@ -143,6 +144,8 @@ const WorkspacesPage = () => {
 
   return (
     <div className="space-y-6">
+      <BackButton to="/" />
+      
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
