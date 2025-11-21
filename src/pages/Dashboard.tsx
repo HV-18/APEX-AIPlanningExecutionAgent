@@ -30,10 +30,15 @@ const Dashboard = () => {
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
           </Button>
-          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/chat")}
+            className="hidden md:flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full hover:bg-primary/20 transition-colors"
+          >
             <Sparkles className="w-4 h-4 text-primary" />
             <span className="text-sm font-medium text-primary">AI-Powered</span>
-          </div>
+          </Button>
         </div>
       </div>
 
