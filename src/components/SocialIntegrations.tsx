@@ -68,19 +68,24 @@ export const SocialIntegrations = ({ userId, userName, studyStats }: SocialInteg
     setLinking(true);
     try {
       const clientId = import.meta.env.VITE_NOTION_CLIENT_ID;
-      if (!clientId) {
-        toast.error("Notion integration not configured. Please add NOTION_CLIENT_ID and NOTION_CLIENT_SECRET.");
+      
+      // Check if credentials are properly configured (not placeholder values)
+      if (!clientId || clientId === "YOUR_NOTION_CLIENT_ID" || clientId.includes("YOUR_")) {
+        toast.error("Notion integration requires setup. Please configure NOTION_CLIENT_ID and NOTION_CLIENT_SECRET in your backend settings.", {
+          duration: 5000,
+        });
+        setLinking(false);
         return;
       }
 
       const redirectUri = `${window.location.origin}/profile`;
       const notionAuthUrl = `https://api.notion.com/v1/oauth/authorize?client_id=${clientId}&response_type=code&owner=user&redirect_uri=${encodeURIComponent(redirectUri)}`;
       
+      // Navigate to Notion OAuth page
       window.location.href = notionAuthUrl;
     } catch (error) {
       console.error("Notion connection error:", error);
       toast.error("Failed to connect Notion. Please try again.");
-    } finally {
       setLinking(false);
     }
   };
