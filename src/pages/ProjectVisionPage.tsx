@@ -9,7 +9,7 @@ const ProjectVisionPage = () => {
       <BackButton to="/dashboard" />
       
       <div className="text-center space-y-3">
-        <Badge variant="secondary">AI-Powered Education Platform</Badge>
+        <Badge variant="secondary">APEX : AI Planning & Execution Agent</Badge>
         <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
           Project Vision
         </h1>

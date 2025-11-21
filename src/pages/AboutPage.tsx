@@ -12,7 +12,7 @@ const AboutPage = () => {
           <Brain className="w-8 h-8 text-primary" />
         </div>
         <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-          About Student Wellness Hub
+          About APEX : AI Planning & Execution Agent
         </h1>
         <p className="text-lg text-muted-foreground">
           AI-powered platform for academic excellence and holistic well-being

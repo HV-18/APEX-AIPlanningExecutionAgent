@@ -22,7 +22,7 @@ const Dashboard = () => {
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground mt-1">
-            Welcome back! Here's your wellness overview
+            Welcome to APEX - Your AI Planning & Execution Agent
           </p>
         </div>
         <div className="flex items-center gap-3">
