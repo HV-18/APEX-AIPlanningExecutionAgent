@@ -22,6 +22,7 @@ import {
   ClipboardList,
   Mic,
   Image,
+  BookText,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
@@ -43,6 +44,8 @@ import { useToast } from "@/hooks/use-toast";
 
 const mainItems = [
   { title: "Dashboard", url: "/", icon: BarChart3 },
+  { title: "About", url: "/about", icon: Lightbulb },
+  { title: "Documentation", url: "/docs", icon: BookText },
   { title: "AI Chat", url: "/chat", icon: MessageSquare },
   { title: "Quiz Generator", url: "/quiz", icon: ClipboardList },
   { title: "Voice Assistant", url: "/voice-assistant", icon: Mic },
@@ -51,13 +54,13 @@ const mainItems = [
   { title: "Study Sessions", url: "/study", icon: BookOpen },
   { title: "Timetable", url: "/timetable", icon: Calendar },
   { title: "Sustainability", url: "/sustainability", icon: Leaf },
-  { title: "Real Projects", url: "/projects", icon: Lightbulb },
+  { title: "Real Projects", url: "/projects", icon: CalendarDays },
   { title: "Health Goals", url: "/health", icon: Heart },
   { title: "Study Rooms", url: "/study-rooms", icon: Users },
   { title: "Focus Zone", url: "/focus", icon: Music },
   { title: "Meal Analyzer", url: "/meal-analyzer", icon: Camera },
   { title: "Wellness Reports", url: "/wellness-reports", icon: FileText },
-  { title: "Meal Planner", url: "/meal-planner", icon: CalendarDays },
+  { title: "Meal Planner", url: "/meal-planner", icon: Calendar },
   { title: "AI Study Buddy", url: "/study-buddy", icon: Brain },
   { title: "Rewards", url: "/rewards", icon: BarChart3 },
   { title: "Team Challenges", url: "/team-challenges", icon: Users },
