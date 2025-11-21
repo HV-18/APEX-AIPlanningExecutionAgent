@@ -59,7 +59,7 @@ export const LoginNotificationEmail = ({
         <Hr style={hr} />
 
         <Text style={footer}>
-          Keep up the great work! Your AI Study Assistant is here to help you succeed.
+          Keep up the great work! APEX is here to help you succeed.
         </Text>
       </Container>
     </Body>
