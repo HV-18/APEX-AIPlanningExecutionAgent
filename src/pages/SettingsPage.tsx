@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { BackButton } from "@/components/BackButton";
+import { useTheme } from "next-themes";
 
 type SettingsSection = 'profile' | 'notifications' | 'security' | 'keyboard' | 'appearance' | 'advanced' | 'support';
 
@@ -37,10 +38,10 @@ const SettingsPage = () => {
     autoBackup: true,
     dataSync: true,
     aiPersonalization: true,
-    darkMode: false,
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     loadProfile();
@@ -411,9 +412,9 @@ const SettingsPage = () => {
                     </p>
                   </div>
                   <Switch
-                    checked={advanced.darkMode}
+                    checked={theme === "dark"}
                     onCheckedChange={(checked) =>
-                      setAdvanced({ ...advanced, darkMode: checked })
+                      setTheme(checked ? "dark" : "light")
                     }
                   />
                 </div>
