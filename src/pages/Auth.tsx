@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { Brain, Eye, EyeOff, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -195,17 +195,17 @@ const Auth = () => {
       <div className="py-6 px-4 text-center text-sm text-white/60 border-t border-white/10">
         <p>
           By messaging APEX, an AI chatbot, you agree to our{" "}
-          <a href="#" className="underline hover:text-white/80">
+          <Link to="/terms" className="underline hover:text-white/80">
             Terms
-          </a>{" "}
+          </Link>{" "}
           and have read our{" "}
-          <a href="#" className="underline hover:text-white/80">
+          <Link to="/privacy" className="underline hover:text-white/80">
             Privacy Policy
-          </a>
+          </Link>
           . See{" "}
-          <a href="#" className="underline hover:text-white/80">
+          <Link to="/cookies" className="underline hover:text-white/80">
             Cookie Preferences
-          </a>
+          </Link>
           .
         </p>
       </div>
