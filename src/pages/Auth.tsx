@@ -154,8 +154,10 @@ const Auth = () => {
               <input
                 type="text"
                 placeholder="Ask anything"
-                className="w-full bg-transparent text-white placeholder:text-white/40 px-14 py-4 text-base focus:outline-none"
+                className="w-full bg-transparent text-white placeholder:text-white/40 px-14 py-4 text-base focus:outline-none cursor-text"
                 onFocus={() => openAuthModal("signup")}
+                onClick={() => openAuthModal("signup")}
+                readOnly
               />
               <button className="absolute right-4 text-white/60 hover:text-white/80 transition-colors">
                 <Mic className="w-5 h-5" />
