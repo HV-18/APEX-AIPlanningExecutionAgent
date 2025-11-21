@@ -128,6 +128,7 @@ const App = () => (
               <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<ProtectedLayout><Dashboard /></ProtectedLayout>} />
+            <Route path="/dashboard" element={<Navigate to="/" replace />} />
             <Route path="/chat" element={<ProtectedLayout><ChatPage /></ProtectedLayout>} />
             <Route path="/quiz" element={<ProtectedLayout><QuizPage /></ProtectedLayout>} />
             <Route path="/voice-assistant" element={<ProtectedLayout><VoiceAssistantPage /></ProtectedLayout>} />
