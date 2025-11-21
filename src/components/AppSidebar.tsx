@@ -44,52 +44,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-
-// Prioritized by importance: Core Education > Collaboration > Wellness > Project Info
-const mainItems = [
-  // 🎯 Core Dashboard
-  { title: "Dashboard", url: "/", icon: BarChart3 },
-  
-  // 📚 Core Education Features (PRIORITY)
-  { title: "AI Chat", url: "/chat", icon: MessageSquare },
-  { title: "AI Study Buddy", url: "/study-buddy", icon: Brain },
-  { title: "Quiz Generator", url: "/quiz", icon: ClipboardList },
-  { title: "Study Sessions", url: "/study", icon: BookOpen },
-  { title: "Voice Assistant", url: "/voice-assistant", icon: Mic },
-  
-  // 👥 Collaborative Learning
-  { title: "Study Rooms", url: "/study-rooms", icon: Users },
-  { title: "Team Challenges", url: "/team-challenges", icon: Users },
-  
-  // 📅 Planning & Organization
-  { title: "Timetable", url: "/timetable", icon: Calendar },
-  { title: "Real Projects", url: "/projects", icon: CalendarDays },
-  
-  // 🎨 Creative & Media Tools
-  { title: "Image Gallery", url: "/image-gallery", icon: Image },
-  { title: "Focus Zone", url: "/focus", icon: Music },
-  
-  // 💪 Wellness & Health
-  { title: "Mood Tracker", url: "/mood", icon: Smile },
-  { title: "Health Goals", url: "/health", icon: Heart },
-  { title: "Meal Analyzer", url: "/meal-analyzer", icon: Camera },
-  { title: "Meal Planner", url: "/meal-planner", icon: Calendar },
-  { title: "Wellness Reports", url: "/wellness-reports", icon: FileText },
-  
-  // 🌱 Sustainability
-  { title: "Sustainability", url: "/sustainability", icon: Leaf },
-  
-  // 🏆 Gamification
-  { title: "Rewards", url: "/rewards", icon: BarChart3 },
-  
-  // ℹ️ Project Information
-  { title: "Project Vision", url: "/project-vision", icon: Rocket },
-  { title: "About", url: "/about", icon: Lightbulb },
-  { title: "Documentation", url: "/docs", icon: BookText },
-  
-  // 👤 Profile
-  { title: "My Profile", url: "/profile", icon: User },
-];
+import { useTranslation } from "react-i18next";
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -97,24 +52,59 @@ export function AppSidebar() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const collapsed = state === "collapsed";
+  const { t } = useTranslation();
+
+  const mainItems = [
+    { title: t('dashboard'), url: "/", icon: BarChart3 },
+    { title: t('chat'), url: "/chat", icon: MessageSquare },
+    { title: t('planning'), url: "/study-buddy", icon: Brain },
+    { title: t('quiz'), url: "/quiz", icon: ClipboardList },
+    { title: t('study'), url: "/study", icon: BookOpen },
+    { title: t('voice'), url: "/voice-assistant", icon: Mic },
+    { title: t('studyRooms'), url: "/study-rooms", icon: Users },
+    { title: t('teamChallenges'), url: "/team-challenges", icon: Users },
+    { title: t('timetable'), url: "/timetable", icon: Calendar },
+    { title: "Real Projects", url: "/projects", icon: CalendarDays },
+    { title: "Image Gallery", url: "/image-gallery", icon: Image },
+    { title: t('focus'), url: "/focus", icon: Music },
+    { title: t('mood'), url: "/mood", icon: Smile },
+    { title: t('health'), url: "/health", icon: Heart },
+    { title: t('mealAnalyzer'), url: "/meal-analyzer", icon: Camera },
+    { title: t('mealPlanner'), url: "/meal-planner", icon: Calendar },
+    { title: t('wellness'), url: "/wellness-reports", icon: FileText },
+    { title: t('sustainability'), url: "/sustainability", icon: Leaf },
+    { title: t('rewards'), url: "/rewards", icon: BarChart3 },
+    { title: "Project Vision", url: "/project-vision", icon: Rocket },
+    { title: "About", url: "/about", icon: Lightbulb },
+    { title: "Documentation", url: "/docs", icon: BookText },
+    { title: t('profile'), url: "/profile", icon: User },
+  ];
 
   const handleSignOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      toast({
-        title: "Signed out successfully",
-        description: "See you soon! 👋",
-      });
-      
-      navigate("/auth");
+      if (error) {
+        console.error("Error signing out:", error);
+        // We still want to redirect even if there's an error
+        toast({
+          title: "Signed out",
+          description: "You have been signed out.",
+        });
+      } else {
+        toast({
+          title: "Signed out successfully",
+          description: "See you soon! 👋",
+        });
+      }
     } catch (error) {
+      console.error("Unexpected error signing out:", error);
       toast({
-        title: "Error signing out",
-        description: "Please try again",
-        variant: "destructive",
+        title: "Signed out",
+        description: "You have been signed out.",
       });
+    } finally {
+      // Always navigate to auth page
+      navigate("/auth");
     }
   };
 
@@ -227,11 +217,11 @@ export function AppSidebar() {
                 size={collapsed ? "icon" : "default"}
               >
                 <LogOut className="w-4 h-4 flex-shrink-0" />
-                {!collapsed && <span className="ml-2 truncate">Sign Out</span>}
+                {!collapsed && <span className="ml-2 truncate">{t('signOut')}</span>}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right">
-              <p>Sign Out</p>
+              <p>{t('signOut')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

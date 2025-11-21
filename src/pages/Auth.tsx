@@ -1,52 +1,63 @@
-import { supabase } from "@/integrations/supabase/client";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Brain, Eye, EyeOff, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useTranslation } from "react-i18next";
+
 
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showHelpDialog, setShowHelpDialog] = useState(false);
-  const [authMode, setAuthMode] = useState<"signin" | "signup" | "forgot">("signin");
+  const [authMode, setAuthMode] = useState<"signin" | "signup" | "forgot" | "update_password">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const lastNotificationRef = useRef<number>(0);
+  const NOTIFICATION_COOLDOWN = 60000; // 1 minute cooldown
 
   // Prevent any auto-opening of dialogs on mount
   useEffect(() => {
     setShowAuthModal(false);
     setShowHelpDialog(false);
-  }, []);
 
-  // Track last notification to prevent duplicates
-  const lastNotificationRef = useRef<number>(0);
-  const NOTIFICATION_COOLDOWN = 60000; // 1 minute cooldown
+    // Check for initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate("/");
+      }
+    });
+  }, [navigate]);
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
-      if (session && event === "SIGNED_IN") {
+      if (event === "PASSWORD_RECOVERY") {
+        setAuthMode("update_password");
+        setShowAuthModal(true);
+      } else if (session && event === "SIGNED_IN") {
         // Navigate immediately
         navigate("/");
-        
+
         // Check if we recently sent a notification
         const now = Date.now();
         const timeSinceLastNotification = now - lastNotificationRef.current;
-        
+
         if (timeSinceLastNotification < NOTIFICATION_COOLDOWN) {
           console.log("Skipping notification - sent too recently");
           return;
         }
-        
+
         // Update last notification time
         lastNotificationRef.current = now;
-        
+
         // Send login notification in the background (non-blocking)
         supabase.functions.invoke("send-login-notification", {
           body: {
@@ -59,13 +70,13 @@ const Auth = () => {
             // Don't show error to user - it's a background operation
             return;
           }
-          
+
           // Check if rate limited
           if (data?.rateLimited) {
             console.log("Login notification rate limited");
             return;
           }
-          
+
           if (data?.success) {
             toast({
               title: "Welcome back! 📧",
@@ -114,6 +125,22 @@ const Auth = () => {
           description: "We've sent you a confirmation link.",
         });
         setShowAuthModal(false);
+        if (error) throw error;
+        setShowAuthModal(false);
+      } else if (authMode === "update_password") {
+        const { error } = await supabase.auth.updateUser({
+          password: password,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Password updated!",
+          description: "Your password has been changed successfully.",
+        });
+        setAuthMode("signin");
+        setShowAuthModal(false);
+        navigate("/");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -185,7 +212,10 @@ const Auth = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 pb-20">
         <div className="w-full max-w-3xl space-y-8">
-          <h1 className="text-4xl md:text-5xl font-medium text-center mb-12 tracking-tight">
+          <h1
+            className="text-4xl md:text-5xl font-medium text-center mb-12 tracking-tight cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => setShowHelpDialog(true)}
+          >
             Welcome to APEX
           </h1>
         </div>
@@ -218,15 +248,19 @@ const Auth = () => {
               {authMode === "forgot"
                 ? "Reset Password"
                 : authMode === "signup"
-                ? "Create your account"
-                : "Welcome back"}
+                  ? "Create your account"
+                  : authMode === "update_password"
+                    ? "Reset your password"
+                    : "Welcome back"}
             </DialogTitle>
             <DialogDescription className="text-white/60 text-center">
               {authMode === "forgot"
                 ? "Enter your email address to receive password reset instructions"
                 : authMode === "signup"
-                ? "Create an account to access APEX services"
-                : "Sign in to access your account"}
+                  ? "Create an account to access APEX services"
+                  : authMode === "update_password"
+                    ? "Enter a new password below to change your password."
+                    : "Sign in to access your account"}
             </DialogDescription>
           </DialogHeader>
 
@@ -246,7 +280,61 @@ const Auth = () => {
               />
             </div>
 
-            {authMode !== "forgot" && (
+            {authMode === "update_password" && (
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-white/90">
+                  New password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="New password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="h-12 bg-white border-gray-200 text-black placeholder:text-gray-400 focus:border-green-500 focus:ring-green-500 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+
+                <Label htmlFor="confirm-password" className="text-white/90 mt-4 block">
+                  Re-enter new password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="confirm-password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Re-enter new password"
+                    required
+                    className="h-12 bg-white border-gray-200 text-black placeholder:text-gray-400 focus:border-green-500 focus:ring-green-500 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {authMode !== "forgot" && authMode !== "update_password" && (
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-white/90">
                   Password
@@ -278,16 +366,21 @@ const Auth = () => {
 
             <Button
               type="submit"
-              className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg"
+              className={`w-full h-12 font-medium rounded-lg ${authMode === "update_password"
+                ? "bg-[#10A37F] hover:bg-[#0E906F] text-white" // OpenAI green
+                : "bg-primary hover:bg-primary/90 text-white"
+                }`}
               disabled={loading}
             >
               {loading
                 ? "Loading..."
                 : authMode === "forgot"
-                ? "Send reset link"
-                : authMode === "signup"
-                ? "Continue"
-                : "Log in"}
+                  ? "Send reset link"
+                  : authMode === "signup"
+                    ? "Continue"
+                    : authMode === "update_password"
+                      ? "Reset password"
+                      : "Log in"}
             </Button>
 
             <div className="space-y-2 text-center text-sm">
@@ -314,8 +407,8 @@ const Auth = () => {
                 {authMode === "forgot"
                   ? "Back to log in"
                   : authMode === "signup"
-                  ? "Already have an account? Log in"
-                  : "Don't have an account? Sign up"}
+                    ? "Already have an account? Log in"
+                    : "Don't have an account? Sign up"}
               </button>
             </div>
           </form>
@@ -326,7 +419,7 @@ const Auth = () => {
       <Dialog open={showHelpDialog} onOpenChange={setShowHelpDialog}>
         <DialogContent className="sm:max-w-md bg-[#1A1A1A] border-white/10 text-white z-50">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold">Support & Documentation</DialogTitle>
+            <DialogTitle className="text-2xl font-semibold">About APEX</DialogTitle>
             <DialogDescription className="text-white/60">
               Platform information and resources
             </DialogDescription>

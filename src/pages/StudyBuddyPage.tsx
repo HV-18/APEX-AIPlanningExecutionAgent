@@ -272,7 +272,7 @@ export default function StudyBuddyPage() {
   if (loading) {
     return (
       <div className="container mx-auto p-6">
-        <div className="text-center">Loading your AI study buddy...</div>
+        <div className="text-center">Loading your AI Planning & Execution agent...</div>
       </div>
     );
   }
@@ -285,7 +285,7 @@ export default function StudyBuddyPage() {
           <div>
             <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
               <Brain className="w-8 h-8" />
-              AI Study Buddy
+              AI Planning & Execution
             </h1>
             <p className="text-muted-foreground mt-1">
               Personalized insights and recommendations based on your learning patterns
@@ -333,8 +333,8 @@ export default function StudyBuddyPage() {
                       {patterns.best_study_hour < 12
                         ? 'Morning'
                         : patterns.best_study_hour < 17
-                        ? 'Afternoon'
-                        : 'Evening'}
+                          ? 'Afternoon'
+                          : 'Evening'}
                     </p>
                   </div>
                 </div>

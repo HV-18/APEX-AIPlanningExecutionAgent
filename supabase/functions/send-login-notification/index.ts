@@ -47,12 +47,12 @@ serve(async (req) => {
     const notificationKey = `${userId}:${userEmail}`;
     const lastNotification = recentNotifications.get(notificationKey);
     const now = Date.now();
-    
+
     if (lastNotification && (now - lastNotification) < RATE_LIMIT_WINDOW) {
       console.log("Rate limit: Notification already sent recently for", userEmail);
       return new Response(
-        JSON.stringify({ 
-          success: true, 
+        JSON.stringify({
+          success: true,
           message: "Notification already sent recently",
           rateLimited: true
         }),
@@ -123,7 +123,7 @@ Respond with a JSON object containing:
 }`;
 
     console.log("Calling Lovable AI for personalized content...");
-    
+
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -153,7 +153,7 @@ Respond with a JSON object containing:
 
     const aiData = await aiResponse.json();
     const aiContent = JSON.parse(aiData.choices[0].message.content);
-    
+
     console.log("AI content generated:", aiContent);
 
     // Format login time
@@ -167,7 +167,7 @@ Respond with a JSON object containing:
     });
 
     // Format recommendations array to string
-    const recommendationsText = Array.isArray(aiContent.recommendations) 
+    const recommendationsText = Array.isArray(aiContent.recommendations)
       ? aiContent.recommendations.join('\n')
       : aiContent.recommendations;
 
@@ -187,18 +187,115 @@ Respond with a JSON object containing:
       console.error("Email template render error:", renderError);
       // Fallback to simple HTML if React template fails
       html = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #333;">Welcome Back, ${userName}! 🎓</h1>
-          <p>You logged in at ${loginTime}</p>
-          <h2>Your Personalized Message</h2>
-          <p>${aiContent.greeting}</p>
-          <h2>📚 Today's Study Recommendations</h2>
-          <p style="white-space: pre-line;">${recommendationsText}</p>
-          <h2>💪 Motivation Boost</h2>
-          <p>${aiContent.motivation}</p>
-          <hr style="margin: 20px 0; border: 1px solid #e6ebf1;">
-          <p style="color: #8898aa; font-size: 14px;">Keep up the great work! APEX is here to help you succeed.</p>
-        </div>
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Welcome to APEX</title>
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                line-height: 1.5;
+                color: #1a1a1a;
+                margin: 0;
+                padding: 0;
+                background-color: #ffffff;
+              }
+              .container {
+                max-width: 560px;
+                margin: 0 auto;
+                padding: 40px 20px;
+              }
+              .logo {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 32px;
+              }
+              .logo-icon {
+                width: 24px;
+                height: 24px;
+                color: #10A37F; /* OpenAI green */
+              }
+              .logo-text {
+                font-weight: 600;
+                font-size: 16px;
+                color: #1a1a1a;
+              }
+              h1 {
+                font-size: 32px;
+                font-weight: 700;
+                margin: 0 0 24px;
+                letter-spacing: -0.5px;
+                color: #1a1a1a;
+              }
+              p {
+                font-size: 16px;
+                margin: 0 0 16px;
+                color: #404040;
+              }
+              .section-title {
+                font-size: 14px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: #666;
+                margin: 32px 0 16px;
+              }
+              .recommendation-box {
+                background-color: #f9f9f9;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 24px;
+                border: 1px solid #eee;
+              }
+              .btn {
+                display: inline-block;
+                background-color: #10A37F; /* OpenAI green */
+                color: #ffffff;
+                font-size: 16px;
+                font-weight: 500;
+                text-decoration: none;
+                padding: 12px 24px;
+                border-radius: 6px;
+                margin-top: 24px;
+              }
+              .footer {
+                margin-top: 48px;
+                padding-top: 24px;
+                border-top: 1px solid #eee;
+                font-size: 12px;
+                color: #888;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="logo">
+                <span class="logo-text">APEX</span>
+              </div>
+              
+              <h1>Welcome back, ${userName}</h1>
+              
+              <p>${aiContent.greeting}</p>
+              
+              <div class="section-title">Today's Focus</div>
+              <div class="recommendation-box">
+                <p style="white-space: pre-line; margin: 0;">${recommendationsText}</p>
+              </div>
+              
+              <div class="section-title">Daily Motivation</div>
+              <p>${aiContent.motivation}</p>
+              
+              <a href="https://apex-study-buddy.lovable.app" class="btn">Go to Dashboard</a>
+              
+              <div class="footer">
+                <p style="margin: 0;">Login detected at ${loginTime}</p>
+                <p style="margin: 8px 0 0;">© ${new Date().getFullYear()} APEX AI Study Platform</p>
+              </div>
+            </div>
+          </body>
+        </html>
       `;
     }
 
@@ -206,7 +303,7 @@ Respond with a JSON object containing:
     console.log("Sending email to:", userEmail);
     let emailData;
     let emailError;
-    
+
     try {
       const result = await resend.emails.send({
         from: "APEX <onboarding@resend.dev>",
@@ -222,12 +319,12 @@ Respond with a JSON object containing:
 
     if (emailError) {
       console.error("Resend error:", emailError);
-      
+
       // If it's a rate limit error, return success with rate limited flag
       if (emailError.statusCode === 429 || emailError.name === "rate_limit_exceeded") {
         console.log("Resend API rate limit hit, silently skipping notification");
         return new Response(
-          JSON.stringify({ 
+          JSON.stringify({
             success: true,
             message: "Rate limit reached, notification skipped",
             rateLimited: true
@@ -238,17 +335,17 @@ Respond with a JSON object containing:
           }
         );
       }
-      
+
       throw emailError;
     }
 
     console.log("Email sent successfully:", emailData);
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         message: "Login notification sent successfully",
-        emailId: emailData?.id 
+        emailId: emailData?.id
       }),
       {
         status: 200,
@@ -258,9 +355,9 @@ Respond with a JSON object containing:
   } catch (error: any) {
     console.error("Error in send-login-notification:", error);
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: error.message || "Failed to send notification",
-        success: false 
+        success: false
       }),
       {
         status: 500,

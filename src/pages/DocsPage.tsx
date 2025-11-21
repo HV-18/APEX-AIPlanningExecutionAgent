@@ -52,7 +52,7 @@ const DocsPage = () => {
           <div className="flex gap-3">
             <Brain className="w-4 h-4 text-primary mt-1 shrink-0" />
             <div>
-              <h4 className="font-semibold">AI Study Buddy</h4>
+              <h4 className="font-semibold">AI Planning & Execution</h4>
               <p className="text-muted-foreground">Personalized recommendations based on study patterns</p>
             </div>
           </div>
