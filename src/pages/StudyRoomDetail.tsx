@@ -56,7 +56,45 @@ export default function StudyRoomDetail() {
   useEffect(() => {
     if (roomId) {
       loadRoomData();
-      subscribeToChanges();
+      
+      const dataChannel = supabase
+        .channel(`room-${roomId}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'room_participants', filter: `room_id=eq.${roomId}` }, loadRoomData)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'room_tasks', filter: `room_id=eq.${roomId}` }, loadRoomData)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'room_notes', filter: `room_id=eq.${roomId}` }, loadRoomData)
+        .subscribe();
+      
+      const presenceChannel = supabase.channel(`room-presence-${roomId}`, {
+        config: { presence: { key: roomId } },
+      });
+
+      presenceChannel
+        .on('presence', { event: 'sync' }, () => {
+          const state = presenceChannel.presenceState();
+          console.log('Room presence updated:', Object.keys(state).length, 'users online');
+        })
+        .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+          console.log('User joined:', newPresences);
+        })
+        .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+          console.log('User left:', leftPresences);
+        })
+        .subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+              await presenceChannel.track({
+                user_id: user.id,
+                online_at: new Date().toISOString(),
+              });
+            }
+          }
+        });
+
+      return () => {
+        supabase.removeChannel(dataChannel);
+        supabase.removeChannel(presenceChannel);
+      };
     }
   }, [roomId]);
 
@@ -72,18 +110,6 @@ export default function StudyRoomDetail() {
     if (notesRes.data) setNotes(notesRes.data);
   };
 
-  const subscribeToChanges = () => {
-    const channel = supabase
-      .channel(`room-${roomId}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'room_participants', filter: `room_id=eq.${roomId}` }, loadRoomData)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'room_tasks', filter: `room_id=eq.${roomId}` }, loadRoomData)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'room_notes', filter: `room_id=eq.${roomId}` }, loadRoomData)
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
 
   const addTask = async () => {
     if (!newTask.trim()) return;

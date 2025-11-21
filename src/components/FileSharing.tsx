@@ -32,7 +32,26 @@ export default function FileSharing({ roomId }: FileSharingProps) {
   useEffect(() => {
     loadFiles();
     getCurrentUser();
-    subscribeToFiles();
+    
+    const channel = supabase
+      .channel(`room-files-${roomId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'room_files',
+          filter: `room_id=eq.${roomId}`,
+        },
+        () => {
+          loadFiles();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [roomId]);
 
   const getCurrentUser = async () => {
@@ -59,27 +78,6 @@ export default function FileSharing({ roomId }: FileSharingProps) {
     }
   };
 
-  const subscribeToFiles = () => {
-    const channel = supabase
-      .channel(`room-files-${roomId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'room_files',
-          filter: `room_id=eq.${roomId}`,
-        },
-        () => {
-          loadFiles();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

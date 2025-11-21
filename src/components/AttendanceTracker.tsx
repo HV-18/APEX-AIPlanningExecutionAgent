@@ -26,11 +26,27 @@ export default function AttendanceTracker({ roomId }: AttendanceTrackerProps) {
 
   useEffect(() => {
     loadAttendance();
-    subscribeToAttendance();
     startAttendance();
+    
+    const channel = supabase
+      .channel(`attendance-${roomId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'room_attendance',
+          filter: `room_id=eq.${roomId}`,
+        },
+        () => {
+          loadAttendance();
+        }
+      )
+      .subscribe();
 
     return () => {
       endAttendance();
+      supabase.removeChannel(channel);
     };
   }, [roomId]);
 
@@ -51,27 +67,6 @@ export default function AttendanceTracker({ roomId }: AttendanceTrackerProps) {
     }
   };
 
-  const subscribeToAttendance = () => {
-    const channel = supabase
-      .channel(`attendance-${roomId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'room_attendance',
-          filter: `room_id=eq.${roomId}`,
-        },
-        () => {
-          loadAttendance();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
 
   const startAttendance = async () => {
     try {
