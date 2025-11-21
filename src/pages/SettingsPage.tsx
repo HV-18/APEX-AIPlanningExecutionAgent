@@ -105,8 +105,8 @@ const SettingsPage = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      // Preserve chat history and navigation - only delete study-related data
       await Promise.all([
-        supabase.from("chat_messages").delete().eq("user_id", user.id),
         supabase.from("mood_logs").delete().eq("user_id", user.id),
         supabase.from("study_sessions").delete().eq("user_id", user.id),
         supabase.from("timetable_events").delete().eq("user_id", user.id),
@@ -117,7 +117,7 @@ const SettingsPage = () => {
 
       toast({
         title: "Data cleared",
-        description: "All your data has been deleted",
+        description: "Study data has been deleted. Chat history and navigation are preserved.",
       });
     } catch (error) {
       console.error("Error clearing data:", error);
@@ -303,9 +303,15 @@ const SettingsPage = () => {
                     </div>
                     <Switch
                       checked={notifications.mealReminders}
-                      onCheckedChange={(checked) =>
-                        setNotifications({ ...notifications, mealReminders: checked })
-                      }
+                      onCheckedChange={(checked) => {
+                        setNotifications({ ...notifications, mealReminders: checked });
+                        toast({
+                          title: checked ? "Meal reminders enabled" : "Meal reminders disabled",
+                          description: checked 
+                            ? "You'll receive healthy eating reminders" 
+                            : "Meal reminders are now turned off",
+                        });
+                      }}
                     />
                   </div>
                 </div>
@@ -382,6 +388,10 @@ const SettingsPage = () => {
                   <div className="flex justify-between items-center py-2 border-b border-border">
                     <span className="text-sm font-medium">Command Palette</span>
                     <kbd className="px-3 py-1.5 bg-muted rounded-md text-xs font-semibold">Ctrl + K</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm font-medium">Voice Commands</span>
+                    <kbd className="px-3 py-1.5 bg-muted rounded-md text-xs font-semibold">Click Mic Icon</kbd>
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-sm font-medium">View All Shortcuts</span>
