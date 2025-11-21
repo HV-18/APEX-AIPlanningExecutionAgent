@@ -1,4 +1,6 @@
-# Welcome to your Lovable project
+# APEX : AI Planning & Execution Agent
+
+Welcome to APEX, your AI-powered companion for academic excellence and holistic well-being.
 
 ## Project info
 

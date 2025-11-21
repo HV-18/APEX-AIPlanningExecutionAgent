@@ -53,7 +53,7 @@ const Auth = () => {
             </div>
             <div>
               <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent mb-4">
-                Student Wellness Hub
+                APEX : AI Planning & Execution Agent
               </h1>
               <p className="text-xl text-muted-foreground mb-6">
                 Your AI-powered companion for academic excellence and holistic well-being

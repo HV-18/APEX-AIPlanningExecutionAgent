@@ -21,9 +21,9 @@ const DocsPage = () => {
       <BackButton to="/dashboard" />
 
       <div className="text-center space-y-3">
-        <h1 className="text-3xl font-bold">Quick Documentation</h1>
+        <h1 className="text-3xl font-bold">APEX Documentation</h1>
         <p className="text-lg text-muted-foreground">
-          Essential features overview
+          AI Planning & Execution Agent - Essential features overview
         </p>
       </div>
 
