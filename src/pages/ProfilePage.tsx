@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, BookOpen, MessageSquare, Trophy, TrendingUp, Calendar } from "lucide-react";
+import { User, BookOpen, MessageSquare, Trophy, TrendingUp, Calendar, Award, Star, Target, Activity, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -29,6 +29,25 @@ interface StudyStats {
   studyStreak: number;
 }
 
+interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+  points_required: number;
+}
+
+interface UserBadge {
+  badge_id: string;
+  earned_at: string;
+}
+
+interface MoodLog {
+  mood_score: number;
+  created_at: string;
+}
+
 const ProfilePage = () => {
   const [profile, setProfile] = useState({ 
     full_name: "", 
@@ -49,6 +68,11 @@ const ProfilePage = () => {
     studyStreak: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [earnedBadges, setEarnedBadges] = useState<Badge[]>([]);
+  const [moodData, setMoodData] = useState<MoodLog[]>([]);
+  const [userPoints, setUserPoints] = useState(0);
+  const [userLevel, setUserLevel] = useState(1);
+  const [leaderboardRank, setLeaderboardRank] = useState<number | null>(null);
 
   useEffect(() => {
     loadProfileData();
@@ -133,6 +157,58 @@ const ProfilePage = () => {
           studyStreak: patterns?.streak_days || 0,
         });
       }
+
+      // Load user badges
+      const { data: userBadgesData } = await supabase
+        .from("user_badges")
+        .select("badge_id, earned_at")
+        .eq("user_id", user.id);
+
+      if (userBadgesData && userBadgesData.length > 0) {
+        const badgeIds = userBadgesData.map((ub: UserBadge) => ub.badge_id);
+        const { data: badgesData } = await supabase
+          .from("badges")
+          .select("*")
+          .in("id", badgeIds);
+
+        setEarnedBadges(badgesData || []);
+      }
+
+      // Load user points and level
+      const { data: pointsData } = await supabase
+        .from("user_points")
+        .select("total_points, level")
+        .eq("user_id", user.id)
+        .single();
+
+      if (pointsData) {
+        setUserPoints(pointsData.total_points || 0);
+        setUserLevel(pointsData.level || 1);
+      }
+
+      // Load mood data (last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const { data: moodLogsData } = await supabase
+        .from("mood_logs")
+        .select("mood_score, created_at")
+        .eq("user_id", user.id)
+        .gte("created_at", thirtyDaysAgo.toISOString())
+        .order("created_at", { ascending: true });
+
+      setMoodData(moodLogsData || []);
+
+      // Calculate leaderboard rank
+      const { data: allUsers } = await supabase
+        .from("user_points")
+        .select("user_id, total_points")
+        .order("total_points", { ascending: false });
+
+      if (allUsers) {
+        const rank = allUsers.findIndex(u => u.user_id === user.id) + 1;
+        setLeaderboardRank(rank > 0 ? rank : null);
+      }
     } catch (error) {
       console.error("Error loading profile data:", error);
     } finally {
@@ -152,11 +228,11 @@ const ProfilePage = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold flex items-center gap-2">
-          <User className="w-8 h-8" />
-          My Profile
+          <User className="w-8 h-8 text-primary" />
+          My APEX Profile
         </h1>
         <p className="text-muted-foreground mt-1">
-          Your personalized study dashboard and activity
+          Your personalized dashboard with achievements, stats & progress
         </p>
       </div>
 
@@ -179,10 +255,20 @@ const ProfilePage = () => {
               <div className="flex gap-2 mt-2">
                 <Badge variant="secondary">
                   <Trophy className="w-3 h-3 mr-1" />
-                  Level {Math.floor(studyStats.totalSessions / 10) + 1}
+                  Level {userLevel}
                 </Badge>
                 <Badge variant="outline">
                   🔥 {studyStats.studyStreak} day streak
+                </Badge>
+                {leaderboardRank && (
+                  <Badge variant="default">
+                    <Star className="w-3 h-3 mr-1" />
+                    #{leaderboardRank} Rank
+                  </Badge>
+                )}
+                <Badge className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
+                  <Zap className="w-3 h-3 mr-1" />
+                  {userPoints} pts
                 </Badge>
               </div>
             </div>
@@ -226,6 +312,128 @@ const ProfilePage = () => {
         userId={userId}
         onUpdate={loadProfileData}
       />
+
+      {/* Achievements & Badges Showcase */}
+      <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Award className="w-5 h-5 text-primary" />
+            Achievements & Badges
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {earnedBadges.length === 0 ? (
+            <div className="text-center text-muted-foreground py-8">
+              <Trophy className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>No badges earned yet. Keep studying to unlock achievements!</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {earnedBadges.map((badge) => (
+                <div
+                  key={badge.id}
+                  className="flex flex-col items-center p-4 rounded-lg bg-card border border-border hover:border-primary transition-colors group"
+                >
+                  <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">
+                    {badge.icon}
+                  </div>
+                  <h4 className="font-semibold text-sm text-center">{badge.name}</h4>
+                  <p className="text-xs text-muted-foreground text-center mt-1 line-clamp-2">
+                    {badge.description}
+                  </p>
+                  <Badge variant="outline" className="mt-2 text-xs">
+                    {badge.category}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Mood & Wellness Trend */}
+      {moodData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="w-5 h-5 text-accent" />
+              Mood & Wellness Trend (Last 30 Days)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-end gap-1 h-32">
+              {moodData.map((mood, index) => {
+                const height = (mood.mood_score / 5) * 100;
+                const color = mood.mood_score >= 4 ? 'bg-green-500' : 
+                              mood.mood_score >= 3 ? 'bg-blue-500' : 
+                              mood.mood_score >= 2 ? 'bg-yellow-500' : 'bg-red-500';
+                return (
+                  <div
+                    key={index}
+                    className={`flex-1 ${color} rounded-t transition-all hover:opacity-80`}
+                    style={{ height: `${height}%` }}
+                    title={`Mood: ${mood.mood_score}/5 on ${new Date(mood.created_at).toLocaleDateString()}`}
+                  />
+                );
+              })}
+            </div>
+            <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+              <span>30 days ago</span>
+              <span>Today</span>
+            </div>
+            <div className="mt-4 flex gap-3 text-xs">
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 bg-green-500 rounded"></div>
+                <span>Great (4-5)</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                <span>Good (3)</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+                <span>Fair (2)</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 bg-red-500 rounded"></div>
+                <span>Low (1)</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Study Goals Progress */}
+      {profile.study_goals.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="w-5 h-5 text-primary" />
+              Study Goals Progress
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {profile.study_goals.map((goal, index) => {
+              // Calculate progress based on study sessions (simplified)
+              const progress = Math.min(100, (studyStats.totalSessions / (index + 5)) * 100);
+              return (
+                <div key={index}>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-medium">{goal}</span>
+                    <span className="text-sm text-muted-foreground">{Math.round(progress)}%</span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-primary to-accent h-full transition-all duration-500"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Data Export */}
       <DataExport />
