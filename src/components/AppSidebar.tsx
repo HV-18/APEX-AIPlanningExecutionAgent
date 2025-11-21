@@ -43,6 +43,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const mainItems = [
   { title: "Dashboard", url: "/", icon: BarChart3 },
@@ -74,14 +75,27 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const collapsed = state === "collapsed";
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Signed out",
-      description: "See you soon! 👋",
-    });
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast({
+        title: "Signed out successfully",
+        description: "See you soon! 👋",
+      });
+      
+      navigate("/auth");
+    } catch (error) {
+      toast({
+        title: "Error signing out",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -178,20 +192,29 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t p-4 space-y-2">
+      <SidebarFooter className="border-t p-4 space-y-2 overflow-hidden">
         <div className="flex items-center justify-between px-2">
           {!collapsed && <span className="text-sm text-muted-foreground">Theme</span>}
           <ThemeToggle />
         </div>
-        <Button
-          variant="ghost"
-          onClick={handleSignOut}
-          className="w-full justify-start"
-          size={collapsed ? "icon" : "default"}
-        >
-          <LogOut className="w-4 h-4" />
-          {!collapsed && <span className="ml-2">Sign Out</span>}
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                onClick={handleSignOut}
+                className="w-full justify-start overflow-hidden"
+                size={collapsed ? "icon" : "default"}
+              >
+                <LogOut className="w-4 h-4 flex-shrink-0" />
+                {!collapsed && <span className="ml-2 truncate">Sign Out</span>}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p>Sign Out</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </SidebarFooter>
     </Sidebar>
   );
