@@ -43,67 +43,98 @@ export default function FocusMusicPlayer() {
   const [volume, setVolume] = useState([70]);
   const [currentTrack, setCurrentTrack] = useState(musicCategories.binaural[0]);
   const [category, setCategory] = useState('binaural');
+  const [playerReady, setPlayerReady] = useState(false);
   const playerRef = useRef<any>(null);
   const iframeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+    // Load YouTube IFrame API
+    if (!(window as any).YT) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+    }
 
     (window as any).onYouTubeIframeAPIReady = () => {
-      if (iframeRef.current) {
+      if (iframeRef.current && !playerRef.current) {
         playerRef.current = new (window as any).YT.Player('youtube-player', {
+          height: '360',
+          width: '640',
           videoId: currentTrack.videoId,
           playerVars: {
             autoplay: 0,
-            controls: 0,
+            controls: 1,
             loop: 1,
             playlist: currentTrack.videoId,
+            playsinline: 1,
           },
           events: {
             onReady: (event: any) => {
+              console.log('Player ready');
               event.target.setVolume(volume[0]);
+              setPlayerReady(true);
+            },
+            onStateChange: (event: any) => {
+              if (event.data === (window as any).YT.PlayerState.PLAYING) {
+                setIsPlaying(true);
+              } else if (event.data === (window as any).YT.PlayerState.PAUSED) {
+                setIsPlaying(false);
+              }
+            },
+            onError: (event: any) => {
+              console.error('YouTube player error:', event.data);
             },
           },
         });
       }
     };
+
+    // Trigger if API already loaded
+    if ((window as any).YT && (window as any).YT.Player) {
+      (window as any).onYouTubeIframeAPIReady();
+    }
   }, []);
 
   useEffect(() => {
-    if (playerRef.current && playerRef.current.loadVideoById) {
+    if (playerRef.current && playerReady && playerRef.current.loadVideoById) {
       playerRef.current.loadVideoById({
         videoId: currentTrack.videoId,
         startSeconds: 0,
       });
-      playerRef.current.setLoop(true);
       if (isPlaying) {
-        playerRef.current.playVideo();
+        setTimeout(() => {
+          playerRef.current.playVideo();
+        }, 500);
       }
     }
-  }, [currentTrack]);
+  }, [currentTrack, playerReady]);
 
   useEffect(() => {
-    if (playerRef.current && playerRef.current.setVolume) {
+    if (playerRef.current && playerReady && playerRef.current.setVolume) {
       playerRef.current.setVolume(volume[0]);
     }
-  }, [volume]);
+  }, [volume, playerReady]);
 
   const handleTrackChange = (track: typeof currentTrack) => {
     setCurrentTrack(track);
-    setIsPlaying(true);
+    setTimeout(() => {
+      if (playerRef.current && playerReady) {
+        playerRef.current.playVideo();
+        setIsPlaying(true);
+      }
+    }, 500);
   };
 
   const togglePlayPause = () => {
-    if (playerRef.current) {
+    if (playerRef.current && playerReady) {
       if (isPlaying) {
         playerRef.current.pauseVideo();
+        setIsPlaying(false);
       } else {
         playerRef.current.playVideo();
+        setIsPlaying(true);
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
@@ -111,7 +142,7 @@ export default function FocusMusicPlayer() {
     const tracks = musicCategories[category as keyof typeof musicCategories];
     const currentIndex = tracks.findIndex(t => t.videoId === currentTrack.videoId);
     const nextIndex = (currentIndex + 1) % tracks.length;
-    setCurrentTrack(tracks[nextIndex]);
+    handleTrackChange(tracks[nextIndex]);
   };
 
   return (
