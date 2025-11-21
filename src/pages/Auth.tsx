@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -19,27 +19,27 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    supabase.auth.onAuthStateChange((event, session) => {
       if (session && event === "SIGNED_IN") {
-        try {
-          const response = await supabase.functions.invoke("send-login-notification", {
-            body: {
-              userEmail: session.user.email,
-              userId: session.user.id,
-            },
-          });
-
-          if (!response.error) {
+        // Navigate immediately
+        navigate("/");
+        
+        // Send login notification in the background (non-blocking)
+        supabase.functions.invoke("send-login-notification", {
+          body: {
+            userEmail: session.user.email,
+            userId: session.user.id,
+          },
+        }).then(({ error }) => {
+          if (!error) {
             toast({
               title: "Welcome back! 📧",
               description: "Check your email for a personalized AI message",
             });
           }
-        } catch (error) {
+        }).catch((error) => {
           console.error("Error sending login notification:", error);
-        }
-
-        navigate("/");
+        });
       }
     });
   }, [navigate, toast]);
@@ -195,6 +195,13 @@ const Auth = () => {
                 ? "Create your account"
                 : "Welcome back"}
             </DialogTitle>
+            <DialogDescription className="text-white/60 text-center">
+              {authMode === "forgot"
+                ? "Enter your email to receive a reset link"
+                : authMode === "signup"
+                ? "Sign up to start your journey"
+                : "Enter your credentials to continue"}
+            </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleAuth} className="space-y-4 mt-4">
