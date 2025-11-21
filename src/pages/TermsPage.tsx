@@ -17,61 +17,58 @@ const TermsPage = () => {
           Back
         </Button>
 
-        <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
+        <h1 className="text-4xl font-bold mb-2 tracking-tight">Terms of Service</h1>
+        <p className="text-sm text-muted-foreground mb-8">Effective Date: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
 
-        <div className="prose prose-neutral dark:prose-invert max-w-none space-y-6">
+        <div className="prose prose-neutral dark:prose-invert max-w-none space-y-8">
           <section>
-            <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
-            <p className="text-muted-foreground">
-              By accessing and using APEX, you accept and agree to be bound by these Terms of Service. If you do not agree, please do not use our services.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">1. Acceptance of Terms</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              By accessing or utilizing APEX services, users acknowledge and agree to be legally bound by these Terms of Service. If you do not accept these terms in their entirety, you must immediately discontinue use of all platform services.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">2. User Responsibilities</h2>
-            <p className="text-muted-foreground">
-              You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account. You agree to use APEX only for lawful educational purposes.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">2. User Obligations and Responsibilities</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Users are solely responsible for maintaining the confidentiality and security of account credentials. All activities conducted under user accounts are the user's responsibility. Platform services must be utilized exclusively for lawful educational purposes in compliance with applicable local, state, and federal regulations.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">3. AI Services</h2>
-            <p className="text-muted-foreground">
-              APEX uses AI technology to provide study assistance, content generation, and personalized recommendations. While we strive for accuracy, AI-generated content should be verified independently for critical academic work.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">3. Artificial Intelligence Services</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              APEX provides artificial intelligence-powered educational assistance, content generation, and personalized recommendation services. While we maintain high accuracy standards, AI-generated content should be independently verified for critical academic applications. Users acknowledge that AI outputs may contain inaccuracies and should not be solely relied upon for assessment or examination purposes.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">4. Data Usage</h2>
-            <p className="text-muted-foreground">
-              Your study data, notes, and interactions are used to improve your experience and provide personalized recommendations. We do not sell your personal data to third parties.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">4. Data Usage and Privacy</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              User study data, notes, and platform interactions are processed to enhance user experience and provide personalized recommendations. Personal data is not sold or transferred to third parties for marketing purposes. Comprehensive data handling practices are detailed in our Privacy Policy.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">5. Limitation of Liability</h2>
-            <p className="text-muted-foreground">
-              APEX is provided "as is" without warranties. We are not liable for any indirect, incidental, or consequential damages arising from your use of the service.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">5. Limitation of Liability</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              APEX services are provided on an "as is" and "as available" basis without warranties of any kind, either express or implied. We disclaim all warranties regarding accuracy, reliability, or fitness for particular purposes. In no event shall APEX be liable for indirect, incidental, consequential, or punitive damages arising from platform usage.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">6. Changes to Terms</h2>
-            <p className="text-muted-foreground">
-              We reserve the right to modify these terms at any time. Continued use of APEX after changes constitutes acceptance of the modified terms.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">6. Terms Modification</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              APEX reserves the right to modify, amend, or update these Terms of Service at any time without prior notice. Continued platform usage following term modifications constitutes acceptance of the revised agreement.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">7. Contact</h2>
-            <p className="text-muted-foreground">
-              For questions about these terms, please contact our support team through the help section in your dashboard.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">7. Contact Information</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              For inquiries regarding these Terms of Service, please contact our support team through the designated support channels accessible via your user dashboard.
             </p>
           </section>
-
-          <p className="text-sm text-muted-foreground mt-8">
-            Last updated: {new Date().toLocaleDateString()}
-          </p>
         </div>
       </div>
     </div>

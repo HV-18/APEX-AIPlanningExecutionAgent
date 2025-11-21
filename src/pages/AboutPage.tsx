@@ -11,11 +11,11 @@ const AboutPage = () => {
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-2">
           <Brain className="w-8 h-8 text-primary" />
         </div>
-        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-          About APEX : AI Planning & Execution Agent
+        <h1 className="text-3xl font-bold tracking-tight">
+          APEX: AI Planning & Execution Agent
         </h1>
         <p className="text-lg text-muted-foreground">
-          AI-powered academic and wellness platform
+          Enterprise-grade AI-powered educational platform
         </p>
       </div>
 
@@ -30,9 +30,8 @@ const AboutPage = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Revolutionize student learning by integrating AI-powered education tools with wellness tracking, 
-              supporting both academic achievement and personal well-being.
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              To revolutionize educational technology by delivering comprehensive AI-powered learning solutions integrated with student wellness capabilities, enabling academic excellence while supporting holistic personal development.
             </p>
           </CardContent>
         </Card>
@@ -43,13 +42,12 @@ const AboutPage = () => {
               <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
                 <Lightbulb className="w-5 h-5 text-accent" />
               </div>
-              <CardTitle>Our Vision</CardTitle>
+              <CardTitle>Strategic Vision</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Become the leading AI-powered platform where every student has access to personalized AI tutoring, 
-              real-time collaboration tools, and wellness support—all integrated.
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              To establish APEX as the premier AI-driven educational platform, providing universal access to personalized intelligent tutoring, real-time collaborative learning environments, and comprehensive wellness management systems.
             </p>
           </CardContent>
         </Card>
@@ -64,10 +62,10 @@ const AboutPage = () => {
             <CardTitle>What We Do</CardTitle>
           </div>
         </CardHeader>
-        <CardContent className="space-y-3 text-sm text-muted-foreground">
-          <p><strong>The Challenge:</strong> Students face academic pressure while juggling mental health, nutrition, and career prep. Traditional tools focus only on academics.</p>
-          <p><strong>Our Solution:</strong> First platform integrating AI education with wellness tracking—personalized learning, collaboration, mood tracking, nutrition analysis, and sustainability features.</p>
-          <p><strong>The Impact:</strong> Better grades, reduced stress, healthier habits, and career readiness through holistic student support.</p>
+        <CardContent className="space-y-3 text-sm text-muted-foreground leading-relaxed">
+          <p><strong>Market Challenge:</strong> Students navigate complex academic demands while managing mental health, nutritional requirements, and career preparation. Existing solutions address individual aspects without comprehensive integration.</p>
+          <p><strong>APEX Solution:</strong> Industry-first platform combining advanced AI educational technology with integrated wellness monitoring, delivering personalized learning pathways, collaborative environments, behavioral analytics, nutritional assessment, and sustainability initiatives.</p>
+          <p><strong>Measurable Impact:</strong> Enhanced academic performance metrics, reduced stress indicators, improved health outcomes, and strengthened career readiness through unified student support infrastructure.</p>
         </CardContent>
       </Card>
 
@@ -81,9 +79,8 @@ const AboutPage = () => {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            APEX leverages <strong className="text-primary">Google Gemini 2.5</strong>, one of the world's most advanced AI models, 
-            to power all intelligent features across the platform.
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            APEX leverages <strong className="text-primary">Google Gemini 2.5</strong>, representing state-of-the-art artificial intelligence technology, to power comprehensive intelligent capabilities across the platform infrastructure.
           </p>
           
           <div className="space-y-3">
@@ -92,10 +89,9 @@ const AboutPage = () => {
                 <Sparkles className="w-3 h-3 text-primary" />
               </div>
               <div>
-                <h4 className="font-semibold text-sm mb-1">Conversational AI Chat</h4>
-                <p className="text-xs text-muted-foreground">
-                  Natural language understanding for study doubts, interview practice, and viva preparation 
-                  using Gemini 2.5 Flash for real-time streaming responses
+                <h4 className="font-semibold text-sm mb-1 tracking-tight">Conversational AI Interface</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Advanced natural language processing for academic inquiry resolution, interview preparation, and examination coaching utilizing Gemini 2.5 Flash with real-time streaming capabilities.
                 </p>
               </div>
             </div>
@@ -105,10 +101,9 @@ const AboutPage = () => {
                 <Brain className="w-3 h-3 text-primary" />
               </div>
               <div>
-                <h4 className="font-semibold text-sm mb-1">Personalized Study Insights</h4>
-                <p className="text-xs text-muted-foreground">
-                  AI analyzes learning patterns to generate customized study tips and recommendations 
-                  tailored to individual performance
+                <h4 className="font-semibold text-sm mb-1 tracking-tight">Adaptive Learning Analytics</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Intelligent analysis of learning patterns generating customized study methodologies and recommendations calibrated to individual performance metrics.
                 </p>
               </div>
             </div>
@@ -118,10 +113,9 @@ const AboutPage = () => {
                 <Target className="w-3 h-3 text-primary" />
               </div>
               <div>
-                <h4 className="font-semibold text-sm mb-1">Custom Quiz Generation</h4>
-                <p className="text-xs text-muted-foreground">
-                  Gemini AI creates adaptive quizzes based on subject topics and identified weak areas 
-                  for targeted practice
+                <h4 className="font-semibold text-sm mb-1 tracking-tight">Dynamic Assessment Generation</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  AI-powered adaptive quiz creation based on subject domains and identified knowledge gaps for targeted skill development.
                 </p>
               </div>
             </div>
@@ -131,10 +125,9 @@ const AboutPage = () => {
                 <Sparkles className="w-3 h-3 text-primary" />
               </div>
               <div>
-                <h4 className="font-semibold text-sm mb-1">Visual Content Generation</h4>
-                <p className="text-xs text-muted-foreground">
-                  Gemini 2.5 Flash Image model generates study diagrams, visual aids, and educational 
-                  illustrations from text prompts
+                <h4 className="font-semibold text-sm mb-1 tracking-tight">Visual Content Synthesis</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Gemini 2.5 Flash Image model generates educational diagrams, visual learning aids, and instructional illustrations from text specifications.
                 </p>
               </div>
             </div>
@@ -164,22 +157,22 @@ const AboutPage = () => {
               <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Brain className="w-6 h-6 text-primary" />
               </div>
-              <h4 className="font-semibold">Education First</h4>
-              <p className="text-muted-foreground text-xs">AI-powered personalized learning and collaborative tools</p>
+              <h4 className="font-semibold">Education Excellence</h4>
+              <p className="text-muted-foreground text-xs leading-relaxed">AI-driven personalized learning pathways and collaborative educational tools</p>
             </div>
             <div className="flex flex-col items-center text-center space-y-2">
               <div className="w-12 h-12 rounded-lg bg-destructive/10 flex items-center justify-center">
                 <Heart className="w-6 h-6 text-destructive" />
               </div>
-              <h4 className="font-semibold">Holistic Wellness</h4>
-              <p className="text-muted-foreground text-xs">Mental health, nutrition, and stress management integrated</p>
+              <h4 className="font-semibold">Comprehensive Wellness</h4>
+              <p className="text-muted-foreground text-xs leading-relaxed">Integrated mental health support, nutritional guidance, and stress management</p>
             </div>
             <div className="flex flex-col items-center text-center space-y-2">
               <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center">
                 <Users className="w-6 h-6 text-accent" />
               </div>
-              <h4 className="font-semibold">Collaboration</h4>
-              <p className="text-muted-foreground text-xs">Real-time study rooms and peer support systems</p>
+              <h4 className="font-semibold">Collaborative Learning</h4>
+              <p className="text-muted-foreground text-xs leading-relaxed">Real-time study environments and peer support networks</p>
             </div>
           </div>
         </CardContent>
@@ -195,30 +188,30 @@ const AboutPage = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3 text-sm text-muted-foreground">
+          <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                 <span className="text-primary font-semibold">1</span>
               </div>
-              <p><strong>AI Personalization:</strong> Adaptive learning paths and intelligent recommendations</p>
+              <p><strong>Intelligent Personalization:</strong> Adaptive learning algorithms and data-driven recommendation engines</p>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
                 <span className="text-accent font-semibold">2</span>
               </div>
-              <p><strong>Real-Time Collaboration:</strong> Live study rooms with video, whiteboard, and code editor</p>
+              <p><strong>Synchronous Collaboration:</strong> Live study environments featuring video conferencing, shared whiteboards, and integrated development tools</p>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                 <span className="text-primary font-semibold">3</span>
               </div>
-              <p><strong>Integrated Wellness:</strong> Mood analysis, nutrition scoring, and comprehensive reports</p>
+              <p><strong>Wellness Integration:</strong> Behavioral analysis, nutritional assessment, and comprehensive wellness reporting</p>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
                 <span className="text-accent font-semibold">4</span>
               </div>
-              <p><strong>Sustainability Focus:</strong> Eco-conscious features preparing students for impactful careers</p>
+              <p><strong>Sustainability Framework:</strong> Environmental consciousness features preparing students for responsible global citizenship</p>
             </div>
           </div>
         </CardContent>
