@@ -112,9 +112,15 @@ const Auth = () => {
                       },
                     },
                   },
+                  className: {
+                    button: 'font-medium',
+                    input: 'border-input',
+                  },
                 }}
-                providers={[]}
+                providers={['google', 'apple']}
+                socialLayout="vertical"
                 theme="light"
+                redirectTo={window.location.origin}
               />
             </div>
           </div>
