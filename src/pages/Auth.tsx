@@ -1,21 +1,25 @@
-import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { Brain, Users, Heart } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Brain, Users, Heart, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (session && event === "SIGNED_IN") {
-        // Send AI-powered login notification email
         try {
-          console.log("Sending login notification email...");
           const response = await supabase.functions.invoke("send-login-notification", {
             body: {
               userEmail: session.user.email,
@@ -23,10 +27,7 @@ const Auth = () => {
             },
           });
 
-          if (response.error) {
-            console.error("Failed to send login notification:", response.error);
-          } else {
-            console.log("Login notification sent successfully");
+          if (!response.error) {
             toast({
               title: "Welcome back! 📧",
               description: "Check your email for a personalized AI message",
@@ -40,6 +41,45 @@ const Auth = () => {
       }
     });
   }, [navigate, toast]);
+
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+          },
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Check your email!",
+          description: "We've sent you a confirmation link.",
+        });
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-accent/5">
@@ -105,32 +145,67 @@ const Auth = () => {
             <div className="bg-card rounded-2xl shadow-2xl p-8 border border-border/50 backdrop-blur-sm">
               <div className="mb-6 text-center">
                 <h2 className="text-2xl font-bold mb-2">Get Started</h2>
-                <p className="text-sm text-muted-foreground">Create your account or sign in to continue</p>
+                <p className="text-sm text-muted-foreground">
+                  {isSignUp ? "Create your account to continue" : "Sign in to your account"}
+                </p>
               </div>
-              <SupabaseAuth
-                supabaseClient={supabase}
-                appearance={{
-                  theme: ThemeSupa,
-                  variables: {
-                    default: {
-                      colors: {
-                        brand: 'hsl(210 80% 55%)',
-                        brandAccent: 'hsl(195 75% 60%)',
-                      },
-                      radii: {
-                        borderRadiusButton: '0.75rem',
-                        inputBorderRadius: '0.75rem',
-                      },
-                    },
-                  },
-                  className: {
-                    button: 'font-medium',
-                    input: 'border-input',
-                  },
-                }}
-                theme="light"
-                redirectTo={window.location.origin}
-              />
+
+              <form onSubmit={handleAuth} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="h-11"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="h-11 pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <Button type="submit" className="w-full h-11" disabled={loading}>
+                  {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
+                </Button>
+
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => setIsSignUp(!isSignUp)}
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {isSignUp
+                      ? "Already have an account? Sign in"
+                      : "Don't have an account? Sign up"}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
