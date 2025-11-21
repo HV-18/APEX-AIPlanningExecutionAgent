@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
-import { Trophy, Award, Star, TrendingUp } from 'lucide-react';
+import { Trophy, Award, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BackButton } from "@/components/BackButton";
+import { useToast } from '@/hooks/use-toast';
+import confetti from 'canvas-confetti';
 
 interface UserPoints {
   total_points: number;
@@ -35,20 +37,104 @@ export default function GamificationPage() {
   const [badges, setBadges] = useState<BadgeType[]>([]);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newBadgeEarned, setNewBadgeEarned] = useState<string | null>(null);
+  const [pointsChange, setPointsChange] = useState<number>(0);
+  const { toast } = useToast();
 
   useEffect(() => {
     loadGamificationData();
 
-    // Subscribe to real-time updates
-    const channel = supabase
-      .channel('gamification-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_points' }, () => loadGamificationData())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_badges' }, () => loadGamificationData())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'leaderboard_entries' }, () => loadGamificationData())
-      .subscribe();
+    const setupRealtimeSubscription = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Subscribe to real-time updates with enhanced callbacks
+      const channel = supabase
+        .channel('gamification-changes')
+        .on('postgres_changes', { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'user_points',
+          filter: `user_id=eq.${user.id}`
+        }, (payload: any) => {
+          const oldPoints = userPoints.total_points;
+          const newPoints = payload.new.total_points;
+          const change = newPoints - oldPoints;
+          
+          if (change > 0) {
+            setPointsChange(change);
+            toast({
+              title: "Points Earned! 🎉",
+              description: `You earned ${change} points!`,
+            });
+            
+            // Trigger confetti for significant point gains
+            if (change >= 50) {
+              confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+              });
+            }
+            
+            // Clear animation after 2 seconds
+            setTimeout(() => setPointsChange(0), 2000);
+          }
+          
+          setUserPoints(payload.new);
+        })
+        .on('postgres_changes', { 
+          event: 'INSERT', 
+          schema: 'public', 
+          table: 'user_badges',
+          filter: `user_id=eq.${user.id}`
+        }, async (payload: any) => {
+          // Fetch badge details
+          const { data: badgeData } = await supabase
+            .from('badges')
+            .select('*')
+            .eq('id', payload.new.badge_id)
+            .single();
+          
+          if (badgeData) {
+            setNewBadgeEarned(badgeData.id);
+            toast({
+              title: "New Badge Unlocked! 🏆",
+              description: `You earned the "${badgeData.name}" badge!`,
+            });
+            
+            // Big confetti celebration
+            confetti({
+              particleCount: 200,
+              spread: 100,
+              origin: { y: 0.5 }
+            });
+            
+            // Clear animation after 3 seconds
+            setTimeout(() => setNewBadgeEarned(null), 3000);
+          }
+          
+          loadGamificationData();
+        })
+        .on('postgres_changes', { 
+          event: '*', 
+          schema: 'public', 
+          table: 'leaderboard_entries' 
+        }, () => {
+          // Reload leaderboard silently
+          loadLeaderboardData();
+        })
+        .subscribe();
+
+      return channel;
+    };
+
+    const channelPromise = setupRealtimeSubscription();
 
     return () => {
-      supabase.removeChannel(channel);
+      channelPromise.then(channel => {
+        if (channel) supabase.removeChannel(channel);
+      });
     };
   }, []);
 
@@ -117,6 +203,26 @@ export default function GamificationPage() {
     }
   };
 
+  const loadLeaderboardData = async () => {
+    try {
+      const { data: leaderboardResult } = await supabase
+        .from('leaderboard_entries')
+        .select('*')
+        .eq('category', 'overall')
+        .order('points', { ascending: false })
+        .limit(10);
+
+      const rankedLeaderboard = leaderboardResult?.map((entry, index) => ({
+        ...entry,
+        rank: index + 1,
+      })) || [];
+
+      setLeaderboard(rankedLeaderboard);
+    } catch (error) {
+      console.error('Error loading leaderboard:', error);
+    }
+  };
+
   const calculateLevelProgress = () => {
     const pointsForNextLevel = userPoints.level * 100;
     const pointsInCurrentLevel = userPoints.total_points % 100;
@@ -146,15 +252,24 @@ export default function GamificationPage() {
       </div>
 
       {/* User Stats */}
-      <Card className="p-6 mb-6">
+      <Card className="p-6 mb-6 relative overflow-hidden">
+        {pointsChange > 0 && (
+          <div className="absolute top-4 right-4 animate-bounce bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+            <Sparkles className="w-4 h-4" />
+            +{pointsChange}
+          </div>
+        )}
+        
         <div className="grid gap-6 md:grid-cols-3">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center transition-transform hover:scale-110">
               <Star className="w-8 h-8 text-primary" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Points</p>
-              <p className="text-3xl font-bold">{userPoints.total_points}</p>
+              <p className="text-3xl font-bold transition-all duration-300">
+                {userPoints.total_points}
+              </p>
             </div>
           </div>
 
@@ -203,8 +318,10 @@ export default function GamificationPage() {
             {badges.map((badge) => (
               <Card
                 key={badge.id}
-                className={`p-6 ${
+                className={`p-6 transition-all duration-300 ${
                   badge.earned ? 'border-primary bg-primary/5' : 'opacity-60'
+                } ${
+                  newBadgeEarned === badge.id ? 'ring-4 ring-primary animate-pulse scale-105' : ''
                 }`}
               >
                 <div className="flex items-start gap-4">
@@ -240,10 +357,14 @@ export default function GamificationPage() {
         </TabsContent>
 
         <TabsContent value="leaderboard" className="space-y-4">
+          <div className="flex items-center gap-2 mb-4 text-sm text-muted-foreground">
+            <Sparkles className="w-4 h-4 animate-pulse text-primary" />
+            <span>Live updates - Rankings refresh automatically</span>
+          </div>
           <Card>
             <div className="divide-y">
               {leaderboard.map((entry) => (
-                <div key={entry.user_id} className="p-4 flex items-center gap-4">
+                <div key={entry.user_id} className="p-4 flex items-center gap-4 transition-all duration-300 hover:bg-accent/5">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
                       entry.rank === 1
