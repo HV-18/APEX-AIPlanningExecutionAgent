@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { BackButton } from "@/components/BackButton";
 
 interface Team {
   id: string;
@@ -145,14 +146,26 @@ export default function TeamChallengesPage() {
   const loadData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
       // Load all teams
-      const { data: teamsData } = await supabase
+      const { data: teamsData, error: teamsError } = await supabase
         .from('teams')
         .select('*')
         .eq('is_active', true)
         .order('team_points', { ascending: false });
+
+      if (teamsError) {
+        console.error('Error loading teams:', teamsError);
+        toast({
+          title: 'Error loading teams',
+          description: teamsError.message,
+          variant: 'destructive'
+        });
+      }
 
       setTeams(teamsData || []);
 
@@ -161,52 +174,49 @@ export default function TeamChallengesPage() {
         .from('team_members')
         .select('team_id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (membership) {
         const myTeamData = teamsData?.find((t) => t.id === membership.team_id);
         if (myTeamData) {
           setMyTeam(myTeamData);
 
-          // Load team members with profiles
-          const { data: members } = await supabase
-            .from('team_members')
-            .select('*')
-            .eq('team_id', myTeamData.id);
+          // Load team members with profiles in parallel
+          const [membersResult, messagesResult, progressResult] = await Promise.all([
+            supabase
+              .from('team_members')
+              .select('*')
+              .eq('team_id', myTeamData.id),
+            supabase
+              .from('team_chat_messages')
+              .select('*')
+              .eq('team_id', myTeamData.id)
+              .order('created_at', { ascending: true })
+              .limit(100),
+            supabase
+              .from('team_challenge_progress')
+              .select('*, team_challenges(*)')
+              .eq('team_id', myTeamData.id)
+          ]);
 
-          if (members) {
+          if (membersResult.data) {
             // Fetch profiles for avatars
-            const memberIds = members.map(m => m.user_id);
+            const memberIds = membersResult.data.map(m => m.user_id);
             const { data: profiles } = await supabase
               .from('profiles')
               .select('id, avatar_url')
               .in('id', memberIds);
 
-            const membersWithAvatars = members.map(member => ({
+            const membersWithAvatars = membersResult.data.map(member => ({
               ...member,
               avatar_url: profiles?.find(p => p.id === member.user_id)?.avatar_url
             }));
 
             setTeamMembers(membersWithAvatars);
-
-            // Load chat messages
-            const { data: messages } = await supabase
-              .from('team_chat_messages')
-              .select('*')
-              .eq('team_id', myTeamData.id)
-              .order('created_at', { ascending: true })
-              .limit(100);
-
-            setChatMessages(messages || []);
           }
 
-          // Load challenge progress
-          const { data: progress } = await supabase
-            .from('team_challenge_progress')
-            .select('*, team_challenges(*)')
-            .eq('team_id', myTeamData.id);
-
-          setChallengeProgress(progress || []);
+          setChatMessages(messagesResult.data || []);
+          setChallengeProgress(progressResult.data || []);
         }
       } else {
         setMyTeam(null);
@@ -224,6 +234,11 @@ export default function TeamChallengesPage() {
       setChallenges(challengesData || []);
     } catch (error) {
       console.error('Error loading data:', error);
+      toast({
+        title: 'Error loading data',
+        description: 'Please try refreshing the page',
+        variant: 'destructive'
+      });
     } finally {
       setLoading(false);
     }
@@ -244,10 +259,17 @@ export default function TeamChallengesPage() {
         .from('profiles')
         .select('full_name')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       // Generate invite code
-      const { data: codeData } = await supabase.rpc('generate_team_invite_code');
+      const { data: codeData, error: codeError } = await supabase.rpc('generate_team_invite_code');
+      
+      if (codeError) {
+        console.error('Error generating code:', codeError);
+        toast({ title: 'Failed to generate invite code', variant: 'destructive' });
+        return;
+      }
+
       const generatedCode = codeData as string;
 
       // Create team
@@ -311,7 +333,7 @@ export default function TeamChallengesPage() {
         .from('profiles')
         .select('full_name')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       const { error } = await supabase.from('team_members').insert({
         team_id: team.id,
@@ -360,7 +382,7 @@ export default function TeamChallengesPage() {
         .from('profiles')
         .select('full_name')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       await supabase.from('team_chat_messages').insert({
         team_id: myTeam.id,
@@ -402,7 +424,7 @@ export default function TeamChallengesPage() {
         .from('profiles')
         .select('full_name')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       const { error } = await supabase
         .from('team_members')
@@ -450,6 +472,8 @@ export default function TeamChallengesPage() {
 
   return (
     <div className="container mx-auto p-6">
+      <BackButton to="/" />
+      
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
           <Users className="w-8 h-8 text-primary" />
