@@ -34,13 +34,14 @@ const CookiesPage = () => {
           Back
         </Button>
 
-        <h1 className="text-4xl font-bold mb-8">Cookie Preferences</h1>
+        <h1 className="text-4xl font-bold mb-2 tracking-tight">Cookie Policy</h1>
+        <p className="text-sm text-muted-foreground mb-8">Effective Date: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
 
         <div className="space-y-8">
           <section>
-            <h2 className="text-2xl font-semibold mb-4">About Cookies</h2>
-            <p className="text-muted-foreground">
-              APEX uses cookies and similar technologies to provide, protect, and improve our services. This page explains what cookies are, how we use them, and your choices.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">Cookie Technology Overview</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              APEX utilizes cookies and similar tracking technologies to deliver, secure, and optimize platform services. This policy outlines cookie definitions, implementation purposes, and user control mechanisms for managing cookie preferences.
             </p>
           </section>
 
@@ -51,11 +52,11 @@ const CookiesPage = () => {
               <div className="p-4 border rounded-lg space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <Label htmlFor="essential" className="text-base font-semibold">
+                    <Label htmlFor="essential" className="text-base font-semibold tracking-tight">
                       Essential Cookies
                     </Label>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Required for authentication, security, and core functionality. Cannot be disabled.
+                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                      Necessary for authentication protocols, security measures, and fundamental platform functionality. These cookies are mandatory and cannot be disabled as they are essential for service delivery.
                     </p>
                   </div>
                   <Switch
@@ -73,11 +74,11 @@ const CookiesPage = () => {
               <div className="p-4 border rounded-lg space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <Label htmlFor="analytics" className="text-base font-semibold">
+                    <Label htmlFor="analytics" className="text-base font-semibold tracking-tight">
                       Analytics Cookies
                     </Label>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Help us understand how you use APEX to improve features and user experience.
+                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                      Enable platform usage analysis to optimize features and enhance user experience through behavioral pattern identification.
                     </p>
                   </div>
                   <Switch
@@ -97,11 +98,11 @@ const CookiesPage = () => {
               <div className="p-4 border rounded-lg space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <Label htmlFor="functional" className="text-base font-semibold">
+                    <Label htmlFor="functional" className="text-base font-semibold tracking-tight">
                       Functional Cookies
                     </Label>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Remember your preferences like theme, language, and notification settings.
+                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                      Store user preferences including interface themes, language settings, and notification configurations for enhanced personalization.
                     </p>
                   </div>
                   <Switch
@@ -120,31 +121,27 @@ const CookiesPage = () => {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">Third-Party Cookies</h2>
-            <p className="text-muted-foreground">
-              We use services from trusted partners that may set their own cookies:
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">Third-Party Service Providers</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              APEX integrates with certified third-party service providers who may deploy their proprietary cookies:
             </p>
-            <ul className="list-disc list-inside text-muted-foreground mt-2 space-y-1">
-              <li>Google AI (Gemini) for AI-powered features</li>
-              <li>Cloud hosting services for application infrastructure</li>
-              <li>Authentication providers for secure login</li>
+            <ul className="list-disc list-inside text-muted-foreground mt-2 space-y-1 ml-4">
+              <li className="leading-relaxed">Google AI Services (Gemini) for artificial intelligence capabilities</li>
+              <li className="leading-relaxed">Cloud infrastructure providers for application hosting and data storage</li>
+              <li className="leading-relaxed">Authentication service providers for secure identity verification</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">Managing Cookies</h2>
-            <p className="text-muted-foreground">
-              You can control cookies through your browser settings. Note that disabling certain cookies may affect APEX functionality. Visit your browser's help section for instructions.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">Cookie Management</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Users may control cookie settings through browser configuration tools. Please note that disabling certain cookie categories may impact platform functionality and user experience. Consult your browser documentation for specific cookie management procedures.
             </p>
           </section>
 
           <Button onClick={handleSave} className="w-full sm:w-auto">
-            Save Preferences
+            Save Cookie Preferences
           </Button>
-
-          <p className="text-sm text-muted-foreground mt-8">
-            Last updated: {new Date().toLocaleDateString()}
-          </p>
         </div>
       </div>
     </div>

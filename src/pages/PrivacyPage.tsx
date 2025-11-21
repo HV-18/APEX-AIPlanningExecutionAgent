@@ -17,75 +17,72 @@ const PrivacyPage = () => {
           Back
         </Button>
 
-        <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
+        <h1 className="text-4xl font-bold mb-2 tracking-tight">Privacy Policy</h1>
+        <p className="text-sm text-muted-foreground mb-8">Effective Date: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
 
-        <div className="prose prose-neutral dark:prose-invert max-w-none space-y-6">
+        <div className="prose prose-neutral dark:prose-invert max-w-none space-y-8">
           <section>
-            <h2 className="text-2xl font-semibold mb-4">1. Information We Collect</h2>
-            <p className="text-muted-foreground">
-              We collect information you provide directly (email, profile data), usage data (study sessions, notes, quiz results), and device data (browser type, IP address) to provide and improve our services.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">1. Information Collection</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              APEX collects personal information directly provided by users, including but not limited to: email addresses, profile information, and account credentials. We also collect usage data such as study session records, note content, quiz performance, and learning analytics. Device information including browser type, IP address, and access timestamps is collected for security and service optimization purposes.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">2. How We Use Your Information</h2>
-            <p className="text-muted-foreground">
-              Your data is used to personalize your learning experience, generate AI-powered recommendations, track your progress, and improve APEX features. We use analytics to understand usage patterns.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">2. Data Processing and Usage</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Personal information is processed to deliver personalized learning experiences, generate intelligent recommendations through artificial intelligence, monitor academic progress, and enhance platform functionality. Usage analytics enable us to identify usage patterns and optimize service delivery. All data processing complies with applicable data protection regulations.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">3. Data Sharing</h2>
-            <p className="text-muted-foreground">
-              We do not sell your personal information. Data may be shared with service providers who help us operate APEX (cloud hosting, AI services) under strict confidentiality agreements.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">3. Information Sharing and Disclosure</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              APEX does not sell or rent personal information to third parties. Data may be disclosed to trusted service providers who assist in platform operations, including cloud infrastructure, AI processing services, and security providers. All third-party service providers are bound by contractual obligations to maintain data confidentiality and implement appropriate security measures.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">4. AI and Machine Learning</h2>
-            <p className="text-muted-foreground">
-              APEX uses AI models to analyze your study patterns and provide personalized assistance. Your interactions with AI features help improve model accuracy while maintaining your privacy.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">4. Artificial Intelligence and Machine Learning</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              The platform employs advanced artificial intelligence models powered by Google Gemini to analyze learning patterns and deliver personalized educational assistance. User interactions with AI features contribute to model refinement and accuracy improvement while maintaining strict privacy protocols. All AI processing is conducted with appropriate data protection safeguards.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">5. Data Security</h2>
-            <p className="text-muted-foreground">
-              We implement industry-standard security measures including encryption, secure authentication, and regular security audits to protect your data from unauthorized access.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">5. Security Measures</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              APEX implements industry-standard security protocols including end-to-end encryption, multi-factor authentication capabilities, and regular security assessments to protect user data from unauthorized access, disclosure, alteration, or destruction. While we employ robust security measures, no method of electronic transmission or storage is completely secure.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">6. Your Rights</h2>
-            <p className="text-muted-foreground">
-              You have the right to access, correct, or delete your personal data. You can export your data at any time from your profile settings. Contact us to exercise these rights.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">6. User Rights and Data Control</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Users maintain the right to access, modify, or request deletion of their personal information. Data export functionality is available through profile settings, enabling users to download their information in standard formats. To exercise these rights or submit data-related inquiries, contact our support team through the designated channels.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">7. Cookies and Tracking</h2>
-            <p className="text-muted-foreground">
-              We use cookies and similar technologies for authentication, preferences, and analytics. See our Cookie Preferences page for detailed information and controls.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">7. Cookies and Tracking Technologies</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              The platform utilizes cookies and similar tracking technologies for authentication, user preference storage, and analytics purposes. Detailed information regarding cookie usage and management options is available in our Cookie Preferences documentation.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">8. Children's Privacy</h2>
-            <p className="text-muted-foreground">
-              APEX is intended for users 13 years and older. We do not knowingly collect data from children under 13. If you believe we have such data, please contact us immediately.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">8. Age Restrictions and Minors</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              APEX services are intended for users aged 13 years and above. We do not knowingly collect or process personal information from individuals under 13 years of age. If we become aware of inadvertent data collection from minors below the minimum age requirement, immediate steps will be taken to delete such information from our systems.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">9. Policy Changes</h2>
-            <p className="text-muted-foreground">
-              We may update this privacy policy periodically. Significant changes will be communicated via email or in-app notification.
+            <h2 className="text-2xl font-semibold mb-4 tracking-tight">9. Policy Modifications</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              This Privacy Policy may be updated periodically to reflect changes in legal requirements, business practices, or platform functionality. Material modifications will be communicated to users via email notification or prominent in-application notices. Continued platform usage following policy updates constitutes acceptance of the revised terms.
             </p>
           </section>
-
-          <p className="text-sm text-muted-foreground mt-8">
-            Last updated: {new Date().toLocaleDateString()}
-          </p>
         </div>
       </div>
     </div>

@@ -185,8 +185,8 @@ const Auth = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 pb-20">
         <div className="w-full max-w-3xl space-y-8">
-          <h1 className="text-4xl md:text-5xl font-medium text-center mb-12">
-            Where should we begin?
+          <h1 className="text-4xl md:text-5xl font-medium text-center mb-12 tracking-tight">
+            Welcome to APEX
           </h1>
         </div>
       </div>
@@ -194,17 +194,17 @@ const Auth = () => {
       {/* Footer */}
       <div className="py-6 px-4 text-center text-sm text-white/60 border-t border-white/10">
         <p>
-          By messaging APEX, an AI chatbot, you agree to our{" "}
-          <Link to="/terms" className="underline hover:text-white/80">
-            Terms
+          By accessing APEX services, you agree to our{" "}
+          <Link to="/terms" className="underline hover:text-white/80 transition-colors">
+            Terms of Service
           </Link>{" "}
-          and have read our{" "}
-          <Link to="/privacy" className="underline hover:text-white/80">
+          and acknowledge our{" "}
+          <Link to="/privacy" className="underline hover:text-white/80 transition-colors">
             Privacy Policy
           </Link>
-          . See{" "}
-          <Link to="/cookies" className="underline hover:text-white/80">
-            Cookie Preferences
+          . Review{" "}
+          <Link to="/cookies" className="underline hover:text-white/80 transition-colors">
+            Cookie Settings
           </Link>
           .
         </p>
@@ -223,10 +223,10 @@ const Auth = () => {
             </DialogTitle>
             <DialogDescription className="text-white/60 text-center">
               {authMode === "forgot"
-                ? "Enter your email to receive a reset link"
+                ? "Enter your email address to receive password reset instructions"
                 : authMode === "signup"
-                ? "Sign up to start your journey"
-                : "Enter your credentials to continue"}
+                ? "Create an account to access APEX services"
+                : "Sign in to access your account"}
             </DialogDescription>
           </DialogHeader>
 
@@ -326,32 +326,32 @@ const Auth = () => {
       <Dialog open={showHelpDialog} onOpenChange={setShowHelpDialog}>
         <DialogContent className="sm:max-w-md bg-[#1A1A1A] border-white/10 text-white z-50">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold">Help & Support</DialogTitle>
+            <DialogTitle className="text-2xl font-semibold">Support & Documentation</DialogTitle>
             <DialogDescription className="text-white/60">
-              Learn how to use APEX
+              Platform information and resources
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
               <h3 className="font-semibold mb-2">Getting Started</h3>
-              <p className="text-sm text-white/70">
-                Sign up for free to access all features including AI study assistant, focus tools, mood tracking, and collaborative study rooms.
+              <p className="text-sm text-white/70 leading-relaxed">
+                Create an account to access comprehensive AI-powered educational tools, productivity features, wellness monitoring, and collaborative study environments.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold mb-2">Features</h3>
+              <h3 className="font-semibold mb-2">Core Features</h3>
               <ul className="text-sm text-white/70 space-y-1 list-disc list-inside">
-                <li>AI-powered study assistance</li>
-                <li>Pomodoro timer & focus music</li>
-                <li>Study rooms with video chat</li>
-                <li>Meal analyzer & wellness tracking</li>
-                <li>Gamification & rewards</li>
+                <li>AI-powered educational assistance</li>
+                <li>Productivity management tools</li>
+                <li>Collaborative study environments</li>
+                <li>Wellness and nutrition tracking</li>
+                <li>Achievement and progress monitoring</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold mb-2">Need More Help?</h3>
-              <p className="text-sm text-white/70">
-                After signing in, visit the docs page for detailed guides and tutorials.
+              <h3 className="font-semibold mb-2">Additional Resources</h3>
+              <p className="text-sm text-white/70 leading-relaxed">
+                Access comprehensive documentation and tutorials through the platform dashboard after authentication.
               </p>
             </div>
           </div>
