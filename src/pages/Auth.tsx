@@ -132,6 +132,7 @@ const Auth = () => {
           <Button
             variant="ghost"
             size="icon"
+            onClick={() => navigate("/docs")}
             className="text-white hover:bg-white/10 rounded-full h-9 w-9"
           >
             <HelpCircle className="w-5 h-5" />
