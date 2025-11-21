@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BackButton } from "@/components/BackButton";
-import { Brain, Target, Lightbulb, Sparkles, Users, Heart } from "lucide-react";
+import { Brain, Target, Lightbulb, Sparkles, Users, Heart, Cpu } from "lucide-react";
 
 const AboutPage = () => {
   return (
@@ -68,6 +68,84 @@ const AboutPage = () => {
           <p><strong>The Challenge:</strong> Students face academic pressure while juggling mental health, nutrition, and career prep. Traditional tools focus only on academics.</p>
           <p><strong>Our Solution:</strong> First platform integrating AI education with wellness tracking—personalized learning, collaboration, mood tracking, nutrition analysis, and sustainability features.</p>
           <p><strong>The Impact:</strong> Better grades, reduced stress, healthier habits, and career readiness through holistic student support.</p>
+        </CardContent>
+      </Card>
+
+      <Card className="border-primary/20 bg-gradient-to-br from-primary/10 via-accent/5 to-background">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+              <Cpu className="w-5 h-5 text-primary" />
+            </div>
+            <CardTitle className="text-primary">AI Technology Powered by Google Gemini</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            APEX leverages <strong className="text-primary">Google Gemini 2.5</strong>, one of the world's most advanced AI models, 
+            to power all intelligent features across the platform.
+          </p>
+          
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+                <Sparkles className="w-3 h-3 text-primary" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm mb-1">Conversational AI Chat</h4>
+                <p className="text-xs text-muted-foreground">
+                  Natural language understanding for study doubts, interview practice, and viva preparation 
+                  using Gemini 2.5 Flash for real-time streaming responses
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+                <Brain className="w-3 h-3 text-primary" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm mb-1">Personalized Study Insights</h4>
+                <p className="text-xs text-muted-foreground">
+                  AI analyzes learning patterns to generate customized study tips and recommendations 
+                  tailored to individual performance
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+                <Target className="w-3 h-3 text-primary" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm mb-1">Custom Quiz Generation</h4>
+                <p className="text-xs text-muted-foreground">
+                  Gemini AI creates adaptive quizzes based on subject topics and identified weak areas 
+                  for targeted practice
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+                <Sparkles className="w-3 h-3 text-primary" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm mb-1">Visual Content Generation</h4>
+                <p className="text-xs text-muted-foreground">
+                  Gemini 2.5 Flash Image model generates study diagrams, visual aids, and educational 
+                  illustrations from text prompts
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 p-4 bg-background/50 rounded-lg border border-primary/20">
+            <p className="text-xs text-muted-foreground">
+              <strong className="text-primary">Model:</strong> google/gemini-2.5-flash (Chat & Analysis), 
+              google/gemini-2.5-flash-image-preview (Image Generation)
+            </p>
+          </div>
         </CardContent>
       </Card>
 
