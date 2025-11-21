@@ -19,10 +19,20 @@ serve(async (req) => {
       throw new Error('ELEVENLABS_API_KEY is not configured');
     }
 
-    console.log('Creating ElevenLabs session for agent:', agentId);
+    // Extract agent ID from URL if full URL is provided
+    let cleanAgentId = agentId;
+    if (agentId.includes('agent_id=')) {
+      const match = agentId.match(/agent_id=([^&]+)/);
+      cleanAgentId = match ? match[1] : agentId;
+    } else if (agentId.includes('/')) {
+      // If it's a URL path, extract the last segment
+      cleanAgentId = agentId.split('/').pop() || agentId;
+    }
+
+    console.log('Creating ElevenLabs session for agent:', cleanAgentId);
 
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=${agentId}`,
+      `https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=${cleanAgentId}`,
       {
         method: "GET",
         headers: {

@@ -138,6 +138,10 @@ export const VoiceAssistant = () => {
                 >
                   ElevenLabs Dashboard
                 </a>
+                <br />
+                <span className="text-xs">
+                  Paste the full agent URL or just the agent ID (e.g., agent_xxxxx)
+                </span>
               </p>
             </div>
 
