@@ -5,6 +5,7 @@ import { Camera, Upload, Loader2, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
+import MealTrendsChart from '@/components/MealTrendsChart';
 
 interface MealAnalysis {
   mealName: string;
@@ -271,7 +272,21 @@ export default function MealAnalyzerPage() {
 
       {/* Meal History Section */}
       <div className="mt-8">
-        <h2 className="text-2xl font-bold text-foreground mb-4">Recent Meal Analysis</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-foreground">Recent Meal Analysis</h2>
+          {mealHistory.length > 0 && (
+            <div className="text-sm text-muted-foreground">
+              <span className="font-semibold">{mealHistory.length}</span> meals tracked
+            </div>
+          )}
+        </div>
+
+        {/* Add Trends Chart */}
+        {mealHistory.length > 0 && (
+          <div className="mb-6">
+            <MealTrendsChart />
+          </div>
+        )}
         {loading ? (
           <Card className="p-8">
             <div className="flex justify-center">

@@ -3,6 +3,8 @@ import { DashboardStats } from "@/components/DashboardStats";
 import { RecentActivity } from "@/components/RecentActivity";
 import { MoodTracker } from "@/components/MoodTracker";
 import { StudyTools } from "@/components/StudyTools";
+import AIInsightsPanel from "@/components/AIInsightsPanel";
+import SmartRecommendations from "@/components/SmartRecommendations";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -64,6 +66,8 @@ const Dashboard = () => {
       </div>
 
       <DashboardStats key={refreshKey} />
+
+      <AIInsightsPanel />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -170,6 +174,8 @@ const Dashboard = () => {
 
         <div className="space-y-6">
           <MoodTracker />
+          
+          <SmartRecommendations />
           
           {/* Language & Timezone */}
           <Card>
