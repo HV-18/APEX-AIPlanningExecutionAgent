@@ -9,18 +9,32 @@ const musicCategories = {
   binaural: [
     { name: 'Deep Focus - Alpha Waves', videoId: 'WPni755-Krg' },
     { name: 'Beta Waves - Concentration', videoId: 'qsxFSUrxRhg' },
+    { name: 'Theta Waves - Deep Study', videoId: 'JDdKxz4b8G0' },
+    { name: 'Gamma Waves - Memory Boost', videoId: 'c3SZTkCnETs' },
+    { name: 'Focus & Study - 40Hz', videoId: 'wJgVZMHFB8s' },
   ],
   lofi: [
     { name: 'Lofi Hip Hop Radio', videoId: 'jfKfPfyJRdk' },
     { name: 'Jazz Lofi Beats', videoId: 'DWcJFNfaw9c' },
+    { name: 'Chilled Cow - Study Beats', videoId: '5qap5aO4i9A' },
+    { name: 'Relaxing Piano Lofi', videoId: 'lTRiuFIWV54' },
+    { name: 'Synthwave Study Mix', videoId: '4xDzrJKXOOY' },
+    { name: 'Coffee Shop Ambience', videoId: 'gaGltwJyBH0' },
   ],
   nature: [
     { name: 'Rain & Thunder Sounds', videoId: 'mPZkdNFkNps' },
     { name: 'Ocean Waves', videoId: 'WHPYKLQB-9g' },
+    { name: 'Forest Sounds - Birds', videoId: 'xNN7iTA57jM' },
+    { name: 'Gentle Stream Water', videoId: 'j5vVlhJpzkg' },
+    { name: 'Thunderstorm for Studying', videoId: 'nDq6TstdEi8' },
+    { name: 'Mountain Wind Ambience', videoId: 'bIvxu-JE0kI' },
   ],
   whitenoise: [
     { name: 'White Noise for Studying', videoId: 'nMfPqeZjc2c' },
     { name: 'Pink Noise - Deep Focus', videoId: 'ZXtimhT-ff4' },
+    { name: 'Brown Noise - Ultra Focus', videoId: 'RqzGzwTY-6w' },
+    { name: 'Spaceship Engine Ambience', videoId: 'DXz0t88hcqA' },
+    { name: 'Fan White Noise', videoId: 'DKnAz4qCyPA' },
   ],
 };
 
