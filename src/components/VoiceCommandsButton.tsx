@@ -1,15 +1,41 @@
-import { Mic, MicOff } from "lucide-react";
+import { Mic, MicOff, Globe, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useVoiceCommands } from "@/hooks/useVoiceCommands";
 import { Badge } from "@/components/ui/badge";
+import { useVoiceCommands, SUPPORTED_LANGUAGES } from "@/hooks/useVoiceCommands";
+import { useState, useEffect } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const VoiceCommandsButton = () => {
-  const { isListening, transcript, startListening, stopListening, commands } = useVoiceCommands();
+  const [selectedLanguage, setSelectedLanguage] = useState('en-US');
+  const [currentTime, setCurrentTime] = useState(new Date());
+  
+  const { isListening, transcript, startListening, stopListening, commands } =
+    useVoiceCommands(true, selectedLanguage);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const getTimeInTimezone = (timezone: string) => {
+    return currentTime.toLocaleTimeString('en-US', {
+      timeZone: timezone,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+  };
 
   return (
     <Popover>
@@ -30,15 +56,53 @@ export const VoiceCommandsButton = () => {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80">
+      <PopoverContent className="w-96 max-h-[600px] overflow-y-auto">
         <div className="space-y-4">
           <div>
-            <h3 className="font-semibold mb-2">Voice Commands</h3>
-            <p className="text-sm text-muted-foreground">
-              {isListening
-                ? "Listening for commands..."
-                : "Click the microphone to start voice commands"}
-            </p>
+            <h4 className="font-medium mb-2 flex items-center gap-2">
+              <Globe className="w-4 h-4" />
+              Language Selection
+            </h4>
+            <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="max-h-[300px]">
+                {Object.entries(SUPPORTED_LANGUAGES).map(([code, name]) => (
+                  <SelectItem key={code} value={code}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <h4 className="font-medium mb-2 flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              Time Zones
+            </h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between p-2 bg-muted rounded">
+                <span className="font-medium">UTC:</span>
+                <span>{getTimeInTimezone('UTC')}</span>
+              </div>
+              <div className="flex justify-between p-2 bg-muted rounded">
+                <span className="font-medium">IST (India):</span>
+                <span>{getTimeInTimezone('Asia/Kolkata')}</span>
+              </div>
+              <div className="flex justify-between p-2 bg-muted rounded">
+                <span className="font-medium">Local:</span>
+                <span>{currentTime.toLocaleTimeString()}</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-medium mb-2">Voice Commands Status</h4>
+            <Badge variant={isListening ? "default" : "secondary"}>
+              {isListening ? "Listening..." : "Inactive"}
+            </Badge>
           </div>
 
           {transcript && (
