@@ -23,7 +23,7 @@ const DocsPage = () => {
       <div className="text-center space-y-3">
         <h1 className="text-3xl font-bold">APEX Documentation</h1>
         <p className="text-lg text-muted-foreground">
-          AI Planning & Execution Agent - Essential features overview
+          Essential features guide
         </p>
       </div>
 

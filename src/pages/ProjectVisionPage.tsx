@@ -14,7 +14,7 @@ const ProjectVisionPage = () => {
           Project Vision
         </h1>
         <p className="text-lg text-muted-foreground">
-          AI agents that unify academic excellence with holistic well-being
+          Intelligent AI agents for academic success and wellness
         </p>
       </div>
 
