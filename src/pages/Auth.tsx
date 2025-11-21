@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Brain, Eye, EyeOff, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -25,11 +25,27 @@ const Auth = () => {
     setShowHelpDialog(false);
   }, []);
 
+  // Track last notification to prevent duplicates
+  const lastNotificationRef = useRef<number>(0);
+  const NOTIFICATION_COOLDOWN = 60000; // 1 minute cooldown
+
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
       if (session && event === "SIGNED_IN") {
         // Navigate immediately
         navigate("/");
+        
+        // Check if we recently sent a notification
+        const now = Date.now();
+        const timeSinceLastNotification = now - lastNotificationRef.current;
+        
+        if (timeSinceLastNotification < NOTIFICATION_COOLDOWN) {
+          console.log("Skipping notification - sent too recently");
+          return;
+        }
+        
+        // Update last notification time
+        lastNotificationRef.current = now;
         
         // Send login notification in the background (non-blocking)
         supabase.functions.invoke("send-login-notification", {
@@ -37,8 +53,20 @@ const Auth = () => {
             userEmail: session.user.email,
             userId: session.user.id,
           },
-        }).then(({ error }) => {
-          if (!error) {
+        }).then(({ data, error }) => {
+          if (error) {
+            console.error("Error sending login notification:", error);
+            // Don't show error to user - it's a background operation
+            return;
+          }
+          
+          // Check if rate limited
+          if (data?.rateLimited) {
+            console.log("Login notification rate limited");
+            return;
+          }
+          
+          if (data?.success) {
             toast({
               title: "Welcome back! 📧",
               description: "Check your email for a personalized AI message",
@@ -46,6 +74,7 @@ const Auth = () => {
           }
         }).catch((error) => {
           console.error("Error sending login notification:", error);
+          // Don't show error to user - it's a background operation
         });
       }
     });

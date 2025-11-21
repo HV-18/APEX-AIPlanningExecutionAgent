@@ -10,6 +10,20 @@ const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+// Rate limiting: Track recent notifications
+const recentNotifications = new Map<string, number>();
+const RATE_LIMIT_WINDOW = 60000; // 1 minute
+
+// Cleanup old entries periodically
+const cleanupInterval = setInterval(() => {
+  const now = Date.now();
+  for (const [key, timestamp] of recentNotifications.entries()) {
+    if (now - timestamp > RATE_LIMIT_WINDOW) {
+      recentNotifications.delete(key);
+    }
+  }
+}, 30000); // Cleanup every 30 seconds
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -28,6 +42,29 @@ serve(async (req) => {
   try {
     const { userEmail, userId }: LoginNotificationRequest = await req.json();
     console.log("Processing login notification for:", userEmail);
+
+    // Rate limiting check
+    const notificationKey = `${userId}:${userEmail}`;
+    const lastNotification = recentNotifications.get(notificationKey);
+    const now = Date.now();
+    
+    if (lastNotification && (now - lastNotification) < RATE_LIMIT_WINDOW) {
+      console.log("Rate limit: Notification already sent recently for", userEmail);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          message: "Notification already sent recently. Please wait before sending another.",
+          rateLimited: true
+        }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Update rate limit tracker
+    recentNotifications.set(notificationKey, now);
 
     // Create Supabase client
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -134,38 +171,83 @@ Respond with a JSON object containing:
       ? aiContent.recommendations.join('\n')
       : aiContent.recommendations;
 
-    // Render email template
-    const html = await render(
-      React.createElement(LoginNotificationEmail, {
-        userName,
-        aiGreeting: aiContent.greeting,
-        aiRecommendations: recommendationsText,
-        aiMotivation: aiContent.motivation,
-        loginTime,
-      })
-    );
-
-    // Send email
-    console.log("Sending email to:", userEmail);
-    const { data, error } = await resend.emails.send({
-      from: "APEX <onboarding@resend.dev>",
-      to: [userEmail],
-      subject: `Welcome back, ${userName}! APEX has insights for you 🎓`,
-      html,
-    });
-
-    if (error) {
-      console.error("Resend error:", error);
-      throw error;
+    // Render email template with error handling
+    let html: string;
+    try {
+      html = await render(
+        React.createElement(LoginNotificationEmail, {
+          userName,
+          aiGreeting: aiContent.greeting,
+          aiRecommendations: recommendationsText,
+          aiMotivation: aiContent.motivation,
+          loginTime,
+        })
+      );
+    } catch (renderError) {
+      console.error("Email template render error:", renderError);
+      // Fallback to simple HTML if React template fails
+      html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #333;">Welcome Back, ${userName}! 🎓</h1>
+          <p>You logged in at ${loginTime}</p>
+          <h2>Your Personalized Message</h2>
+          <p>${aiContent.greeting}</p>
+          <h2>📚 Today's Study Recommendations</h2>
+          <p style="white-space: pre-line;">${recommendationsText}</p>
+          <h2>💪 Motivation Boost</h2>
+          <p>${aiContent.motivation}</p>
+          <hr style="margin: 20px 0; border: 1px solid #e6ebf1;">
+          <p style="color: #8898aa; font-size: 14px;">Keep up the great work! APEX is here to help you succeed.</p>
+        </div>
+      `;
     }
 
-    console.log("Email sent successfully:", data);
+    // Send email with retry logic for rate limiting
+    console.log("Sending email to:", userEmail);
+    let emailData;
+    let emailError;
+    
+    try {
+      const result = await resend.emails.send({
+        from: "APEX <onboarding@resend.dev>",
+        to: [userEmail],
+        subject: `Welcome back, ${userName}! APEX has insights for you 🎓`,
+        html,
+      });
+      emailData = result.data;
+      emailError = result.error;
+    } catch (error: any) {
+      emailError = error;
+    }
+
+    if (emailError) {
+      console.error("Resend error:", emailError);
+      
+      // If it's a rate limit error, return a more specific message
+      if (emailError.statusCode === 429 || emailError.name === "rate_limit_exceeded") {
+        return new Response(
+          JSON.stringify({ 
+            error: "Email service rate limit reached. Please try again in a few seconds.",
+            success: false,
+            rateLimited: true
+          }),
+          {
+            status: 429,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+      
+      throw emailError;
+    }
+
+    console.log("Email sent successfully:", emailData);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         message: "Login notification sent successfully",
-        emailId: data?.id 
+        emailId: emailData?.id 
       }),
       {
         status: 200,
@@ -176,7 +258,7 @@ Respond with a JSON object containing:
     console.error("Error in send-login-notification:", error);
     return new Response(
       JSON.stringify({ 
-        error: error.message,
+        error: error.message || "Failed to send notification",
         success: false 
       }),
       {
