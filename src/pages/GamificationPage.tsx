@@ -55,52 +55,56 @@ export default function GamificationPage() {
   const loadGamificationData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
-      // Load user points
-      const { data: pointsData } = await supabase
-        .from('user_points')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      // Parallel fetch all data for faster loading
+      const [pointsResult, allBadgesResult, earnedBadgesResult, leaderboardResult] = await Promise.all([
+        supabase
+          .from('user_points')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle(),
+        supabase.from('badges').select('*'),
+        supabase
+          .from('user_badges')
+          .select('badge_id, earned_at')
+          .eq('user_id', user.id),
+        supabase
+          .from('leaderboard_entries')
+          .select('*')
+          .eq('category', 'overall')
+          .order('points', { ascending: false })
+          .limit(10)
+      ]);
 
-      if (pointsData) {
-        setUserPoints(pointsData);
+      // Handle user points
+      if (pointsResult.data) {
+        setUserPoints(pointsResult.data);
       } else {
-        // Initialize user points
+        // Initialize user points if they don't exist
         const { data: newPoints } = await supabase
           .from('user_points')
           .insert([{ user_id: user.id }])
           .select()
-          .single();
+          .maybeSingle();
         if (newPoints) setUserPoints(newPoints);
       }
 
-      // Load all badges with earned status
-      const { data: allBadges } = await supabase.from('badges').select('*');
-      const { data: earnedBadges } = await supabase
-        .from('user_badges')
-        .select('badge_id, earned_at')
-        .eq('user_id', user.id);
-
-      const earnedIds = new Set(earnedBadges?.map((b) => b.badge_id));
-      const badgesWithStatus = allBadges?.map((badge) => ({
+      // Process badges with earned status
+      const earnedIds = new Set(earnedBadgesResult.data?.map((b) => b.badge_id));
+      const badgesWithStatus = allBadgesResult.data?.map((badge) => ({
         ...badge,
         earned: earnedIds.has(badge.id),
-        earned_at: earnedBadges?.find((b) => b.badge_id === badge.id)?.earned_at,
+        earned_at: earnedBadgesResult.data?.find((b) => b.badge_id === badge.id)?.earned_at,
       })) || [];
 
       setBadges(badgesWithStatus);
 
-      // Load leaderboard
-      const { data: leaderboardData } = await supabase
-        .from('leaderboard_entries')
-        .select('*')
-        .eq('category', 'overall')
-        .order('points', { ascending: false })
-        .limit(10);
-
-      const rankedLeaderboard = leaderboardData?.map((entry, index) => ({
+      // Process leaderboard with ranks
+      const rankedLeaderboard = leaderboardResult.data?.map((entry, index) => ({
         ...entry,
         rank: index + 1,
       })) || [];
@@ -129,6 +133,8 @@ export default function GamificationPage() {
 
   return (
     <div className="container mx-auto p-6">
+      <BackButton to="/" />
+      
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
           <Trophy className="w-8 h-8 text-primary" />
