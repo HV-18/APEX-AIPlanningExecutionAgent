@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Brain, Eye, EyeOff, Paperclip, Mic, HelpCircle } from "lucide-react";
+import { Brain, Eye, EyeOff, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -145,25 +145,6 @@ const Auth = () => {
           <h1 className="text-4xl md:text-5xl font-medium text-center mb-12">
             Where should we begin?
           </h1>
-
-          <div className="relative">
-            <div className="relative flex items-center bg-[#2F2F2F] rounded-3xl border border-white/10 hover:border-white/20 transition-colors">
-              <button className="absolute left-4 text-white/60 hover:text-white/80 transition-colors">
-                <Paperclip className="w-5 h-5" />
-              </button>
-              <input
-                type="text"
-                placeholder="Ask anything"
-                className="w-full bg-transparent text-white placeholder:text-white/40 px-14 py-4 text-base focus:outline-none cursor-text"
-                onFocus={() => openAuthModal("signup")}
-                onClick={() => openAuthModal("signup")}
-                readOnly
-              />
-              <button className="absolute right-4 text-white/60 hover:text-white/80 transition-colors">
-                <Mic className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 
