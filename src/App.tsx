@@ -45,6 +45,8 @@ import WorkspaceDashboard from "@/pages/WorkspaceDashboard";
 import QuizPage from "@/pages/QuizPage";
 import VoiceAssistantPage from "@/pages/VoiceAssistantPage";
 import ImageGalleryPage from "@/pages/ImageGalleryPage";
+import AboutPage from "@/pages/AboutPage";
+import DocsPage from "@/pages/DocsPage";
 import NotFound from "./pages/NotFound";
 import { NotificationProvider } from "./components/NotificationProvider";
 
@@ -153,6 +155,8 @@ const App = () => (
             <Route path="/quiz" element={<ProtectedLayout><QuizPage /></ProtectedLayout>} />
             <Route path="/voice-assistant" element={<ProtectedLayout><VoiceAssistantPage /></ProtectedLayout>} />
             <Route path="/image-gallery" element={<ProtectedLayout><ImageGalleryPage /></ProtectedLayout>} />
+            <Route path="/about" element={<ProtectedLayout><AboutPage /></ProtectedLayout>} />
+            <Route path="/docs" element={<ProtectedLayout><DocsPage /></ProtectedLayout>} />
             <Route path="*" element={<NotFound />} />
             </Routes>
           </NotificationProvider>
