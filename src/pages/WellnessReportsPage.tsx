@@ -24,6 +24,7 @@ export default function WellnessReportsPage() {
   const [reports, setReports] = useState<WellnessReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -43,7 +44,13 @@ export default function WellnessReportsPage() {
   const loadReports = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setIsAuthenticated(false);
+        setLoading(false);
+        return;
+      }
+
+      setIsAuthenticated(true);
 
       const { data, error } = await supabase
         .from('wellness_reports')
@@ -52,7 +59,15 @@ export default function WellnessReportsPage() {
         .order('report_date', { ascending: false })
         .limit(10);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading reports:', error);
+        toast({ 
+          title: 'Error loading reports', 
+          description: error.message,
+          variant: 'destructive' 
+        });
+        throw error;
+      }
       setReports(data || []);
     } catch (error) {
       console.error('Error loading reports:', error);
@@ -155,6 +170,15 @@ export default function WellnessReportsPage() {
 
       {loading ? (
         <div className="text-center py-12">Loading...</div>
+      ) : !isAuthenticated ? (
+        <Card className="p-12 text-center">
+          <Activity className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-xl font-semibold mb-2">Authentication Required</h3>
+          <p className="text-muted-foreground mb-4">Please log in to view your wellness reports</p>
+          <Button onClick={() => window.location.href = '/auth'}>
+            Go to Login
+          </Button>
+        </Card>
       ) : reports.length === 0 ? (
         <Card className="p-12 text-center">
           <Activity className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
