@@ -12,6 +12,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showHelpDialog, setShowHelpDialog] = useState(false);
   const [authMode, setAuthMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -132,7 +133,7 @@ const Auth = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate("/docs")}
+            onClick={() => setShowHelpDialog(true)}
             aria-label="Help and Documentation"
             className="text-white hover:bg-white/10 rounded-full h-9 w-9"
           >
@@ -278,6 +279,42 @@ const Auth = () => {
               </button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Help Dialog */}
+      <Dialog open={showHelpDialog} onOpenChange={setShowHelpDialog}>
+        <DialogContent className="sm:max-w-md bg-[#1A1A1A] border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-semibold">Help & Support</DialogTitle>
+            <DialogDescription className="text-white/60">
+              Learn how to use APEX
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <h3 className="font-semibold mb-2">Getting Started</h3>
+              <p className="text-sm text-white/70">
+                Sign up for free to access all features including AI study assistant, focus tools, mood tracking, and collaborative study rooms.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-2">Features</h3>
+              <ul className="text-sm text-white/70 space-y-1 list-disc list-inside">
+                <li>AI-powered study assistance</li>
+                <li>Pomodoro timer & focus music</li>
+                <li>Study rooms with video chat</li>
+                <li>Meal analyzer & wellness tracking</li>
+                <li>Gamification & rewards</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-2">Need More Help?</h3>
+              <p className="text-sm text-white/70">
+                After signing in, visit the docs page for detailed guides and tutorials.
+              </p>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
