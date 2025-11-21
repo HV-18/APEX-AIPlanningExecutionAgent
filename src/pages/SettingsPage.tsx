@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Settings, User, Bell, Shield, Trash2, Keyboard, Palette, Zap } from "lucide-react";
+import { Settings, User, Bell, Shield, Trash2, Keyboard, Palette, Zap, Mail } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { BackButton } from "@/components/BackButton";
 
-type SettingsSection = 'profile' | 'notifications' | 'security' | 'keyboard' | 'appearance' | 'advanced';
+type SettingsSection = 'profile' | 'notifications' | 'security' | 'keyboard' | 'appearance' | 'advanced' | 'support';
 
 const settingsSections = [
   { id: 'profile' as SettingsSection, label: 'Profile', icon: User },
@@ -19,6 +19,7 @@ const settingsSections = [
   { id: 'keyboard' as SettingsSection, label: 'Keyboard Shortcuts', icon: Keyboard },
   { id: 'appearance' as SettingsSection, label: 'Appearance', icon: Palette },
   { id: 'advanced' as SettingsSection, label: 'Advanced', icon: Zap },
+  { id: 'support' as SettingsSection, label: 'Contact Support', icon: Mail },
 ];
 
 const SettingsPage = () => {
@@ -476,6 +477,62 @@ const SettingsPage = () => {
                         setAdvanced({ ...advanced, aiPersonalization: checked })
                       }
                     />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {activeSection === 'support' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Mail className="w-5 h-5" />
+                  Contact Support
+                </CardTitle>
+                <CardDescription>
+                  Get help with APEX : AI Planning & Execution Agent
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-base">Email Support</Label>
+                    <p className="text-sm text-muted-foreground mt-1 mb-3">
+                      Send us an email and we'll get back to you within 24 hours
+                    </p>
+                    <Button variant="outline" className="gap-2" asChild>
+                      <a href="mailto:support@apex-ai.com">
+                        <Mail className="w-4 h-4" />
+                        support@apex-ai.com
+                      </a>
+                    </Button>
+                  </div>
+
+                  <div className="pt-4 border-t border-border">
+                    <Label className="text-base">Documentation</Label>
+                    <p className="text-sm text-muted-foreground mt-1 mb-3">
+                      Browse our documentation for quick answers
+                    </p>
+                    <Button variant="outline" onClick={() => window.location.href = '/docs'}>
+                      View Documentation
+                    </Button>
+                  </div>
+
+                  <div className="pt-4 border-t border-border">
+                    <Label className="text-base">Project Information</Label>
+                    <p className="text-sm text-muted-foreground mt-1 mb-3">
+                      Learn more about APEX and our vision
+                    </p>
+                    <Button variant="outline" onClick={() => window.location.href = '/about'}>
+                      About APEX
+                    </Button>
+                  </div>
+
+                  <div className="p-4 bg-muted rounded-lg">
+                    <p className="text-sm text-muted-foreground">
+                      <strong>Response Time:</strong> We typically respond within 24 hours during business days. For urgent issues, please mark your email as high priority.
+                    </p>
                   </div>
                 </div>
               </CardContent>
