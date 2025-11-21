@@ -147,9 +147,9 @@ Respond with a JSON object containing:
     // Send email
     console.log("Sending email to:", userEmail);
     const { data, error } = await resend.emails.send({
-      from: "Study Assistant <onboarding@resend.dev>",
+      from: "APEX <onboarding@resend.dev>",
       to: [userEmail],
-      subject: `Welcome back, ${userName}! Your AI study assistant has insights for you 🎓`,
+      subject: `Welcome back, ${userName}! APEX has insights for you 🎓`,
       html,
     });
 
