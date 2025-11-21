@@ -19,6 +19,12 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Prevent any auto-opening of dialogs on mount
+  useEffect(() => {
+    setShowAuthModal(false);
+    setShowHelpDialog(false);
+  }, []);
+
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
       if (session && event === "SIGNED_IN") {
@@ -100,10 +106,15 @@ const Auth = () => {
   };
 
   const openAuthModal = (mode: "signin" | "signup") => {
-    setAuthMode(mode);
-    setShowAuthModal(true);
+    // Close help dialog if it's open
+    setShowHelpDialog(false);
+    // Reset form
     setEmail("");
     setPassword("");
+    setShowPassword(false);
+    // Set mode and open
+    setAuthMode(mode);
+    setShowAuthModal(true);
   };
 
   return (
@@ -172,7 +183,7 @@ const Auth = () => {
 
       {/* Auth Modal */}
       <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
-        <DialogContent className="sm:max-w-md bg-[#1A1A1A] border-white/10 text-white">
+        <DialogContent className="sm:max-w-md bg-[#1A1A1A] border-white/10 text-white z-50">
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold text-center">
               {authMode === "forgot"
@@ -284,7 +295,7 @@ const Auth = () => {
 
       {/* Help Dialog */}
       <Dialog open={showHelpDialog} onOpenChange={setShowHelpDialog}>
-        <DialogContent className="sm:max-w-md bg-[#1A1A1A] border-white/10 text-white">
+        <DialogContent className="sm:max-w-md bg-[#1A1A1A] border-white/10 text-white z-50">
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold">Help & Support</DialogTitle>
             <DialogDescription className="text-white/60">
