@@ -128,21 +128,25 @@ export const VoiceAssistant = () => {
                 placeholder="Enter your agent ID"
                 className="w-full px-4 py-2 border rounded-md bg-background"
               />
-              <p className="text-sm text-muted-foreground mt-2">
-                Get your agent ID from{" "}
-                <a
-                  href="https://elevenlabs.io/app/conversational-ai"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  ElevenLabs Dashboard
-                </a>
-                <br />
-                <span className="text-xs">
-                  Paste the full agent URL or just the agent ID (e.g., agent_xxxxx)
-                </span>
-              </p>
+              <div className="mt-3 p-3 bg-muted/50 rounded-md">
+                <p className="text-sm font-medium mb-2">Setup Instructions:</p>
+                <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+                  <li>
+                    Visit{" "}
+                    <a
+                      href="https://elevenlabs.io/app/conversational-ai"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      ElevenLabs Conversational AI
+                    </a>
+                  </li>
+                  <li>Create a new Conversational AI agent</li>
+                  <li>Copy the Agent ID from your agent's settings</li>
+                  <li>Paste it above (e.g., 9BWtsMINqrJLrRacOk9x)</li>
+                </ol>
+              </div>
             </div>
 
             <Button

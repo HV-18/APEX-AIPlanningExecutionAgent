@@ -44,6 +44,12 @@ serve(async (req) => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('ElevenLabs API error:', response.status, errorText);
+      
+      // Provide user-friendly error messages
+      if (response.status === 404) {
+        throw new Error('Agent not found. Please create a Conversational AI agent in your ElevenLabs dashboard first, then copy its Agent ID.');
+      }
+      
       throw new Error(`ElevenLabs API error: ${errorText}`);
     }
 
