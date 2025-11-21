@@ -87,7 +87,7 @@ export const WorkspaceIntegrations = ({
       if (integrationType === "github") {
         toast({
           title: "GitHub Integration",
-          description: "To connect GitHub, use the GitHub button in the top menu to enable Lovable's native GitHub integration.",
+          description: "To connect GitHub, use the GitHub button in the top menu to enable native GitHub integration.",
         });
       } else {
         toast({
@@ -184,8 +184,7 @@ export const WorkspaceIntegrations = ({
 
         <div className="p-3 bg-muted/50 rounded-lg">
           <p className="text-xs text-muted-foreground">
-            💡 <strong>Note:</strong> GitHub integration is available natively in
-            Lovable. Click the GitHub button in the top menu to connect your GitHub
+            💡 <strong>Note:</strong> GitHub integration is available natively. Click the GitHub button in the top menu to connect your GitHub
             account and enable two-way sync.
           </p>
         </div>
