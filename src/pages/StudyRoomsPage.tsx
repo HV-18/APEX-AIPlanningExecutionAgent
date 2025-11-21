@@ -135,86 +135,156 @@ export default function StudyRoomsPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Collaborative Study Rooms</h1>
-          <p className="text-muted-foreground mt-1">Join or create study rooms with real-time collaboration</p>
-        </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Create Room
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create Study Room</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <Input
-                placeholder="Room Name"
-                value={newRoom.name}
-                onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
-              />
-              <Input
-                placeholder="Topic (e.g., Math, Physics)"
-                value={newRoom.topic}
-                onChange={(e) => setNewRoom({ ...newRoom, topic: e.target.value })}
-              />
-              <Textarea
-                placeholder="Description"
-                value={newRoom.description}
-                onChange={(e) => setNewRoom({ ...newRoom, description: e.target.value })}
-              />
-              <Button onClick={createRoom} className="w-full">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="container mx-auto p-6 space-y-8">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              Collaborative Study Rooms
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Join or create study rooms with real-time collaboration
+            </p>
+          </div>
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="lg" className="shadow-lg hover:shadow-xl transition-all">
+                <Plus className="w-5 h-5 mr-2" />
                 Create Room
               </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {loading ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">Loading rooms...</p>
-        </div>
-      ) : rooms.length === 0 ? (
-        <Card className="p-12 text-center">
-          <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-xl font-semibold mb-2">No Active Rooms</h3>
-          <p className="text-muted-foreground mb-4">Be the first to create a study room!</p>
-        </Card>
-      ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {rooms.map((room) => (
-            <Card key={room.id} className="p-6 hover:shadow-lg transition-shadow">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-lg text-foreground">{room.name}</h3>
-                  <p className="text-sm text-primary">{room.topic}</p>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle className="text-2xl">Create Study Room</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Room Name</label>
+                  <Input
+                    placeholder="e.g., Advanced Calculus Study Group"
+                    value={newRoom.name}
+                    onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
+                    className="h-11"
+                  />
                 </div>
-                <Users className="w-5 h-5 text-muted-foreground" />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Topic</label>
+                  <Input
+                    placeholder="e.g., Math, Physics, Chemistry"
+                    value={newRoom.topic}
+                    onChange={(e) => setNewRoom({ ...newRoom, topic: e.target.value })}
+                    className="h-11"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Description</label>
+                  <Textarea
+                    placeholder="Describe what you'll be studying..."
+                    value={newRoom.description}
+                    onChange={(e) => setNewRoom({ ...newRoom, description: e.target.value })}
+                    rows={4}
+                    className="resize-none"
+                  />
+                </div>
+                <Button onClick={createRoom} className="w-full h-11" size="lg">
+                  Create Room
+                </Button>
               </div>
-              
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                {room.description}
-              </p>
-
-              <div className="flex items-center gap-2 mb-4 text-xs text-muted-foreground">
-                <Video className="w-4 h-4" />
-                <Share2 className="w-4 h-4" />
-                <MessageSquare className="w-4 h-4" />
-              </div>
-
-              <Button onClick={() => joinRoom(room.id)} className="w-full">
-                Join Room
-              </Button>
-            </Card>
-          ))}
+            </DialogContent>
+          </Dialog>
         </div>
-      )}
+
+        {/* Content Section */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+            </div>
+            <p className="text-muted-foreground mt-4 text-lg">Loading rooms...</p>
+          </div>
+        ) : rooms.length === 0 ? (
+          <Card className="border-2 border-dashed border-border/50 bg-muted/5">
+            <div className="p-12 text-center space-y-4">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-2">
+                <Users className="w-10 h-10 text-primary" />
+              </div>
+              <h3 className="text-2xl font-semibold text-foreground">No Active Rooms</h3>
+              <p className="text-muted-foreground text-lg max-w-md mx-auto">
+                Be the first to create a study room and start collaborating with others!
+              </p>
+              <Button 
+                onClick={() => setIsCreateDialogOpen(true)} 
+                size="lg"
+                className="mt-4"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Create Your First Room
+              </Button>
+            </div>
+          </Card>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rooms.map((room) => (
+              <Card 
+                key={room.id} 
+                className="group overflow-hidden border-border/50 bg-card hover:border-primary/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="p-6 space-y-4">
+                  {/* Header */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 space-y-1">
+                      <h3 className="font-bold text-xl text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                        {room.name}
+                      </h3>
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                        <span className="text-xs font-medium text-primary">{room.topic}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted">
+                      <Users className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {room.participant_count || 0}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Description */}
+                  <p className="text-sm text-muted-foreground line-clamp-3 min-h-[3.75rem]">
+                    {room.description || 'No description provided'}
+                  </p>
+
+                  {/* Features */}
+                  <div className="flex items-center gap-3 pt-2 border-t border-border/50">
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Video className="w-4 h-4" />
+                      <span className="text-xs">Video</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Share2 className="w-4 h-4" />
+                      <span className="text-xs">Share</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <MessageSquare className="w-4 h-4" />
+                      <span className="text-xs">Chat</span>
+                    </div>
+                  </div>
+
+                  {/* Join Button */}
+                  <Button 
+                    onClick={() => joinRoom(room.id)} 
+                    className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all"
+                    size="lg"
+                  >
+                    Join Room
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
