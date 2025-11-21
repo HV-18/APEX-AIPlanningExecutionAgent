@@ -29,7 +29,26 @@ export default function TextChat({ roomId }: TextChatProps) {
   useEffect(() => {
     loadMessages();
     getCurrentUser();
-    subscribeToMessages();
+    
+    const channel = supabase
+      .channel(`room-messages-${roomId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'room_messages',
+          filter: `room_id=eq.${roomId}`,
+        },
+        (payload) => {
+          setMessages((prev) => [...prev, payload.new as Message]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [roomId]);
 
   useEffect(() => {
@@ -64,27 +83,6 @@ export default function TextChat({ roomId }: TextChatProps) {
     }
   };
 
-  const subscribeToMessages = () => {
-    const channel = supabase
-      .channel(`room-messages-${roomId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'room_messages',
-          filter: `room_id=eq.${roomId}`,
-        },
-        (payload) => {
-          setMessages((prev) => [...prev, payload.new as Message]);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
 
   const sendMessage = async () => {
     if (!newMessage.trim()) return;

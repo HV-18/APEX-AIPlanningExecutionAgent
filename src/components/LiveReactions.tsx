@@ -31,7 +31,22 @@ export default function LiveReactions({ roomId }: LiveReactionsProps) {
 
   useEffect(() => {
     loadReactions();
-    subscribeToReactions();
+    
+    const channel = supabase
+      .channel(`reactions-${roomId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'room_reactions',
+          filter: `room_id=eq.${roomId}`,
+        },
+        (payload) => {
+          setReactions((prev) => [...prev, payload.new as Reaction]);
+        }
+      )
+      .subscribe();
     
     // Cleanup expired reactions every 5 seconds
     const interval = setInterval(() => {
@@ -39,6 +54,7 @@ export default function LiveReactions({ roomId }: LiveReactionsProps) {
     }, 5000);
 
     return () => {
+      supabase.removeChannel(channel);
       clearInterval(interval);
     };
   }, [roomId]);
@@ -69,27 +85,6 @@ export default function LiveReactions({ roomId }: LiveReactionsProps) {
     }
   };
 
-  const subscribeToReactions = () => {
-    const channel = supabase
-      .channel(`reactions-${roomId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'room_reactions',
-          filter: `room_id=eq.${roomId}`,
-        },
-        (payload) => {
-          setReactions((prev) => [...prev, payload.new as Reaction]);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
 
   const cleanupExpiredReactions = () => {
     setReactions((prev) =>

@@ -39,7 +39,37 @@ export default function BreakoutRooms({ roomId, participants }: BreakoutRoomsPro
     loadBreakoutRooms();
     loadAssignments();
     getCurrentUser();
-    subscribeToBreakoutRooms();
+    
+    const channel = supabase
+      .channel(`breakout-${roomId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'breakout_rooms',
+          filter: `parent_room_id=eq.${roomId}`,
+        },
+        () => {
+          loadBreakoutRooms();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'breakout_assignments',
+        },
+        () => {
+          loadAssignments();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [roomId]);
 
   const getCurrentUser = async () => {
@@ -93,38 +123,6 @@ export default function BreakoutRooms({ roomId, participants }: BreakoutRoomsPro
     }
   };
 
-  const subscribeToBreakoutRooms = () => {
-    const channel = supabase
-      .channel(`breakout-${roomId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'breakout_rooms',
-          filter: `parent_room_id=eq.${roomId}`,
-        },
-        () => {
-          loadBreakoutRooms();
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'breakout_assignments',
-        },
-        () => {
-          loadAssignments();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
 
   const createBreakoutRoom = async () => {
     if (!newRoomName.trim()) {

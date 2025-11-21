@@ -41,8 +41,49 @@ export default function CodeEditor({ roomId }: CodeEditorProps) {
 
   useEffect(() => {
     loadCodeSession();
-    subscribeToCodeChanges();
-    trackPresence();
+    
+    const codeChannel = supabase
+      .channel(`code-${roomId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'code_sessions',
+          filter: `room_id=eq.${roomId}`,
+        },
+        (payload) => {
+          const updated = payload.new as CodeSession;
+          setCodeSession(updated);
+          setCode(updated.code_content);
+          setLanguage(updated.language);
+        }
+      )
+      .subscribe();
+    
+    const presenceChannel = supabase.channel(`code-presence-${roomId}`, {
+      config: { presence: { key: roomId } },
+    });
+
+    presenceChannel
+      .on('presence', { event: 'sync' }, () => {
+        const state = presenceChannel.presenceState();
+        setActiveUsers(Object.keys(state).length);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          const { data: { user } } = await supabase.auth.getUser();
+          await presenceChannel.track({
+            user_id: user?.id,
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(codeChannel);
+      supabase.removeChannel(presenceChannel);
+    };
   }, [roomId]);
 
   const loadCodeSession = async () => {
@@ -88,55 +129,6 @@ export default function CodeEditor({ roomId }: CodeEditorProps) {
     }
   };
 
-  const subscribeToCodeChanges = () => {
-    const channel = supabase
-      .channel(`code-${roomId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'code_sessions',
-          filter: `room_id=eq.${roomId}`,
-        },
-        (payload) => {
-          const updated = payload.new as CodeSession;
-          setCodeSession(updated);
-          setCode(updated.code_content);
-          setLanguage(updated.language);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
-
-  const trackPresence = () => {
-    const channel = supabase.channel(`code-presence-${roomId}`, {
-      config: { presence: { key: roomId } },
-    });
-
-    channel
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState();
-        setActiveUsers(Object.keys(state).length);
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          const { data: { user } } = await supabase.auth.getUser();
-          await channel.track({
-            user_id: user?.id,
-            online_at: new Date().toISOString(),
-          });
-        }
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
 
   const handleCodeChange = (newCode: string) => {
     setCode(newCode);

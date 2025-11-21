@@ -30,8 +30,30 @@ export default function HandRaise({ roomId }: HandRaiseProps) {
   useEffect(() => {
     loadHandRaises();
     getCurrentUser();
-    subscribeToHandRaises();
-  }, [roomId]);
+    
+    const channel = supabase
+      .channel(`hand-raises-${roomId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'hand_raises',
+          filter: `room_id=eq.${roomId}`,
+        },
+        () => {
+          loadHandRaises();
+          if (currentUserId) {
+            checkIfHandRaised(currentUserId);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [roomId, currentUserId]);
 
   const getCurrentUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -71,30 +93,6 @@ export default function HandRaise({ roomId }: HandRaiseProps) {
     }
   };
 
-  const subscribeToHandRaises = () => {
-    const channel = supabase
-      .channel(`hand-raises-${roomId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'hand_raises',
-          filter: `room_id=eq.${roomId}`,
-        },
-        () => {
-          loadHandRaises();
-          if (currentUserId) {
-            checkIfHandRaised(currentUserId);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
 
   const raiseHand = async () => {
     try {
