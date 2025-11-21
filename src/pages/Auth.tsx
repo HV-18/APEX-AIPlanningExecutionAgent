@@ -56,7 +56,7 @@ const Auth = () => {
                 APEX : AI Planning & Execution Agent
               </h1>
               <p className="text-xl text-muted-foreground mb-6">
-                Your AI-powered companion for academic excellence and holistic well-being
+                Your intelligent companion for academic success and wellness
               </p>
             </div>
 

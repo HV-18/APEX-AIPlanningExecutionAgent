@@ -15,7 +15,7 @@ const AboutPage = () => {
           About APEX : AI Planning & Execution Agent
         </h1>
         <p className="text-lg text-muted-foreground">
-          AI-powered platform for academic excellence and holistic well-being
+          AI-powered academic and wellness platform
         </p>
       </div>
 
