@@ -48,6 +48,9 @@ import ImageGalleryPage from "@/pages/ImageGalleryPage";
 import AboutPage from "@/pages/AboutPage";
 import DocsPage from "@/pages/DocsPage";
 import ProjectVisionPage from "@/pages/ProjectVisionPage";
+import TermsPage from "@/pages/TermsPage";
+import PrivacyPage from "@/pages/PrivacyPage";
+import CookiesPage from "@/pages/CookiesPage";
 import NotFound from "./pages/NotFound";
 import { NotificationProvider } from "./components/NotificationProvider";
 
@@ -160,6 +163,9 @@ const App = () => (
             <Route path="/about" element={<ProtectedLayout><AboutPage /></ProtectedLayout>} />
             <Route path="/docs" element={<ProtectedLayout><DocsPage /></ProtectedLayout>} />
             <Route path="/project-vision" element={<ProtectedLayout><ProjectVisionPage /></ProtectedLayout>} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/cookies" element={<CookiesPage />} />
             <Route path="*" element={<NotFound />} />
             </Routes>
           </NotificationProvider>
