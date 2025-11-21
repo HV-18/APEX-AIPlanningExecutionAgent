@@ -1,6 +1,6 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BackButton } from "@/components/BackButton";
-import { Brain, Target, Lightbulb, Users, Heart, Sparkles } from "lucide-react";
+import { Brain, Target, Lightbulb, Sparkles, Users, Heart } from "lucide-react";
 
 const AboutPage = () => {
   return (
@@ -22,8 +22,10 @@ const AboutPage = () => {
       <div className="grid md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-primary" />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Target className="w-5 h-5 text-primary" />
+              </div>
               <CardTitle>Our Mission</CardTitle>
             </div>
           </CardHeader>
@@ -37,8 +39,10 @@ const AboutPage = () => {
 
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <Lightbulb className="w-5 h-5 text-accent" />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                <Lightbulb className="w-5 h-5 text-accent" />
+              </div>
               <CardTitle>Our Vision</CardTitle>
             </div>
           </CardHeader>
@@ -53,10 +57,12 @@ const AboutPage = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary" />
-            What We Do
-          </CardTitle>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-primary" />
+            </div>
+            <CardTitle>What We Do</CardTitle>
+          </div>
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-muted-foreground">
           <p><strong>The Challenge:</strong> Students face academic pressure while juggling mental health, nutrition, and career prep. Traditional tools focus only on academics.</p>
@@ -67,33 +73,35 @@ const AboutPage = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-accent" />
-            Core Values
-          </CardTitle>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+              <Users className="w-5 h-5 text-accent" />
+            </div>
+            <CardTitle>Core Values</CardTitle>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-3 gap-4 text-sm">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <Brain className="w-4 h-4 text-primary" />
-                <h4 className="font-semibold">Education First</h4>
+            <div className="flex flex-col items-center text-center space-y-2">
+              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Brain className="w-6 h-6 text-primary" />
               </div>
-              <p className="text-muted-foreground">AI-powered personalized learning and collaborative tools</p>
+              <h4 className="font-semibold">Education First</h4>
+              <p className="text-muted-foreground text-xs">AI-powered personalized learning and collaborative tools</p>
             </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <Heart className="w-4 h-4 text-destructive" />
-                <h4 className="font-semibold">Holistic Wellness</h4>
+            <div className="flex flex-col items-center text-center space-y-2">
+              <div className="w-12 h-12 rounded-lg bg-destructive/10 flex items-center justify-center">
+                <Heart className="w-6 h-6 text-destructive" />
               </div>
-              <p className="text-muted-foreground">Mental health, nutrition, and stress management integrated</p>
+              <h4 className="font-semibold">Holistic Wellness</h4>
+              <p className="text-muted-foreground text-xs">Mental health, nutrition, and stress management integrated</p>
             </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <Users className="w-4 h-4 text-accent" />
-                <h4 className="font-semibold">Collaboration</h4>
+            <div className="flex flex-col items-center text-center space-y-2">
+              <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center">
+                <Users className="w-6 h-6 text-accent" />
               </div>
-              <p className="text-muted-foreground">Real-time study rooms and peer support systems</p>
+              <h4 className="font-semibold">Collaboration</h4>
+              <p className="text-muted-foreground text-xs">Real-time study rooms and peer support systems</p>
             </div>
           </div>
         </CardContent>
@@ -101,14 +109,39 @@ const AboutPage = () => {
 
       <Card className="bg-gradient-to-br from-primary/5 via-accent/5 to-background">
         <CardHeader>
-          <CardTitle>What Makes Us Different</CardTitle>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-primary" />
+            </div>
+            <CardTitle>What Makes Us Different</CardTitle>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2 text-sm text-muted-foreground">
-            <p><strong>1. AI Personalization:</strong> Adaptive learning paths and intelligent recommendations</p>
-            <p><strong>2. Real-Time Collaboration:</strong> Live study rooms with video, whiteboard, and code editor</p>
-            <p><strong>3. Integrated Wellness:</strong> Mood analysis, nutrition scoring, and comprehensive reports</p>
-            <p><strong>4. Sustainability Focus:</strong> Eco-conscious features preparing students for impactful careers</p>
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <span className="text-primary font-semibold">1</span>
+              </div>
+              <p><strong>AI Personalization:</strong> Adaptive learning paths and intelligent recommendations</p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                <span className="text-accent font-semibold">2</span>
+              </div>
+              <p><strong>Real-Time Collaboration:</strong> Live study rooms with video, whiteboard, and code editor</p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <span className="text-primary font-semibold">3</span>
+              </div>
+              <p><strong>Integrated Wellness:</strong> Mood analysis, nutrition scoring, and comprehensive reports</p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                <span className="text-accent font-semibold">4</span>
+              </div>
+              <p><strong>Sustainability Focus:</strong> Eco-conscious features preparing students for impactful careers</p>
+            </div>
           </div>
         </CardContent>
       </Card>
