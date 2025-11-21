@@ -23,6 +23,7 @@ import {
   Mic,
   Image,
   BookText,
+  Rocket,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
@@ -44,6 +45,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const mainItems = [
   { title: "Dashboard", url: "/", icon: BarChart3 },
+  { title: "Project Vision", url: "/project-vision", icon: Rocket },
   { title: "About", url: "/about", icon: Lightbulb },
   { title: "Documentation", url: "/docs", icon: BookText },
   { title: "AI Chat", url: "/chat", icon: MessageSquare },
