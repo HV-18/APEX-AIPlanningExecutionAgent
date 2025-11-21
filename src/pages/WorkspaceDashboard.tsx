@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import CollaborationPresence from "@/components/CollaborationPresence";
+import AdvancedAnalyticsDashboard from "@/components/AdvancedAnalyticsDashboard";
 import {
   Dialog,
   DialogContent,
@@ -27,14 +29,35 @@ const WorkspaceDashboard = () => {
   const navigate = useNavigate();
   const [workspace, setWorkspace] = useState<any>(null);
   const [widgets, setWidgets] = useState<Widget[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string>("");
   const { toast } = useToast();
 
   useEffect(() => {
     if (workspaceId) {
       loadWorkspace();
       loadWidgets();
+      getCurrentUser();
     }
   }, [workspaceId]);
+
+  useEffect(() => {
+    if (!workspaceId) return;
+
+    const channel = supabase
+      .channel('workspace-dashboard-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'workspace_dashboard_widgets', filter: `workspace_id=eq.${workspaceId}` }, loadWidgets)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'workspace_activities', filter: `workspace_id=eq.${workspaceId}` }, loadWorkspace)
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [workspaceId]);
+
+  const getCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) setCurrentUserId(user.id);
+  };
 
   const loadWorkspace = async () => {
     const { data } = await supabase
@@ -172,6 +195,18 @@ const WorkspaceDashboard = () => {
         </Dialog>
       </div>
 
+      {currentUserId && workspaceId && (
+        <CollaborationPresence workspaceId={workspaceId} currentUserId={currentUserId} />
+      )}
+
+      <AdvancedAnalyticsDashboard />
+
+      {currentUserId && workspaceId && (
+        <CollaborationPresence workspaceId={workspaceId} currentUserId={currentUserId} />
+      )}
+
+      <AdvancedAnalyticsDashboard />
+
       <div className="grid gap-6">
         {visibleWidgets.map((widget) => (
           <Card key={widget.id}>
@@ -179,9 +214,16 @@ const WorkspaceDashboard = () => {
               <CardTitle className="capitalize">{widget.widget_type}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">
-                {widget.widget_type} widget content will be displayed here
-              </p>
+              {widget.widget_type === 'analytics' && <AdvancedAnalyticsDashboard />}
+              {widget.widget_type === 'activity' && (
+                <p className="text-muted-foreground">Recent workspace activity will be displayed here</p>
+              )}
+              {widget.widget_type === 'files' && (
+                <p className="text-muted-foreground">Workspace files will be displayed here</p>
+              )}
+              {widget.widget_type === 'search' && (
+                <p className="text-muted-foreground">Search functionality will be displayed here</p>
+              )}
             </CardContent>
           </Card>
         ))}
