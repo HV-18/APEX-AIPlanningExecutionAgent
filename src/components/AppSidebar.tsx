@@ -45,29 +45,49 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
+// Prioritized by importance: Core Education > Collaboration > Wellness > Project Info
 const mainItems = [
+  // 🎯 Core Dashboard
   { title: "Dashboard", url: "/", icon: BarChart3 },
+  
+  // 📚 Core Education Features (PRIORITY)
+  { title: "AI Chat", url: "/chat", icon: MessageSquare },
+  { title: "AI Study Buddy", url: "/study-buddy", icon: Brain },
+  { title: "Quiz Generator", url: "/quiz", icon: ClipboardList },
+  { title: "Study Sessions", url: "/study", icon: BookOpen },
+  { title: "Voice Assistant", url: "/voice-assistant", icon: Mic },
+  
+  // 👥 Collaborative Learning
+  { title: "Study Rooms", url: "/study-rooms", icon: Users },
+  { title: "Team Challenges", url: "/team-challenges", icon: Users },
+  
+  // 📅 Planning & Organization
+  { title: "Timetable", url: "/timetable", icon: Calendar },
+  { title: "Real Projects", url: "/projects", icon: CalendarDays },
+  
+  // 🎨 Creative & Media Tools
+  { title: "Image Gallery", url: "/image-gallery", icon: Image },
+  { title: "Focus Zone", url: "/focus", icon: Music },
+  
+  // 💪 Wellness & Health
+  { title: "Mood Tracker", url: "/mood", icon: Smile },
+  { title: "Health Goals", url: "/health", icon: Heart },
+  { title: "Meal Analyzer", url: "/meal-analyzer", icon: Camera },
+  { title: "Meal Planner", url: "/meal-planner", icon: Calendar },
+  { title: "Wellness Reports", url: "/wellness-reports", icon: FileText },
+  
+  // 🌱 Sustainability
+  { title: "Sustainability", url: "/sustainability", icon: Leaf },
+  
+  // 🏆 Gamification
+  { title: "Rewards", url: "/rewards", icon: BarChart3 },
+  
+  // ℹ️ Project Information
   { title: "Project Vision", url: "/project-vision", icon: Rocket },
   { title: "About", url: "/about", icon: Lightbulb },
   { title: "Documentation", url: "/docs", icon: BookText },
-  { title: "AI Chat", url: "/chat", icon: MessageSquare },
-  { title: "Quiz Generator", url: "/quiz", icon: ClipboardList },
-  { title: "Voice Assistant", url: "/voice-assistant", icon: Mic },
-  { title: "Image Gallery", url: "/image-gallery", icon: Image },
-  { title: "Mood Tracker", url: "/mood", icon: Smile },
-  { title: "Study Sessions", url: "/study", icon: BookOpen },
-  { title: "Timetable", url: "/timetable", icon: Calendar },
-  { title: "Sustainability", url: "/sustainability", icon: Leaf },
-  { title: "Real Projects", url: "/projects", icon: CalendarDays },
-  { title: "Health Goals", url: "/health", icon: Heart },
-  { title: "Study Rooms", url: "/study-rooms", icon: Users },
-  { title: "Focus Zone", url: "/focus", icon: Music },
-  { title: "Meal Analyzer", url: "/meal-analyzer", icon: Camera },
-  { title: "Wellness Reports", url: "/wellness-reports", icon: FileText },
-  { title: "Meal Planner", url: "/meal-planner", icon: Calendar },
-  { title: "AI Study Buddy", url: "/study-buddy", icon: Brain },
-  { title: "Rewards", url: "/rewards", icon: BarChart3 },
-  { title: "Team Challenges", url: "/team-challenges", icon: Users },
+  
+  // 👤 Profile
   { title: "My Profile", url: "/profile", icon: User },
 ];
 
