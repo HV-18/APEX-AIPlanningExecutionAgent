@@ -1,120 +1,70 @@
 # APEX : AI Planning & Execution Agent
 
-Welcome to **APEX**, your AI-powered companion for academic excellence and holistic well-being.
-
-APEX helps students plan, execute, and track their study, health, and lifestyle habits in one place using intelligent AI agents.
+APEX is an AI-driven platform that helps students plan, execute, and track academic, health, and lifestyle habits using intelligent agents. Instead of being just a chatbot, APEX acts as a **planning + execution system**—it recommends actions and helps you follow through.
 
 ---
 
 ## 🔗 Live Application
 
-- **Auth / Login**: [http://10.0.14.9:8081/auth](http://10.0.14.9:8081/auth)
+- **Auth / Login:** http://10.0.14.9:8081/auth
 
-> Note: This URL is accessible only inside the configured network (e.g., campus / local network).
-
----
-
-## 🧠 What is APEX?
-
-APEX is an AI-driven platform built for students to manage:
-
-- **Education** – Study planning, reminders, task breakdown, exam preparation
-- **Health** – Stress check-ins, basic wellness tips, focus music suggestions
-- **Sustainability** – Travel mode suggestions, eco-friendly choices, habit nudges
-
-Instead of being “just a chatbot”, APEX acts like a **planning + execution agent**:
-it helps you **decide what to do** and then **actually follow through**.
+> Accessible only within the internal/local network.
 
 ---
 
-## ✨ Core Features
+## 🧠 What APEX Does
 
-- 📚 **Smart Study Planner**
-  - Create subject-wise plans and tasks
-  - Break big goals into daily/weekly sessions
-  - Track completion and pending work
+APEX supports three major domains:
 
-- ❤️ **Health & Well-being Support**
-  - Simple self-checks for mood and stress
-  - Suggestions like breaks, sleep, hydration, and focus music
-  - Gentle nudges instead of spammy notifications
+### **📚 Education**
+- Study planning and task breakdown
+- Progress tracking
+- Exam prep workflow
 
-- 🌍 **Sustainable Living & Travel**
-  - Ask how to travel more sustainably (mode suggestions, carbon-aware choices)
-  - Keep a log of your daily travel and habits
-  - Awareness tips that actually fit a student lifestyle
+### **❤️ Health & Well-Being**
+- Stress/mood check-ins
+- Break reminders, hydration prompts, focus music recommendations  
+  (Not "mental health therapy"—just lightweight nudges)
 
-- 💬 **Chat-first Experience**
-  - Interact with APEX like chatting with a friend
-  - Ask about studies, health, or sustainability in one place
-  - Context-aware responses instead of random advice
+### **🌍 Sustainability & Lifestyle**
+- Travel mode recommendations
+- Habit tracking
+- Awareness tips tailored for students
 
-- 🔐 **Secure Auth System**
-  - Login via: [http://10.0.14.9:8081/auth](http://10.0.14.9:8081/auth)
-  - Role-based access planned for students/admins (can be extended later)
+---
+
+## ✨ Key Features
+
+- **AI-assisted study schedules**
+- **Chat interface for multi-domain queries**
+- **Task execution tracking**
+- **Secure login authentication**
+- **Role-based system (planned)**
 
 ---
 
 ## 🛠 Tech Stack
 
-> Update this to match your actual stack, but here’s a sane default:
-
-- **Frontend:** React / Next.js (TypeScript) + Tailwind CSS
-- **Backend:** Node.js (Express / NestJS)
-- **Database:** MongoDB / PostgreSQL
-- **Auth:** JWT-based authentication
-- **AI Layer:** Custom agents for education, health, and sustainability logic
+- **Frontend:** React + TypeScript + Vite
+- **UI:** Tailwind CSS + shadcn-ui
+- **Backend:** Node.js (Express / planned API layer)
+- **Database:** MongoDB / Planned integration
+- **Auth:** JWT-based login
+- **AI Layer:** Modular agents (education, health, sustainability)
 
 ---
 
-## 🚀 Running the Project Locally
+## 🚀 Run Locally
 
 ```sh
-# 1. Clone the repository
-git clone <your-repo-url>
-cd <your-project-folder>
-
-# 2. Install dependencies
-npm install
-
-# 3. Start development server
-npm run dev
-
-# Step 1: Clone the repository using the project's Git URL.
+# Clone repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
+# Navigate to project folder
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
+# Install dependencies
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start dev server
 npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS.
-
-## Can I connect a custom domain to my Lovable project?
