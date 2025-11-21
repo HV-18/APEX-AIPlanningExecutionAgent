@@ -11,6 +11,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -47,7 +48,19 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      if (isSignUp) {
+      if (isForgotPassword) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth`,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Check your email!",
+          description: "We've sent you a password reset link.",
+        });
+        setIsForgotPassword(false);
+      } else if (isSignUp) {
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -144,9 +157,15 @@ const Auth = () => {
           <div className="w-full max-w-md mx-auto order-1 lg:order-2">
             <div className="bg-card rounded-2xl shadow-2xl p-8 border border-border/50 backdrop-blur-sm">
               <div className="mb-6 text-center">
-                <h2 className="text-2xl font-bold mb-2">Get Started</h2>
+                <h2 className="text-2xl font-bold mb-2">
+                  {isForgotPassword ? "Reset Password" : "Get Started"}
+                </h2>
                 <p className="text-sm text-muted-foreground">
-                  {isSignUp ? "Create your account to continue" : "Sign in to your account"}
+                  {isForgotPassword
+                    ? "Enter your email to receive a reset link"
+                    : isSignUp
+                    ? "Create your account to continue"
+                    : "Sign in to your account"}
                 </p>
               </div>
 
@@ -164,43 +183,65 @@ const Auth = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      className="h-11 pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </button>
+                {!isForgotPassword && (
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className="h-11 pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <Button type="submit" className="w-full h-11" disabled={loading}>
-                  {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
+                  {loading
+                    ? "Loading..."
+                    : isForgotPassword
+                    ? "Send Reset Link"
+                    : isSignUp
+                    ? "Sign Up"
+                    : "Sign In"}
                 </Button>
 
-                <div className="text-center">
+                <div className="space-y-2 text-center">
+                  {!isForgotPassword && !isSignUp && (
+                    <button
+                      type="button"
+                      onClick={() => setIsForgotPassword(true)}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors block w-full"
+                    >
+                      Forgot password?
+                    </button>
+                  )}
                   <button
                     type="button"
-                    onClick={() => setIsSignUp(!isSignUp)}
+                    onClick={() => {
+                      setIsSignUp(!isSignUp);
+                      setIsForgotPassword(false);
+                    }}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
-                    {isSignUp
+                    {isForgotPassword
+                      ? "Back to sign in"
+                      : isSignUp
                       ? "Already have an account? Sign in"
                       : "Don't have an account? Sign up"}
                   </button>
