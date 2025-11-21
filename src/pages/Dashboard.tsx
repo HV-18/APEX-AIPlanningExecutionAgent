@@ -7,10 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [refreshKey, setRefreshKey] = useState(0);
+  const { toast } = useToast();
 
   const handleRefresh = () => {
     setRefreshKey(prev => prev + 1);
@@ -54,50 +57,95 @@ const Dashboard = () => {
               <CardTitle>🚀 Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-3">
-              <Button
-                variant="outline"
-                className="h-auto py-4 flex flex-col items-center gap-2"
-                onClick={() => navigate("/chat")}
-              >
-                <MessageSquare className="w-6 h-6 text-primary" />
-                <div className="text-center">
-                  <p className="font-semibold">AI Chat</p>
-                  <p className="text-xs text-muted-foreground">Ask questions</p>
-                </div>
-              </Button>
-              <Button
-                variant="outline"
-                className="h-auto py-4 flex flex-col items-center gap-2"
-                onClick={() => navigate("/sustainability")}
-              >
-                <Leaf className="w-6 h-6 text-secondary" />
-                <div className="text-center">
-                  <p className="font-semibold">Log Green Trip</p>
-                  <p className="text-xs text-muted-foreground">Track eco-choices</p>
-                </div>
-              </Button>
-              <Button
-                variant="outline"
-                className="h-auto py-4 flex flex-col items-center gap-2"
-                onClick={() => navigate("/projects")}
-              >
-                <Lightbulb className="w-6 h-6 text-accent" />
-                <div className="text-center">
-                  <p className="font-semibold">Start Project</p>
-                  <p className="text-xs text-muted-foreground">Solve real problems</p>
-                </div>
-              </Button>
-              <Button
-                variant="outline"
-                className="h-auto py-4 flex flex-col items-center gap-2"
-                onClick={() => navigate("/settings")}
-              >
-                <SettingsIcon className="w-6 h-6 text-muted-foreground" />
-                <div className="text-center">
-                  <p className="font-semibold">Settings</p>
-                  <p className="text-xs text-muted-foreground">Customize app</p>
-                </div>
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="h-auto py-4 flex flex-col items-center gap-2"
+                      onClick={() => {
+                        toast({ title: "AI Chat", description: "This is the AI Chat - Ask questions and get intelligent responses" });
+                        navigate("/chat");
+                      }}
+                    >
+                      <MessageSquare className="w-6 h-6 text-primary" />
+                      <div className="text-center">
+                        <p className="font-semibold">AI Chat</p>
+                        <p className="text-xs text-muted-foreground">Ask questions</p>
+                      </div>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Open AI Chat Assistant</p>
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="h-auto py-4 flex flex-col items-center gap-2"
+                      onClick={() => {
+                        toast({ title: "Sustainability", description: "This is the Sustainability page - Track eco-friendly transportation" });
+                        navigate("/sustainability");
+                      }}
+                    >
+                      <Leaf className="w-6 h-6 text-secondary" />
+                      <div className="text-center">
+                        <p className="font-semibold">Log Green Trip</p>
+                        <p className="text-xs text-muted-foreground">Track eco-choices</p>
+                      </div>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Track your sustainable transportation</p>
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="h-auto py-4 flex flex-col items-center gap-2"
+                      onClick={() => {
+                        toast({ title: "Real Projects", description: "This is the Real Projects page - Create and manage learning projects" });
+                        navigate("/projects");
+                      }}
+                    >
+                      <Lightbulb className="w-6 h-6 text-accent" />
+                      <div className="text-center">
+                        <p className="font-semibold">Start Project</p>
+                        <p className="text-xs text-muted-foreground">Solve real problems</p>
+                      </div>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Create real-world learning projects</p>
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="h-auto py-4 flex flex-col items-center gap-2"
+                      onClick={() => {
+                        toast({ title: "Settings", description: "This is the Settings page - Customize your APEX experience" });
+                        navigate("/settings");
+                      }}
+                    >
+                      <SettingsIcon className="w-6 h-6 text-muted-foreground" />
+                      <div className="text-center">
+                        <p className="font-semibold">Settings</p>
+                        <p className="text-xs text-muted-foreground">Customize app</p>
+                      </div>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Configure your preferences</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </CardContent>
           </Card>
         </div>

@@ -40,6 +40,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -86,17 +87,26 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b px-4 py-3">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Brain className="w-5 h-5 text-primary" />
-          </div>
-          {!collapsed && (
-            <div className="flex flex-col">
-              <span className="font-semibold text-sm">APEX</span>
-              <span className="text-xs text-muted-foreground">AI Planning & Execution</span>
-            </div>
-          )}
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2 cursor-pointer" onClick={() => toast({ title: "APEX Logo", description: "This is the APEX AI Planning & Execution Agent" })}>
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Brain className="w-5 h-5 text-primary" />
+                </div>
+                {!collapsed && (
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-sm">APEX</span>
+                    <span className="text-xs text-muted-foreground">AI Planning & Execution</span>
+                  </div>
+                )}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p>APEX - AI Planning & Execution Agent</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </SidebarHeader>
 
       <SidebarHeader className="border-b p-4">
@@ -108,21 +118,31 @@ export function AppSidebar() {
           <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === "/"}
-                      className="flex items-center gap-3 hover:bg-sidebar-accent rounded-md"
-                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
-                    >
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              <TooltipProvider>
+                {mainItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton asChild>
+                          <NavLink
+                            to={item.url}
+                            end={item.url === "/"}
+                            className="flex items-center gap-3 hover:bg-sidebar-accent rounded-md"
+                            activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
+                            onClick={() => toast({ title: item.title, description: `This is the ${item.title} page` })}
+                          >
+                            <item.icon className="w-4 h-4" />
+                            <span>{item.title}</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>{item.title}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </SidebarMenuItem>
+                ))}
+              </TooltipProvider>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -131,18 +151,28 @@ export function AppSidebar() {
           <SidebarGroupLabel>Settings</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <NavLink
-                    to="/settings"
-                    className="flex items-center gap-3 hover:bg-sidebar-accent rounded-md"
-                    activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
-                  >
-                    <Settings className="w-4 h-4" />
-                    <span>Settings</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              <TooltipProvider>
+                <SidebarMenuItem>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <SidebarMenuButton asChild>
+                        <NavLink
+                          to="/settings"
+                          className="flex items-center gap-3 hover:bg-sidebar-accent rounded-md"
+                          activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
+                          onClick={() => toast({ title: "Settings", description: "This is the Settings page" })}
+                        >
+                          <Settings className="w-4 h-4" />
+                          <span>Settings</span>
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>Settings</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </SidebarMenuItem>
+              </TooltipProvider>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
