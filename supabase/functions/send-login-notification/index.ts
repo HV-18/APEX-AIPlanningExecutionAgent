@@ -52,12 +52,12 @@ serve(async (req) => {
       console.log("Rate limit: Notification already sent recently for", userEmail);
       return new Response(
         JSON.stringify({ 
-          success: false, 
-          message: "Notification already sent recently. Please wait before sending another.",
+          success: true, 
+          message: "Notification already sent recently",
           rateLimited: true
         }),
         {
-          status: 429,
+          status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
@@ -223,16 +223,17 @@ Respond with a JSON object containing:
     if (emailError) {
       console.error("Resend error:", emailError);
       
-      // If it's a rate limit error, return a more specific message
+      // If it's a rate limit error, return success with rate limited flag
       if (emailError.statusCode === 429 || emailError.name === "rate_limit_exceeded") {
+        console.log("Resend API rate limit hit, silently skipping notification");
         return new Response(
           JSON.stringify({ 
-            error: "Email service rate limit reached. Please try again in a few seconds.",
-            success: false,
+            success: true,
+            message: "Rate limit reached, notification skipped",
             rateLimited: true
           }),
           {
-            status: 429,
+            status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           }
         );
