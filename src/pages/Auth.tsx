@@ -128,8 +128,6 @@ const Auth = () => {
                     input: 'border-input',
                   },
                 }}
-                providers={['google', 'apple']}
-                socialLayout="vertical"
                 theme="light"
                 redirectTo={window.location.origin}
               />
