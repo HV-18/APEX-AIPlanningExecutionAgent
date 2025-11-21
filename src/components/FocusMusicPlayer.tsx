@@ -167,9 +167,9 @@ export default function FocusMusicPlayer() {
         </div>
       </div>
 
-      {/* Embedded Player (Hidden but functional) */}
-      <div ref={iframeRef} className="mt-4">
-        <div id="youtube-player" className="w-full h-0" />
+      {/* Embedded YouTube Player */}
+      <div ref={iframeRef} className="mt-6">
+        <div id="youtube-player" className="w-full aspect-video rounded-lg overflow-hidden" />
       </div>
     </Card>
   );
