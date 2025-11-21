@@ -53,6 +53,16 @@ export const VoiceAssistant = () => {
       return;
     }
 
+    // Validate that it's not an API key
+    if (agentId.startsWith('sk_')) {
+      toast({
+        title: "Invalid Agent ID",
+        description: "This looks like an API key. Please enter the Agent ID instead (e.g., 9BWtsMINqrJLrRacOk9x)",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsConnecting(true);
     try {
       // Request microphone access
@@ -129,8 +139,8 @@ export const VoiceAssistant = () => {
                 className="w-full px-4 py-2 border rounded-md bg-background"
               />
               <div className="mt-3 p-3 bg-muted/50 rounded-md">
-                <p className="text-sm font-medium mb-2">Setup Instructions:</p>
-                <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+                <p className="text-sm font-medium mb-2 text-foreground">Setup Instructions:</p>
+                <ol className="text-xs text-muted-foreground space-y-1.5 list-decimal list-inside">
                   <li>
                     Visit{" "}
                     <a
@@ -143,9 +153,14 @@ export const VoiceAssistant = () => {
                     </a>
                   </li>
                   <li>Create a new Conversational AI agent</li>
-                  <li>Copy the Agent ID from your agent's settings</li>
-                  <li>Paste it above (e.g., 9BWtsMINqrJLrRacOk9x)</li>
+                  <li>Copy the <strong>Agent ID</strong> from your agent (short alphanumeric code)</li>
+                  <li>Paste it above (e.g., <code className="bg-background px-1 py-0.5 rounded">9BWtsMINqrJLrRacOk9x</code>)</li>
                 </ol>
+                <div className="mt-2 pt-2 border-t border-border">
+                  <p className="text-xs text-amber-600 dark:text-amber-500">
+                    ⚠️ <strong>Note:</strong> Enter your Agent ID, not your API key (API keys start with "sk_")
+                  </p>
+                </div>
               </div>
             </div>
 
