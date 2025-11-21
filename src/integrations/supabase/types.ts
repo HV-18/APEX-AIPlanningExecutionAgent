@@ -856,27 +856,33 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age_verified: boolean | null
           avatar_url: string | null
           bio: string | null
           created_at: string | null
+          date_of_birth: string | null
           full_name: string | null
           id: string
           preferred_subjects: string[] | null
           study_goals: string[] | null
         }
         Insert: {
+          age_verified?: boolean | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
+          date_of_birth?: string | null
           full_name?: string | null
           id: string
           preferred_subjects?: string[] | null
           study_goals?: string[] | null
         }
         Update: {
+          age_verified?: boolean | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
+          date_of_birth?: string | null
           full_name?: string | null
           id?: string
           preferred_subjects?: string[] | null
@@ -2056,6 +2062,35 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "workspace_dashboard_widgets_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_favorites_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
