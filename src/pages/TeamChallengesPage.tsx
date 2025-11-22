@@ -74,12 +74,64 @@ export default function TeamChallengesPage() {
     // Subscribe to real-time updates
     const channel = supabase
       .channel('team-challenges-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'teams' }, () => loadData())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members' }, () => loadData())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_challenges' }, () => loadData())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_challenge_progress' }, () => loadData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'teams' }, async (payload) => {
+        if (payload.eventType === 'INSERT') {
+          setTeams(prev => [...prev, payload.new as Team]);
+        } else if (payload.eventType === 'UPDATE') {
+          setTeams(prev => prev.map(t => t.id === payload.new.id ? payload.new as Team : t));
+          if (myTeam && payload.new.id === myTeam.id) {
+            setMyTeam(payload.new as Team);
+          }
+        } else if (payload.eventType === 'DELETE') {
+          setTeams(prev => prev.filter(t => t.id !== payload.old.id));
+        }
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members' }, async (payload) => {
+        const teamId = (payload.new as any)?.team_id || (payload.old as any)?.team_id;
+        if (myTeam && teamId === myTeam.id) {
+          const { data: membersData } = await supabase
+            .from('team_members')
+            .select('*')
+            .eq('team_id', myTeam.id);
+          
+          if (membersData) {
+            const memberIds = membersData.map(m => m.user_id);
+            const { data: profiles } = await supabase
+              .from('profiles')
+              .select('id, avatar_url')
+              .in('id', memberIds);
+
+            const membersWithAvatars = membersData.map(member => ({
+              ...member,
+              avatar_url: profiles?.find(p => p.id === member.user_id)?.avatar_url
+            }));
+
+            setTeamMembers(membersWithAvatars);
+          }
+        }
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_challenges' }, async (payload) => {
+        if (payload.eventType === 'INSERT') {
+          setChallenges(prev => [...prev, payload.new as Challenge]);
+        } else if (payload.eventType === 'UPDATE') {
+          setChallenges(prev => prev.map(c => c.id === payload.new.id ? payload.new as Challenge : c));
+        } else if (payload.eventType === 'DELETE') {
+          setChallenges(prev => prev.filter(c => c.id !== payload.old.id));
+        }
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_challenge_progress' }, async (payload) => {
+        const teamId = (payload.new as any)?.team_id || (payload.old as any)?.team_id;
+        if (myTeam && teamId === myTeam.id) {
+          const { data: progressData } = await supabase
+            .from('team_challenge_progress')
+            .select('*, team_challenges(*)')
+            .eq('team_id', myTeam.id);
+          
+          setChallengeProgress(progressData || []);
+        }
+      })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'team_chat_messages' }, (payload) => {
-        if (payload.new && myTeam && payload.new.team_id === myTeam.id) {
+        if (payload.new && myTeam && (payload.new as any).team_id === myTeam.id) {
           setChatMessages(prev => [...prev, payload.new as ChatMessage]);
           setTimeout(() => {
             chatScrollRef.current?.scrollIntoView({ behavior: 'smooth' });
