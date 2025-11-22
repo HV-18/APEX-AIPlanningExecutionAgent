@@ -32,6 +32,7 @@ export const ChatInterface = () => {
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [lastRequestTime, setLastRequestTime] = useState<number>(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -197,6 +198,19 @@ export const ChatInterface = () => {
   const sendMessage = async () => {
     if ((!input.trim() && uploadedFiles.length === 0) || isLoading) return;
 
+    // Prevent rapid requests (minimum 2 seconds between requests)
+    const now = Date.now();
+    const timeSinceLastRequest = now - lastRequestTime;
+    if (timeSinceLastRequest < 2000) {
+      toast({
+        title: "Please wait",
+        description: "Please wait a moment before sending another message.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setLastRequestTime(now);
+
     // Convert images to base64
     const imagePromises = uploadedFiles.map(file => {
       return new Promise<string>((resolve) => {
@@ -249,7 +263,7 @@ export const ChatInterface = () => {
         
         // Check for rate limit error
         if (response.status === 429) {
-          throw new Error('Rate limit exceeded. Please wait a moment and try again.');
+          throw new Error('Gemini API rate limit reached. Please wait 30-60 seconds before sending another message.');
         }
         
         throw new Error(errorData.error || "Failed to get response");
