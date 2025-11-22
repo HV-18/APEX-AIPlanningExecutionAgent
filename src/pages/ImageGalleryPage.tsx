@@ -38,8 +38,13 @@ const ImageGalleryPage = () => {
 
   const fetchImages = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to view your images",
+          variant: "destructive",
+        });
         navigate("/auth");
         return;
       }
@@ -47,7 +52,7 @@ const ImageGalleryPage = () => {
       const { data, error } = await supabase
         .from("generated_images")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", session.user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;

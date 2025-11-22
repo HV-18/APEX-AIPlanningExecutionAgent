@@ -36,6 +36,10 @@ export default function StudyRoomsPage() {
 
   const loadRooms = async () => {
     try {
+      // Study rooms are public, so we can load them without auth
+      // But we still check session for proper error handling
+      const { data: { session } } = await supabase.auth.getSession();
+      
       const { data, error } = await supabase
         .from('study_rooms')
         .select('*')
@@ -77,14 +81,22 @@ export default function StudyRoomsPage() {
 
   const createRoom = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        toast({
+          title: 'Authentication Required',
+          description: 'Please log in to create study rooms',
+          variant: 'destructive',
+        });
+        navigate('/auth');
+        return;
+      }
 
       const { error } = await supabase.from('study_rooms').insert({
         name: newRoom.name,
         description: newRoom.description,
         topic: newRoom.topic,
-        created_by: user.id,
+        created_by: session.user.id,
       });
 
       if (error) throw error;
@@ -108,18 +120,26 @@ export default function StudyRoomsPage() {
 
   const joinRoom = async (roomId: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        toast({
+          title: 'Authentication Required',
+          description: 'Please log in to join study rooms',
+          variant: 'destructive',
+        });
+        navigate('/auth');
+        return;
+      }
 
       const { data: profile } = await supabase
         .from('profiles')
         .select('full_name')
-        .eq('id', user.id)
+        .eq('id', session.user.id)
         .single();
 
       await supabase.from('room_participants').insert({
         room_id: roomId,
-        user_id: user.id,
+        user_id: session.user.id,
         user_name: profile?.full_name || 'Student',
       });
 
