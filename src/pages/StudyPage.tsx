@@ -5,6 +5,7 @@ import { StudyTools } from "@/components/StudyTools";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { BackButton } from "@/components/BackButton";
+import { useTranslation } from "react-i18next";
 
 type StudySession = {
   id: string;
@@ -16,6 +17,7 @@ type StudySession = {
 };
 
 const StudyPage = () => {
+  const { t } = useTranslation();
   const [sessions, setSessions] = useState<StudySession[]>([]);
   const [stats, setStats] = useState({
     total: 0,
@@ -86,7 +88,7 @@ const StudyPage = () => {
       <div>
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <BookOpen className="w-8 h-8" />
-          Study Sessions
+          {t('study')}
         </h1>
         <p className="text-muted-foreground mt-1">
           Track your study time and stay productive
