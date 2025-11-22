@@ -56,32 +56,32 @@ export function AppSidebar() {
 
   // Education & Learning (Priority)
   const educationItems = [
-    { title: "Dashboard", url: "/", icon: BarChart3, group: "education" },
-    { title: "AI Chat Assistant", url: "/chat", icon: MessageSquare, group: "education" },
-    { title: "Study Planner", url: "/study-buddy", icon: Brain, group: "education" },
-    { title: "Quiz Generator", url: "/quiz", icon: ClipboardList, group: "education" },
-    { title: "Study Sessions", url: "/study", icon: BookOpen, group: "education" },
-    { title: "Voice Assistant", url: "/voice-assistant", icon: Mic, group: "education" },
-    { title: "Study Rooms", url: "/study-rooms", icon: Users, group: "education" },
-    { title: "Timetable", url: "/timetable", icon: Calendar, group: "education" },
-    { title: "Learning Projects", url: "/projects", icon: CalendarDays, group: "education" },
+    { title: t('dashboard'), url: "/", icon: BarChart3, group: "education" },
+    { title: t('chat'), url: "/chat", icon: MessageSquare, group: "education" },
+    { title: t('planning'), url: "/study-buddy", icon: Brain, group: "education" },
+    { title: t('quiz'), url: "/quiz", icon: ClipboardList, group: "education" },
+    { title: t('study'), url: "/study", icon: BookOpen, group: "education" },
+    { title: t('voice'), url: "/voice-assistant", icon: Mic, group: "education" },
+    { title: t('studyRooms'), url: "/study-rooms", icon: Users, group: "education" },
+    { title: t('timetable'), url: "/timetable", icon: Calendar, group: "education" },
+    { title: t('projects'), url: "/projects", icon: CalendarDays, group: "education" },
   ];
 
   // Collaboration & Competition
   const collaborationItems = [
-    { title: "Team Competitions", url: "/team-challenges", icon: Users, group: "collaboration" },
-    { title: "Gamification", url: "/rewards", icon: BarChart3, group: "collaboration" },
+    { title: t('teamChallenges'), url: "/team-challenges", icon: Users, group: "collaboration" },
+    { title: t('rewards'), url: "/rewards", icon: BarChart3, group: "collaboration" },
   ];
 
   // Wellness & Health
   const wellnessItems = [
-    { title: "Focus Mode", url: "/focus", icon: Music, group: "wellness" },
-    { title: "Mood Tracker", url: "/mood", icon: Smile, group: "wellness" },
-    { title: "Health Goals", url: "/health", icon: Heart, group: "wellness" },
-    { title: "Meal Analyzer", url: "/meal-analyzer", icon: Camera, group: "wellness" },
-    { title: "Meal Planner", url: "/meal-planner", icon: Calendar, group: "wellness" },
-    { title: "Wellness Reports", url: "/wellness-reports", icon: FileText, group: "wellness" },
-    { title: "Sustainability", url: "/sustainability", icon: Leaf, group: "wellness" },
+    { title: t('focus'), url: "/focus", icon: Music, group: "wellness" },
+    { title: t('mood'), url: "/mood", icon: Smile, group: "wellness" },
+    { title: t('health'), url: "/health", icon: Heart, group: "wellness" },
+    { title: t('mealAnalyzer'), url: "/meal-analyzer", icon: Camera, group: "wellness" },
+    { title: t('mealPlanner'), url: "/meal-planner", icon: Calendar, group: "wellness" },
+    { title: t('wellness'), url: "/wellness-reports", icon: FileText, group: "wellness" },
+    { title: t('sustainability'), url: "/sustainability", icon: Leaf, group: "wellness" },
   ];
 
   // Resources & Information
@@ -94,7 +94,7 @@ export function AppSidebar() {
 
   // User Profile
   const profileItems = [
-    { title: "My Profile", url: "/profile", icon: User, group: "profile" },
+    { title: t('profile'), url: "/profile", icon: User, group: "profile" },
   ];
 
   const mainItems = [
@@ -337,15 +337,15 @@ export function AppSidebar() {
                           to="/settings"
                           className="flex items-center gap-3 hover:bg-sidebar-accent rounded-md"
                           activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
-                          onClick={() => toast({ title: "Settings", description: "This is the Settings page" })}
+                          onClick={() => toast({ title: t('settings'), description: "This is the Settings page" })}
                         >
                           <Settings className="w-4 h-4" />
-                          <span>Settings</span>
+                          <span>{t('settings')}</span>
                         </NavLink>
                       </SidebarMenuButton>
                     </TooltipTrigger>
                     <TooltipContent side="right">
-                      <p>Settings</p>
+                      <p>{t('settings')}</p>
                     </TooltipContent>
                   </Tooltip>
                 </SidebarMenuItem>
