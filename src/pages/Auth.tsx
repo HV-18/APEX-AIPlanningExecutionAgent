@@ -216,7 +216,7 @@ const Auth = () => {
             className="text-4xl md:text-5xl font-medium text-center mb-12 tracking-tight cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => setShowHelpDialog(true)}
           >
-            {t('welcome')}
+            Welcome to APEX
           </h1>
         </div>
       </div>
