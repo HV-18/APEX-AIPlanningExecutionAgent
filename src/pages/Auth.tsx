@@ -188,14 +188,14 @@ const Auth = () => {
             onClick={() => openAuthModal("signin")}
             className="text-white hover:bg-white/10 h-9 px-4 rounded-full"
           >
-            Log in
+            {t('login')}
           </Button>
           <Button
             size="sm"
             onClick={() => openAuthModal("signup")}
             className="bg-white text-black hover:bg-white/90 h-9 px-4 rounded-full font-medium"
           >
-            Sign up for free
+            {t('signup')}
           </Button>
           <Button
             variant="ghost"
@@ -216,7 +216,7 @@ const Auth = () => {
             className="text-4xl md:text-5xl font-medium text-center mb-12 tracking-tight cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => setShowHelpDialog(true)}
           >
-            Welcome to APEX
+            {t('welcome')}
           </h1>
         </div>
       </div>
@@ -246,33 +246,33 @@ const Auth = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold text-center">
               {authMode === "forgot"
-                ? "Reset Password"
+                ? t('resetPassword')
                 : authMode === "signup"
-                  ? "Create your account"
+                  ? t('createAccount')
                   : authMode === "update_password"
-                    ? "Reset your password"
-                    : "Welcome back"}
+                    ? t('resetPassword')
+                    : t('welcome')}
             </DialogTitle>
             <DialogDescription className="text-white/60 text-center">
               {authMode === "forgot"
-                ? "Enter your email address to receive password reset instructions"
+                ? t('enterEmail')
                 : authMode === "signup"
-                  ? "Create an account to access APEX services"
+                  ? t('createAccount')
                   : authMode === "update_password"
-                    ? "Enter a new password below to change your password."
-                    : "Sign in to access your account"}
+                    ? t('newPassword')
+                    : t('signIn')}
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleAuth} className="space-y-4 mt-4">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-white/90">
-                Email address
+                {t('enterEmail')}
               </Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t('enterEmail')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -283,7 +283,7 @@ const Auth = () => {
             {authMode === "update_password" && (
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-white/90">
-                  New password
+                  {t('newPassword')}
                 </Label>
                 <div className="relative">
                   <Input
@@ -309,7 +309,7 @@ const Auth = () => {
                 </div>
 
                 <Label htmlFor="confirm-password" className="text-white/90 mt-4 block">
-                  Re-enter new password
+                  {t('reEnterPassword')}
                 </Label>
                 <div className="relative">
                   <Input
@@ -375,12 +375,12 @@ const Auth = () => {
               {loading
                 ? "Loading..."
                 : authMode === "forgot"
-                  ? "Send reset link"
+                  ? t('sendResetLink')
                   : authMode === "signup"
-                    ? "Continue"
+                    ? t('continue')
                     : authMode === "update_password"
-                      ? "Reset password"
-                      : "Log in"}
+                      ? t('resetPasswordButton')
+                      : t('loginButton')}
             </Button>
 
             <div className="space-y-2 text-center text-sm">
@@ -390,7 +390,7 @@ const Auth = () => {
                   onClick={() => setAuthMode("forgot")}
                   className="text-white/60 hover:text-white/80 transition-colors block w-full"
                 >
-                  Forgot password?
+                  {t('forgotPassword')}
                 </button>
               )}
               <button
@@ -405,10 +405,10 @@ const Auth = () => {
                 className="text-white/60 hover:text-white/80 transition-colors"
               >
                 {authMode === "forgot"
-                  ? "Back to log in"
+                  ? t('backToLogin')
                   : authMode === "signup"
-                    ? "Already have an account? Log in"
-                    : "Don't have an account? Sign up"}
+                    ? t('login')
+                    : t('signup')}
               </button>
             </div>
           </form>
@@ -419,9 +419,9 @@ const Auth = () => {
       <Dialog open={showHelpDialog} onOpenChange={setShowHelpDialog}>
         <DialogContent className="sm:max-w-md bg-[#1A1A1A] border-white/10 text-white z-50">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold">About APEX</DialogTitle>
+            <DialogTitle className="text-2xl font-semibold">{t('apex')}</DialogTitle>
             <DialogDescription className="text-white/60">
-              Platform information and resources
+              {t('helpDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 mt-4">
