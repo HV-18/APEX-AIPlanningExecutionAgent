@@ -54,30 +54,55 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const { t } = useTranslation();
 
+  // Education & Learning (Priority)
+  const educationItems = [
+    { title: "Dashboard", url: "/", icon: BarChart3, group: "education" },
+    { title: "AI Chat Assistant", url: "/chat", icon: MessageSquare, group: "education" },
+    { title: "Study Planner", url: "/study-buddy", icon: Brain, group: "education" },
+    { title: "Quiz Generator", url: "/quiz", icon: ClipboardList, group: "education" },
+    { title: "Study Sessions", url: "/study", icon: BookOpen, group: "education" },
+    { title: "Voice Assistant", url: "/voice-assistant", icon: Mic, group: "education" },
+    { title: "Study Rooms", url: "/study-rooms", icon: Users, group: "education" },
+    { title: "Timetable", url: "/timetable", icon: Calendar, group: "education" },
+    { title: "Learning Projects", url: "/projects", icon: CalendarDays, group: "education" },
+  ];
+
+  // Collaboration & Competition
+  const collaborationItems = [
+    { title: "Team Competitions", url: "/team-challenges", icon: Users, group: "collaboration" },
+    { title: "Gamification", url: "/rewards", icon: BarChart3, group: "collaboration" },
+  ];
+
+  // Wellness & Health
+  const wellnessItems = [
+    { title: "Focus Mode", url: "/focus", icon: Music, group: "wellness" },
+    { title: "Mood Tracker", url: "/mood", icon: Smile, group: "wellness" },
+    { title: "Health Goals", url: "/health", icon: Heart, group: "wellness" },
+    { title: "Meal Analyzer", url: "/meal-analyzer", icon: Camera, group: "wellness" },
+    { title: "Meal Planner", url: "/meal-planner", icon: Calendar, group: "wellness" },
+    { title: "Wellness Reports", url: "/wellness-reports", icon: FileText, group: "wellness" },
+    { title: "Sustainability", url: "/sustainability", icon: Leaf, group: "wellness" },
+  ];
+
+  // Resources & Information
+  const resourceItems = [
+    { title: "Image Gallery", url: "/image-gallery", icon: Image, group: "resources" },
+    { title: "Project Vision", url: "/project-vision", icon: Rocket, group: "resources" },
+    { title: "About APEX", url: "/about", icon: Lightbulb, group: "resources" },
+    { title: "Documentation", url: "/docs", icon: BookText, group: "resources" },
+  ];
+
+  // User Profile
+  const profileItems = [
+    { title: "My Profile", url: "/profile", icon: User, group: "profile" },
+  ];
+
   const mainItems = [
-    { title: t('dashboard'), url: "/", icon: BarChart3 },
-    { title: t('chat'), url: "/chat", icon: MessageSquare },
-    { title: t('planning'), url: "/study-buddy", icon: Brain },
-    { title: t('quiz'), url: "/quiz", icon: ClipboardList },
-    { title: t('study'), url: "/study", icon: BookOpen },
-    { title: t('voice'), url: "/voice-assistant", icon: Mic },
-    { title: t('studyRooms'), url: "/study-rooms", icon: Users },
-    { title: t('teamChallenges'), url: "/team-challenges", icon: Users },
-    { title: t('timetable'), url: "/timetable", icon: Calendar },
-    { title: "Real Projects", url: "/projects", icon: CalendarDays },
-    { title: "Image Gallery", url: "/image-gallery", icon: Image },
-    { title: t('focus'), url: "/focus", icon: Music },
-    { title: t('mood'), url: "/mood", icon: Smile },
-    { title: t('health'), url: "/health", icon: Heart },
-    { title: t('mealAnalyzer'), url: "/meal-analyzer", icon: Camera },
-    { title: t('mealPlanner'), url: "/meal-planner", icon: Calendar },
-    { title: t('wellness'), url: "/wellness-reports", icon: FileText },
-    { title: t('sustainability'), url: "/sustainability", icon: Leaf },
-    { title: t('rewards'), url: "/rewards", icon: BarChart3 },
-    { title: "Project Vision", url: "/project-vision", icon: Rocket },
-    { title: "About", url: "/about", icon: Lightbulb },
-    { title: "Documentation", url: "/docs", icon: BookText },
-    { title: t('profile'), url: "/profile", icon: User },
+    ...educationItems,
+    ...collaborationItems,
+    ...wellnessItems,
+    ...resourceItems,
+    ...profileItems,
   ];
 
   const handleSignOut = async () => {
@@ -138,12 +163,13 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
+        {/* Education & Learning Section */}
         <SidebarGroup>
-          <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
+          <SidebarGroupLabel>Education & Learning</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <TooltipProvider>
-                {mainItems.map((item) => (
+                {educationItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -153,7 +179,134 @@ export function AppSidebar() {
                             end={item.url === "/"}
                             className="flex items-center gap-3 hover:bg-sidebar-accent rounded-md"
                             activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
-                            onClick={() => toast({ title: item.title, description: `This is the ${item.title} page` })}
+                          >
+                            <item.icon className="w-4 h-4" />
+                            <span>{item.title}</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>{item.title}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </SidebarMenuItem>
+                ))}
+              </TooltipProvider>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Collaboration Section */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Collaboration</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <TooltipProvider>
+                {collaborationItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton asChild>
+                          <NavLink
+                            to={item.url}
+                            className="flex items-center gap-3 hover:bg-sidebar-accent rounded-md"
+                            activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
+                          >
+                            <item.icon className="w-4 h-4" />
+                            <span>{item.title}</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>{item.title}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </SidebarMenuItem>
+                ))}
+              </TooltipProvider>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Wellness Section */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Wellness & Health</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <TooltipProvider>
+                {wellnessItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton asChild>
+                          <NavLink
+                            to={item.url}
+                            className="flex items-center gap-3 hover:bg-sidebar-accent rounded-md"
+                            activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
+                          >
+                            <item.icon className="w-4 h-4" />
+                            <span>{item.title}</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>{item.title}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </SidebarMenuItem>
+                ))}
+              </TooltipProvider>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Resources Section */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Resources</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <TooltipProvider>
+                {resourceItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton asChild>
+                          <NavLink
+                            to={item.url}
+                            className="flex items-center gap-3 hover:bg-sidebar-accent rounded-md"
+                            activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
+                          >
+                            <item.icon className="w-4 h-4" />
+                            <span>{item.title}</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>{item.title}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </SidebarMenuItem>
+                ))}
+              </TooltipProvider>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Profile Section */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Account</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <TooltipProvider>
+                {profileItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton asChild>
+                          <NavLink
+                            to={item.url}
+                            className="flex items-center gap-3 hover:bg-sidebar-accent rounded-md"
+                            activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
                           >
                             <item.icon className="w-4 h-4" />
                             <span>{item.title}</span>
