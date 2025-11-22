@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 const ChatPage = () => {
   const { t } = useTranslation();
-  
+
   return (
     <div className="space-y-6">
       <BackButton to="/dashboard" />
@@ -13,7 +13,7 @@ const ChatPage = () => {
         <div className="flex items-start justify-between mb-2">
           <h1 className="text-3xl font-bold flex items-center gap-2">
             <MessageSquare className="w-8 h-8" />
-            {t('chat')}
+            {t('Chat')}
           </h1>
         </div>
         <p className="text-muted-foreground">

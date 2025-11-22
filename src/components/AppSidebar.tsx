@@ -56,45 +56,45 @@ export function AppSidebar() {
 
   // Education & Learning (Priority)
   const educationItems = [
-    { title: t('dashboard'), url: "/", icon: BarChart3, group: "education" },
-    { title: t('chat'), url: "/chat", icon: MessageSquare, group: "education" },
-    { title: t('planning'), url: "/study-buddy", icon: Brain, group: "education" },
-    { title: t('quiz'), url: "/quiz", icon: ClipboardList, group: "education" },
-    { title: t('study'), url: "/study", icon: BookOpen, group: "education" },
-    { title: t('voice'), url: "/voice-assistant", icon: Mic, group: "education" },
-    { title: t('studyRooms'), url: "/study-rooms", icon: Users, group: "education" },
-    { title: t('timetable'), url: "/timetable", icon: Calendar, group: "education" },
-    { title: t('projects'), url: "/projects", icon: CalendarDays, group: "education" },
+    { title: t('Dashboard'), url: "/", icon: BarChart3, group: "education" },
+    { title: t('Chat'), url: "/chat", icon: MessageSquare, group: "education" },
+    { title: t('Planning'), url: "/study-buddy", icon: Brain, group: "education" },
+    { title: t('Quiz'), url: "/quiz", icon: ClipboardList, group: "education" },
+    { title: t('Study'), url: "/study", icon: BookOpen, group: "education" },
+    { title: t('Voice'), url: "/voice-assistant", icon: Mic, group: "education" },
+    { title: t('StudyRooms'), url: "/study-rooms", icon: Users, group: "education" },
+    { title: t('Timetable'), url: "/timetable", icon: Calendar, group: "education" },
+    { title: t('Projects'), url: "/projects", icon: CalendarDays, group: "education" },
   ];
 
   // Collaboration & Competition
   const collaborationItems = [
-    { title: t('teamChallenges'), url: "/team-challenges", icon: Users, group: "collaboration" },
-    { title: t('rewards'), url: "/rewards", icon: BarChart3, group: "collaboration" },
+    { title: t('TeamChallenges'), url: "/team-challenges", icon: Users, group: "collaboration" },
+    { title: t('Rewards'), url: "/rewards", icon: BarChart3, group: "collaboration" },
   ];
 
   // Wellness & Health
   const wellnessItems = [
-    { title: t('focus'), url: "/focus", icon: Music, group: "wellness" },
-    { title: t('mood'), url: "/mood", icon: Smile, group: "wellness" },
-    { title: t('health'), url: "/health", icon: Heart, group: "wellness" },
-    { title: t('mealAnalyzer'), url: "/meal-analyzer", icon: Camera, group: "wellness" },
-    { title: t('mealPlanner'), url: "/meal-planner", icon: Calendar, group: "wellness" },
-    { title: t('wellness'), url: "/wellness-reports", icon: FileText, group: "wellness" },
-    { title: t('sustainability'), url: "/sustainability", icon: Leaf, group: "wellness" },
+    { title: t('Focus'), url: "/focus", icon: Music, group: "wellness" },
+    { title: t('Mood'), url: "/mood", icon: Smile, group: "wellness" },
+    { title: t('Health'), url: "/health", icon: Heart, group: "wellness" },
+    { title: t('MealAnalyzer'), url: "/meal-analyzer", icon: Camera, group: "wellness" },
+    { title: t('MealPlanner'), url: "/meal-planner", icon: Calendar, group: "wellness" },
+    { title: t('Wellness'), url: "/wellness-reports", icon: FileText, group: "wellness" },
+    { title: t('Sustainability'), url: "/sustainability", icon: Leaf, group: "wellness" },
   ];
 
   // Resources & Information
   const resourceItems = [
-    { title: t('imageGallery'), url: "/image-gallery", icon: Image, group: "resources" },
-    { title: t('projectVision'), url: "/project-vision", icon: Rocket, group: "resources" },
-    { title: t('aboutApex'), url: "/about", icon: Lightbulb, group: "resources" },
-    { title: t('documentation'), url: "/docs", icon: BookText, group: "resources" },
+    { title: t('ImageGallery'), url: "/image-gallery", icon: Image, group: "resources" },
+    { title: t('ProjectVision'), url: "/project-vision", icon: Rocket, group: "resources" },
+    { title: t('AboutApex'), url: "/about", icon: Lightbulb, group: "resources" },
+    { title: t('Documentation'), url: "/docs", icon: BookText, group: "resources" },
   ];
 
   // User Profile
   const profileItems = [
-    { title: t('profile'), url: "/profile", icon: User, group: "profile" },
+    { title: t('Profile'), url: "/profile", icon: User, group: "profile" },
   ];
 
   const mainItems = [
@@ -165,7 +165,7 @@ export function AppSidebar() {
       <SidebarContent>
         {/* Education & Learning Section */}
         <SidebarGroup>
-          <SidebarGroupLabel>{t('educationLearning')}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('EducationLearning')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <TooltipProvider>
@@ -198,7 +198,7 @@ export function AppSidebar() {
 
         {/* Collaboration Section */}
         <SidebarGroup>
-          <SidebarGroupLabel>{t('collaboration')}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('Collaboration')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <TooltipProvider>
@@ -230,7 +230,7 @@ export function AppSidebar() {
 
         {/* Wellness Section */}
         <SidebarGroup>
-          <SidebarGroupLabel>{t('wellnessHealth')}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('WellnessHealth')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <TooltipProvider>
@@ -262,7 +262,7 @@ export function AppSidebar() {
 
         {/* Resources Section */}
         <SidebarGroup>
-          <SidebarGroupLabel>{t('resources')}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('Resources')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <TooltipProvider>
@@ -294,7 +294,7 @@ export function AppSidebar() {
 
         {/* Profile Section */}
         <SidebarGroup>
-          <SidebarGroupLabel>{t('account')}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('Account')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <TooltipProvider>
@@ -325,7 +325,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>{t('settings')}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('Settings')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <TooltipProvider>
@@ -337,15 +337,15 @@ export function AppSidebar() {
                           to="/settings"
                           className="flex items-center gap-3 hover:bg-sidebar-accent rounded-md"
                           activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
-                          onClick={() => toast({ title: t('settings'), description: "This is the Settings page" })}
+                          onClick={() => toast({ title: t('Settings'), description: "This is the Settings page" })}
                         >
                           <Settings className="w-4 h-4" />
-                          <span>{t('settings')}</span>
+                          <span>{t('Settings')}</span>
                         </NavLink>
                       </SidebarMenuButton>
                     </TooltipTrigger>
                     <TooltipContent side="right">
-                      <p>{t('settings')}</p>
+                      <p>{t('Settings')}</p>
                     </TooltipContent>
                   </Tooltip>
                 </SidebarMenuItem>
@@ -357,7 +357,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t p-4 space-y-2 overflow-hidden">
         <div className="flex items-center justify-between px-2">
-          {!collapsed && <span className="text-sm text-muted-foreground">{t('theme')}</span>}
+          {!collapsed && <span className="text-sm text-muted-foreground">{t('Theme')}</span>}
           <ThemeToggle />
         </div>
         <TooltipProvider>
@@ -370,11 +370,11 @@ export function AppSidebar() {
                 size={collapsed ? "icon" : "default"}
               >
                 <LogOut className="w-4 h-4 flex-shrink-0" />
-                {!collapsed && <span className="ml-2 truncate">{t('signOut')}</span>}
+                {!collapsed && <span className="ml-2 truncate">{t('SignOut')}</span>}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right">
-              <p>{t('signOut')}</p>
+              <p>{t('SignOut')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

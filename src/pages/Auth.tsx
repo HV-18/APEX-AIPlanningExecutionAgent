@@ -8,12 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useTranslation } from "react-i18next";
-
-
+import { LanguageSelector } from "@/components/LanguageSelector";
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation();
+
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showHelpDialog, setShowHelpDialog] = useState(false);
   const [authMode, setAuthMode] = useState<"signin" | "signup" | "forgot" | "update_password">("signin");
@@ -182,20 +182,21 @@ const Auth = () => {
           <span className="font-semibold text-lg">APEX</span>
         </div>
         <div className="flex items-center gap-3">
+          <LanguageSelector />
           <Button
             variant="ghost"
             size="sm"
             onClick={() => openAuthModal("signin")}
             className="text-white hover:bg-white/10 h-9 px-4 rounded-full"
           >
-            {t('login')}
+            {t('Login')}
           </Button>
           <Button
             size="sm"
             onClick={() => openAuthModal("signup")}
             className="bg-white text-black hover:bg-white/90 h-9 px-4 rounded-full font-medium"
           >
-            {t('signup')}
+            {t('Signup')}
           </Button>
           <Button
             variant="ghost"
@@ -224,17 +225,17 @@ const Auth = () => {
       {/* Footer */}
       <div className="py-6 px-4 text-center text-sm text-white/60 border-t border-white/10">
         <p>
-          By accessing APEX services, you agree to our{" "}
+          {t('TermsAgreement')}{" "}
           <Link to="/terms" className="underline hover:text-white/80 transition-colors">
-            Terms of Service
+            {t('TermsOfService')}
           </Link>{" "}
-          and acknowledge our{" "}
+          {t('AcknowledgePrivacy')}{" "}
           <Link to="/privacy" className="underline hover:text-white/80 transition-colors">
-            Privacy Policy
+            {t('PrivacyPolicy')}
           </Link>
-          . Review{" "}
+          . {t('ReviewCookies')}{" "}
           <Link to="/cookies" className="underline hover:text-white/80 transition-colors">
-            Cookie Settings
+            {t('CookieSettings')}
           </Link>
           .
         </p>
@@ -246,33 +247,33 @@ const Auth = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold text-center">
               {authMode === "forgot"
-                ? t('resetPassword')
+                ? t('ResetPassword')
                 : authMode === "signup"
-                  ? t('createAccount')
+                  ? t('CreateAccount')
                   : authMode === "update_password"
-                    ? t('resetPassword')
-                    : t('welcome')}
+                    ? t('ResetPassword')
+                    : t('Welcome')}
             </DialogTitle>
             <DialogDescription className="text-white/60 text-center">
               {authMode === "forgot"
-                ? t('enterEmail')
+                ? t('EnterEmail')
                 : authMode === "signup"
-                  ? t('createAccount')
+                  ? t('CreateAccount')
                   : authMode === "update_password"
-                    ? t('newPassword')
-                    : t('signIn')}
+                    ? t('NewPassword')
+                    : t('SignIn')}
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleAuth} className="space-y-4 mt-4">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-white/90">
-                {t('enterEmail')}
+                {t('EnterEmail')}
               </Label>
               <Input
                 id="email"
                 type="email"
-                placeholder={t('enterEmail')}
+                placeholder={t('EnterEmail')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -283,13 +284,13 @@ const Auth = () => {
             {authMode === "update_password" && (
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-white/90">
-                  {t('newPassword')}
+                  {t('NewPassword')}
                 </Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="New password"
+                    placeholder={t('NewPassword')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -309,13 +310,13 @@ const Auth = () => {
                 </div>
 
                 <Label htmlFor="confirm-password" className="text-white/90 mt-4 block">
-                  {t('reEnterPassword')}
+                  {t('ReEnterPassword')}
                 </Label>
                 <div className="relative">
                   <Input
                     id="confirm-password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Re-enter new password"
+                    placeholder={t('ReEnterPassword')}
                     required
                     className="h-12 bg-white border-gray-200 text-black placeholder:text-gray-400 focus:border-green-500 focus:ring-green-500 pr-10"
                   />
@@ -337,13 +338,13 @@ const Auth = () => {
             {authMode !== "forgot" && authMode !== "update_password" && (
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-white/90">
-                  Password
+                  {t('Password')}
                 </Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder={t('EnterPassword')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -373,14 +374,14 @@ const Auth = () => {
               disabled={loading}
             >
               {loading
-                ? "Loading..."
+                ? t('Loading')
                 : authMode === "forgot"
-                  ? t('sendResetLink')
+                  ? t('SendResetLink')
                   : authMode === "signup"
-                    ? t('continue')
+                    ? t('Continue')
                     : authMode === "update_password"
-                      ? t('resetPasswordButton')
-                      : t('loginButton')}
+                      ? t('ResetPasswordButton')
+                      : t('LoginButton')}
             </Button>
 
             <div className="space-y-2 text-center text-sm">
@@ -390,7 +391,7 @@ const Auth = () => {
                   onClick={() => setAuthMode("forgot")}
                   className="text-white/60 hover:text-white/80 transition-colors block w-full"
                 >
-                  {t('forgotPassword')}
+                  {t('ForgotPassword')}
                 </button>
               )}
               <button
@@ -405,10 +406,10 @@ const Auth = () => {
                 className="text-white/60 hover:text-white/80 transition-colors"
               >
                 {authMode === "forgot"
-                  ? t('backToLogin')
+                  ? t('BackToLogin')
                   : authMode === "signup"
-                    ? t('login')
-                    : t('signup')}
+                    ? t('Login')
+                    : t('Signup')}
               </button>
             </div>
           </form>
@@ -419,32 +420,32 @@ const Auth = () => {
       <Dialog open={showHelpDialog} onOpenChange={setShowHelpDialog}>
         <DialogContent className="sm:max-w-md bg-[#1A1A1A] border-white/10 text-white z-50">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold">{t('apex')}</DialogTitle>
+            <DialogTitle className="text-2xl font-semibold">{t('Apex')}</DialogTitle>
             <DialogDescription className="text-white/60">
-              {t('helpDescription')}
+              {t('HelpDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
-              <h3 className="font-semibold mb-2">Getting Started</h3>
+              <h3 className="font-semibold mb-2">{t('GettingStarted')}</h3>
               <p className="text-sm text-white/70 leading-relaxed">
-                Create an account to access comprehensive AI-powered educational tools, productivity features, wellness monitoring, and collaborative study environments.
+                {t('GettingStartedDesc')}
               </p>
             </div>
             <div>
-              <h3 className="font-semibold mb-2">Core Features</h3>
+              <h3 className="font-semibold mb-2">{t('CoreFeatures')}</h3>
               <ul className="text-sm text-white/70 space-y-1 list-disc list-inside">
-                <li>AI-powered educational assistance</li>
-                <li>Productivity management tools</li>
-                <li>Collaborative study environments</li>
-                <li>Wellness and nutrition tracking</li>
-                <li>Achievement and progress monitoring</li>
+                <li>{t('Feature1')}</li>
+                <li>{t('Feature2')}</li>
+                <li>{t('Feature3')}</li>
+                <li>{t('Feature4')}</li>
+                <li>{t('Feature5')}</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold mb-2">Additional Resources</h3>
+              <h3 className="font-semibold mb-2">{t('AdditionalResources')}</h3>
               <p className="text-sm text-white/70 leading-relaxed">
-                Access comprehensive documentation and tutorials through the platform dashboard after authentication.
+                {t('AdditionalResourcesDesc')}
               </p>
             </div>
           </div>

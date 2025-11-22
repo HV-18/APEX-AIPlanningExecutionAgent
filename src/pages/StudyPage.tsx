@@ -88,7 +88,7 @@ const StudyPage = () => {
       <div>
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <BookOpen className="w-8 h-8" />
-          {t('study')}
+          {t('Study')}
         </h1>
         <p className="text-muted-foreground mt-1">
           Track your study time and stay productive
@@ -192,7 +192,7 @@ const StudyPage = () => {
         {/* Sidebar - Study Tools */}
         <div>
           <StudyTools />
-          
+
           <Card className="mt-6 bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
             <CardHeader>
               <CardTitle className="text-lg">🎯 Study Tips</CardTitle>
