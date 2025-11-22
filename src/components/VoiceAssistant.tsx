@@ -1,37 +1,131 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useConversation } from "@11labs/react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Mic, MicOff, Volume2, VolumeX, Loader2 } from "lucide-react";
+import { Mic, MicOff, Volume2, VolumeX, Loader2, History, Globe, Trash2, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+interface ConversationHistory {
+  id: string;
+  agent_id: string;
+  language: string;
+  started_at: string;
+  ended_at: string | null;
+  duration_seconds: number | null;
+  message_count: number;
+  summary: string | null;
+}
+
+interface VoiceMessage {
+  id: string;
+  role: string;
+  content: string;
+  timestamp: string;
+}
 
 export const VoiceAssistant = () => {
   const [agentId, setAgentId] = useState("");
   const [isConnecting, setIsConnecting] = useState(false);
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
+  const [language, setLanguage] = useState("en");
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [conversationHistory, setConversationHistory] = useState<ConversationHistory[]>([]);
+  const [selectedHistory, setSelectedHistory] = useState<string | null>(null);
+  const [historyMessages, setHistoryMessages] = useState<VoiceMessage[]>([]);
   const { toast } = useToast();
 
   const conversation = useConversation({
-    onConnect: () => {
+    onConnect: async () => {
       console.log("Connected to ElevenLabs");
       toast({
         title: "Connected",
         description: "Voice assistant is ready to talk!",
       });
+      
+      // Create conversation record
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('voice_conversations')
+          .insert({
+            user_id: user.id,
+            agent_id: agentId,
+            language: language,
+          })
+          .select()
+          .single();
+        
+        if (data && !error) {
+          setCurrentConversationId(data.id);
+        }
+      }
     },
-    onDisconnect: () => {
+    onDisconnect: async () => {
       console.log("Disconnected from ElevenLabs");
+      
+      // Update conversation with end time
+      if (currentConversationId) {
+        const { data: conversation } = await supabase
+          .from('voice_conversations')
+          .select('started_at')
+          .eq('id', currentConversationId)
+          .single();
+        
+        if (conversation) {
+          const duration = Math.floor(
+            (new Date().getTime() - new Date(conversation.started_at).getTime()) / 1000
+          );
+          
+          await supabase
+            .from('voice_conversations')
+            .update({
+              ended_at: new Date().toISOString(),
+              duration_seconds: duration,
+            })
+            .eq('id', currentConversationId);
+        }
+        
+        setCurrentConversationId(null);
+        loadConversationHistory();
+      }
+      
       toast({
         title: "Disconnected",
         description: "Voice assistant session ended",
       });
     },
-    onMessage: (message) => {
+    onMessage: async (message) => {
       console.log("Message received:", message);
+      
+      // Save message to database
+      if (currentConversationId && message.message) {
+        await supabase.from('voice_messages').insert({
+          conversation_id: currentConversationId,
+          role: message.source === 'user' ? 'user' : 'assistant',
+          content: message.message,
+        });
+        
+        // Update message count
+        const { data: conv } = await supabase
+          .from('voice_conversations')
+          .select('message_count')
+          .eq('id', currentConversationId)
+          .single();
+        
+        if (conv) {
+          await supabase
+            .from('voice_conversations')
+            .update({ message_count: (conv.message_count || 0) + 1 })
+            .eq('id', currentConversationId);
+        }
+      }
     },
     onError: (error) => {
       console.error("Voice assistant error:", error);
@@ -106,6 +200,73 @@ export const VoiceAssistant = () => {
     await conversation.setVolume({ volume: newMutedState ? 0 : volume });
   };
 
+  const loadConversationHistory = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('voice_conversations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('started_at', { ascending: false })
+      .limit(20);
+
+    if (data && !error) {
+      setConversationHistory(data);
+    }
+  };
+
+  const loadHistoryMessages = async (conversationId: string) => {
+    const { data, error } = await supabase
+      .from('voice_messages')
+      .select('*')
+      .eq('conversation_id', conversationId)
+      .order('timestamp', { ascending: true });
+
+    if (data && !error) {
+      setHistoryMessages(data);
+      setSelectedHistory(conversationId);
+    }
+  };
+
+  const deleteConversation = async (conversationId: string) => {
+    const { error } = await supabase
+      .from('voice_conversations')
+      .delete()
+      .eq('id', conversationId);
+
+    if (!error) {
+      toast({
+        title: "Deleted",
+        description: "Conversation deleted successfully",
+      });
+      loadConversationHistory();
+      if (selectedHistory === conversationId) {
+        setSelectedHistory(null);
+        setHistoryMessages([]);
+      }
+    }
+  };
+
+  useEffect(() => {
+    loadConversationHistory();
+  }, []);
+
+  const languages = [
+    { value: "en", label: "English" },
+    { value: "es", label: "Spanish" },
+    { value: "fr", label: "French" },
+    { value: "de", label: "German" },
+    { value: "it", label: "Italian" },
+    { value: "pt", label: "Portuguese" },
+    { value: "zh", label: "Chinese" },
+    { value: "ja", label: "Japanese" },
+    { value: "ko", label: "Korean" },
+    { value: "ar", label: "Arabic" },
+    { value: "hi", label: "Hindi" },
+    { value: "ru", label: "Russian" },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
@@ -124,9 +285,41 @@ export const VoiceAssistant = () => {
         </Badge>
       </div>
 
+      <Tabs defaultValue="assistant" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="assistant">
+            <Mic className="w-4 h-4 mr-2" />
+            Assistant
+          </TabsTrigger>
+          <TabsTrigger value="history">
+            <History className="w-4 h-4 mr-2" />
+            History
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="assistant" className="space-y-6 mt-6">
       <Card className="p-6 space-y-6">
         {conversation.status === "disconnected" ? (
           <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                <Globe className="w-4 h-4 inline mr-1" />
+                Language
+              </label>
+              <Select value={language} onValueChange={setLanguage}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {languages.map((lang) => (
+                    <SelectItem key={lang.value} value={lang.value}>
+                      {lang.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div>
               <label className="block text-sm font-medium mb-2">
                 ElevenLabs Agent ID
@@ -261,6 +454,103 @@ export const VoiceAssistant = () => {
           <li>• Ask specific questions for better answers</li>
         </ul>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="history" className="space-y-6 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <History className="w-5 h-5" />
+                Past Conversations
+              </h3>
+              <ScrollArea className="h-[500px] pr-4">
+                {conversationHistory.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    No conversation history yet
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {conversationHistory.map((conv) => (
+                      <div
+                        key={conv.id}
+                        className={`p-4 rounded-lg border cursor-pointer transition-colors hover:bg-muted/50 ${
+                          selectedHistory === conv.id ? 'bg-muted border-primary' : ''
+                        }`}
+                        onClick={() => loadHistoryMessages(conv.id)}
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <Globe className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">
+                              {languages.find(l => l.value === conv.language)?.label}
+                            </span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteConversation(conv.id);
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          </Button>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <Clock className="w-3 h-3" />
+                          <span>{new Date(conv.started_at).toLocaleString()}</span>
+                        </div>
+                        {conv.duration_seconds && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Duration: {Math.floor(conv.duration_seconds / 60)}m {conv.duration_seconds % 60}s
+                          </p>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                          {conv.message_count} messages
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4">Conversation Details</h3>
+              <ScrollArea className="h-[500px] pr-4">
+                {selectedHistory ? (
+                  <div className="space-y-4">
+                    {historyMessages.map((msg) => (
+                      <div
+                        key={msg.id}
+                        className={`p-3 rounded-lg ${
+                          msg.role === 'user'
+                            ? 'bg-primary/10 ml-8'
+                            : 'bg-muted mr-8'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge variant={msg.role === 'user' ? 'default' : 'secondary'} className="text-xs">
+                            {msg.role === 'user' ? 'You' : 'Assistant'}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(msg.timestamp).toLocaleTimeString()}
+                          </span>
+                        </div>
+                        <p className="text-sm">{msg.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    Select a conversation to view details
+                  </p>
+                )}
+              </ScrollArea>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

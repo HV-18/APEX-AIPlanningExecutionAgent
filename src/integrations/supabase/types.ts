@@ -1777,6 +1777,80 @@ export type Database = {
           },
         ]
       }
+      voice_conversations: {
+        Row: {
+          agent_id: string
+          created_at: string
+          duration_seconds: number | null
+          ended_at: string | null
+          id: string
+          language: string
+          message_count: number | null
+          started_at: string
+          summary: string | null
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          language?: string
+          message_count?: number | null
+          started_at?: string
+          summary?: string | null
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          language?: string
+          message_count?: number | null
+          started_at?: string
+          summary?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      voice_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+          timestamp: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+          timestamp?: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          timestamp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "voice_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       voice_signals: {
         Row: {
           created_at: string | null
