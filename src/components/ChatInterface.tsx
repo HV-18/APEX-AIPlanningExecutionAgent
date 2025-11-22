@@ -263,7 +263,7 @@ export const ChatInterface = () => {
         
         // Check for rate limit error
         if (response.status === 429) {
-          throw new Error('Gemini API rate limit reached. Please wait 30-60 seconds before sending another message.');
+          throw new Error('Rate limit reached. Please wait a moment before sending another message.');
         }
         
         throw new Error(errorData.error || "Failed to get response");
