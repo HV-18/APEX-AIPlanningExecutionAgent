@@ -199,14 +199,6 @@ const WorkspaceDashboard = () => {
         <CollaborationPresence workspaceId={workspaceId} currentUserId={currentUserId} />
       )}
 
-      <AdvancedAnalyticsDashboard />
-
-      {currentUserId && workspaceId && (
-        <CollaborationPresence workspaceId={workspaceId} currentUserId={currentUserId} />
-      )}
-
-      <AdvancedAnalyticsDashboard />
-
       <div className="grid gap-6">
         {visibleWidgets.map((widget) => (
           <Card key={widget.id}>
