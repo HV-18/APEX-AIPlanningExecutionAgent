@@ -24,6 +24,44 @@ APEX supports three major domains:
 - Awareness tips tailored for students
 
 ---
+**Proposed Circular Architecture**
+
+
+
+                          ┌──────────────────────────┐
+                          │   System Integrations    │
+                          └──────────────────────────┘
+                                      ▲
+                                      │
+
+            ┌──────────────┬──────────────┬──────────────┬──────────────┐
+            │ Education     │ Health       │ Sustainability│ Productivity │
+            │   Agents      │   Agents     │    Agents     │    Agents    │
+            └──────────────┴──────────────┴──────────────┴──────────────┘
+                                      ▲
+                                      │
+
+                          ┌──────────────────────────┐
+                          │   Core AI Engine         │
+                          │ (Planner + Execution)    │
+                          └──────────────────────────┘
+                                      ▲
+                                      │
+
+                          ┌──────────────────────────┐
+                          │ Authentication + Users   │
+                          └──────────────────────────┘
+                                      ▲
+                                      │
+
+                          ┌──────────────────────────┐
+                          │ React UI / Frontend      │
+                          └──────────────────────────┘
+
+
+
+
+---
 
 ## ✨ Key Features
 
