@@ -52,13 +52,16 @@ export default function MealPlannerPage() {
 
   const loadMealPlans = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        setLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from('meal_plans')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', session.user.id)
         .eq('week_start', weekStart);
 
       if (error) throw error;
@@ -73,8 +76,17 @@ export default function MealPlannerPage() {
   const generateWeeklyPlan = async () => {
     setGenerating(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        toast({
+          title: 'Authentication Required',
+          description: 'Please log in to generate meal plans',
+          variant: 'destructive',
+        });
+        setGenerating(false);
+        return;
+      }
+      const user = session.user;
 
       console.log('Starting meal plan generation for user:', user.id);
 

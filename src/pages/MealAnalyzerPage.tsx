@@ -25,6 +25,7 @@ interface SavedMeal {
   cost: number | null;
   is_sustainable: boolean | null;
   notes: string | null;
+  photo_url: string | null;
   created_at: string;
 }
 
@@ -65,13 +66,16 @@ export default function MealAnalyzerPage() {
 
   const loadMealHistory = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        setLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from('meals')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', session.user.id)
         .order('created_at', { ascending: false })
         .limit(10);
 
@@ -116,17 +120,35 @@ export default function MealAnalyzerPage() {
 
       setAnalysis(data);
 
-      // Save to database
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      // Upload image and save to database
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        // Upload image to storage
+        const fileName = `meal_${Date.now()}.jpg`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('meal-photos')
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        let photoUrl = null;
+        if (!uploadError && uploadData) {
+          const { data: publicUrlData } = supabase.storage
+            .from('meal-photos')
+            .getPublicUrl(fileName);
+          photoUrl = publicUrlData.publicUrl;
+        }
+
         await supabase.from('meals').insert({
-          user_id: user.id,
+          user_id: session.user.id,
           meal_name: data.mealName,
           calories: data.calories,
           nutrition_score: data.nutritionScore,
           cost: data.estimatedCost,
           is_sustainable: data.isSustainable,
           notes: data.analysisNotes,
+          photo_url: photoUrl,
         });
       }
 
@@ -303,7 +325,14 @@ export default function MealAnalyzerPage() {
           <div className="space-y-3">
             {mealHistory.map((meal) => (
               <Card key={meal.id} className="p-4 hover:border-primary/50 transition-all">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start gap-4">
+                  {meal.photo_url && (
+                    <img 
+                      src={meal.photo_url} 
+                      alt={meal.meal_name}
+                      className="w-24 h-24 object-cover rounded-lg"
+                    />
+                  )}
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="font-semibold text-foreground">{meal.meal_name}</h3>

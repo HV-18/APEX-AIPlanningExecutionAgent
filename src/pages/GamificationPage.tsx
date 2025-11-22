@@ -45,8 +45,9 @@ export default function GamificationPage() {
     loadGamificationData();
 
     const setupRealtimeSubscription = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      const user = session.user;
 
       // Subscribe to real-time updates with enhanced callbacks
       const channel = supabase
@@ -140,11 +141,17 @@ export default function GamificationPage() {
 
   const loadGamificationData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
         setLoading(false);
+        toast({
+          title: 'Authentication Required',
+          description: 'Please log in to view rewards',
+          variant: 'destructive',
+        });
         return;
       }
+      const user = session.user;
 
       // Parallel fetch all data for faster loading
       const [pointsResult, allBadgesResult, earnedBadgesResult, leaderboardResult] = await Promise.all([

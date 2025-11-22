@@ -56,9 +56,14 @@ export default function AIInsightsPanel() {
         subjects: Array.from(new Set(sessions.map(s => s.subject))),
       };
 
-      // Generate AI insights
-      const { data, error } = await supabase.functions.invoke('ai-chat', {
-        body: {
+      // Generate AI insights using streaming
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
           messages: [
             {
               role: 'system',
@@ -77,14 +82,37 @@ export default function AIInsightsPanel() {
               content: `Analyze this study data and provide insights: ${JSON.stringify(context)}`
             }
           ],
-          model: 'google/gemini-2.5-flash'
-        }
+          mode: 'casual'
+        })
       });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error(`Failed to generate insights: ${response.status}`);
+      }
 
-      const aiResponse = data.choices[0].message.content;
-      const parsedInsights = JSON.parse(aiResponse);
+      // Read the streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullResponse = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          fullResponse += chunk;
+        }
+      }
+
+      // Extract JSON from markdown code blocks if present
+      let jsonText = fullResponse.trim();
+      if (jsonText.includes('```json')) {
+        jsonText = jsonText.split('```json')[1].split('```')[0].trim();
+      } else if (jsonText.includes('```')) {
+        jsonText = jsonText.split('```')[1].split('```')[0].trim();
+      }
+
+      const parsedInsights = JSON.parse(jsonText);
       setInsights(parsedInsights);
 
     } catch (error) {
