@@ -51,7 +51,7 @@ export const WorkspaceSharingModal = ({
   const loadMembers = async () => {
     const { data } = await supabase
       .from("workspace_members")
-      .select("*")
+      .select("id, user_id, role, joined_at, workspace_id")
       .eq("workspace_id", workspaceId);
 
     if (data) {
@@ -65,7 +65,10 @@ export const WorkspaceSharingModal = ({
             .single();
           
           return {
-            ...member,
+            id: member.id,
+            user_id: member.user_id,
+            role: member.role,
+            joined_at: member.joined_at,
             full_name: profile?.full_name
           };
         })
