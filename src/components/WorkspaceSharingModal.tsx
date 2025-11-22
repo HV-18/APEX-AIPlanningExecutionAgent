@@ -31,9 +31,7 @@ interface Member {
   user_id: string;
   role: string;
   joined_at: string;
-  profiles?: {
-    full_name: string | null;
-  };
+  full_name?: string | null;
 }
 
 export const WorkspaceSharingModal = ({
@@ -53,10 +51,27 @@ export const WorkspaceSharingModal = ({
   const loadMembers = async () => {
     const { data } = await supabase
       .from("workspace_members")
-      .select("*, profiles(full_name)")
+      .select("*")
       .eq("workspace_id", workspaceId);
 
-    if (data) setMembers(data);
+    if (data) {
+      // Fetch profile data for each member
+      const membersWithProfiles = await Promise.all(
+        data.map(async (member) => {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', member.user_id)
+            .single();
+          
+          return {
+            ...member,
+            full_name: profile?.full_name
+          };
+        })
+      );
+      setMembers(membersWithProfiles);
+    }
   };
 
   const handleInvite = async () => {
@@ -185,7 +200,7 @@ export const WorkspaceSharingModal = ({
                     <div className="flex items-center gap-2">
                       <Shield className="w-4 h-4 text-muted-foreground" />
                       <span className="text-sm">
-                        {member.profiles?.full_name || member.user_id.slice(0, 8) + '...'}
+                        {member.full_name || member.user_id.slice(0, 8) + '...'}
                       </span>
                       <Badge variant="secondary" className="text-xs">
                         {member.role}
