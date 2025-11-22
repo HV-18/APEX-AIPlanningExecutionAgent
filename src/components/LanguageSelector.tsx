@@ -11,9 +11,15 @@ import {
 import { Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+// Supported languages with full translations
+const supportedLanguages = [
+    'en-us', 'es-es', 'fr-fr', 'de', 'zh', 'ja', 'pt-br', 'hi',
+    'ar-sa', 'ko', 'ru', 'id', 'tr', 'sw', 'vi', 'it'
+];
+
 const languages = {
     "Africa": [
-        { code: "sw", name: "Swahili" },
+        { code: "sw", name: "Swahili ✓" },
         { code: "am", name: "Amharic" },
         { code: "yo", name: "Yoruba" },
         { code: "ig", name: "Igbo" },
@@ -25,31 +31,31 @@ const languages = {
         { code: "pt-ao", name: "Portuguese (Angola)" },
     ],
     "Asia": [
-        { code: "zh", name: "Mandarin Chinese" },
-        { code: "hi", name: "Hindi" },
-        { code: "ja", name: "Japanese" },
-        { code: "ko", name: "Korean" },
-        { code: "ar-sa", name: "Arabic (Saudi Arabia)" },
+        { code: "zh", name: "Mandarin Chinese ✓" },
+        { code: "hi", name: "Hindi ✓" },
+        { code: "ja", name: "Japanese ✓" },
+        { code: "ko", name: "Korean ✓" },
+        { code: "ar-sa", name: "Arabic (Saudi Arabia) ✓" },
         { code: "bn", name: "Bengali" },
-        { code: "id", name: "Indonesian" },
-        { code: "tr", name: "Turkish" },
-        { code: "vi", name: "Vietnamese" },
+        { code: "id", name: "Indonesian ✓" },
+        { code: "tr", name: "Turkish ✓" },
+        { code: "vi", name: "Vietnamese ✓" },
         { code: "th", name: "Thai" },
     ],
     "Europe": [
         { code: "en-gb", name: "English (UK)" },
-        { code: "es-es", name: "Spanish (Spain)" },
-        { code: "fr-fr", name: "French (France)" },
-        { code: "de", name: "German" },
-        { code: "it", name: "Italian" },
+        { code: "es-es", name: "Spanish (Spain) ✓" },
+        { code: "fr-fr", name: "French (France) ✓" },
+        { code: "de", name: "German ✓" },
+        { code: "it", name: "Italian ✓" },
         { code: "pt-pt", name: "Portuguese (Portugal)" },
-        { code: "ru", name: "Russian" },
+        { code: "ru", name: "Russian ✓" },
         { code: "pl", name: "Polish" },
         { code: "nl", name: "Dutch" },
         { code: "el", name: "Greek" },
     ],
     "North America": [
-        { code: "en-us", name: "English (US)" },
+        { code: "en-us", name: "English (US) ✓" },
         { code: "es-mx", name: "Spanish (Mexico)" },
         { code: "fr-ca", name: "French (Canada)" },
         { code: "ht", name: "Haitian Creole" },
@@ -62,7 +68,7 @@ const languages = {
     ],
     "South America": [
         { code: "es-ar", name: "Spanish (Argentina)" },
-        { code: "pt-br", name: "Portuguese (Brazil)" },
+        { code: "pt-br", name: "Portuguese (Brazil) ✓" },
         { code: "es-co", name: "Spanish (Colombia)" },
         { code: "es-pe", name: "Spanish (Peru)" },
         { code: "es-cl", name: "Spanish (Chile)" },
@@ -97,6 +103,12 @@ export function LanguageSelector() {
     const handleLanguageChange = (langCode: string) => {
         setSelectedLanguage(langCode);
         i18n.changeLanguage(langCode);
+        
+        // Show feedback message
+        const isSupported = supportedLanguages.includes(langCode);
+        if (!isSupported) {
+            console.log(`Language ${langCode} will use English fallback - full translation coming soon`);
+        }
     };
 
     return (
@@ -108,6 +120,9 @@ export function LanguageSelector() {
                 </div>
             </SelectTrigger>
             <SelectContent className="max-h-[500px]">
+                <div className="px-2 py-1.5 text-xs text-muted-foreground border-b sticky top-0 bg-popover z-20">
+                    ✓ = Full translations available
+                </div>
                 {Object.entries(languages).map(([continent, langs]) => (
                     <SelectGroup key={continent}>
                         <SelectLabel className="font-bold text-primary sticky top-0 bg-popover z-10">
