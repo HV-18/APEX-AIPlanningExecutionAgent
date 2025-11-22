@@ -86,10 +86,10 @@ export function AppSidebar() {
 
   // Resources & Information
   const resourceItems = [
-    { title: "Image Gallery", url: "/image-gallery", icon: Image, group: "resources" },
-    { title: "Project Vision", url: "/project-vision", icon: Rocket, group: "resources" },
-    { title: "About APEX", url: "/about", icon: Lightbulb, group: "resources" },
-    { title: "Documentation", url: "/docs", icon: BookText, group: "resources" },
+    { title: t('imageGallery'), url: "/image-gallery", icon: Image, group: "resources" },
+    { title: t('projectVision'), url: "/project-vision", icon: Rocket, group: "resources" },
+    { title: t('aboutApex'), url: "/about", icon: Lightbulb, group: "resources" },
+    { title: t('documentation'), url: "/docs", icon: BookText, group: "resources" },
   ];
 
   // User Profile
@@ -165,7 +165,7 @@ export function AppSidebar() {
       <SidebarContent>
         {/* Education & Learning Section */}
         <SidebarGroup>
-          <SidebarGroupLabel>Education & Learning</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('educationLearning')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <TooltipProvider>
@@ -198,7 +198,7 @@ export function AppSidebar() {
 
         {/* Collaboration Section */}
         <SidebarGroup>
-          <SidebarGroupLabel>Collaboration</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('collaboration')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <TooltipProvider>
@@ -230,7 +230,7 @@ export function AppSidebar() {
 
         {/* Wellness Section */}
         <SidebarGroup>
-          <SidebarGroupLabel>Wellness & Health</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('wellnessHealth')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <TooltipProvider>
@@ -262,7 +262,7 @@ export function AppSidebar() {
 
         {/* Resources Section */}
         <SidebarGroup>
-          <SidebarGroupLabel>Resources</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('resources')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <TooltipProvider>
@@ -294,7 +294,7 @@ export function AppSidebar() {
 
         {/* Profile Section */}
         <SidebarGroup>
-          <SidebarGroupLabel>Account</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('account')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <TooltipProvider>
@@ -325,7 +325,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Settings</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('settings')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <TooltipProvider>
@@ -357,7 +357,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t p-4 space-y-2 overflow-hidden">
         <div className="flex items-center justify-between px-2">
-          {!collapsed && <span className="text-sm text-muted-foreground">Theme</span>}
+          {!collapsed && <span className="text-sm text-muted-foreground">{t('theme')}</span>}
           <ThemeToggle />
         </div>
         <TooltipProvider>
