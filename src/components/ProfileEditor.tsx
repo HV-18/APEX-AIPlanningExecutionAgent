@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { User, Upload, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,6 +106,19 @@ export const ProfileEditor = ({ profile, userId, onUpdate }: ProfileEditorProps)
       setSaving(false);
     }
   };
+
+  // Keyboard shortcut for saving
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        handleSave();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [formData]);
 
   return (
     <Card>
@@ -237,10 +250,18 @@ export const ProfileEditor = ({ profile, userId, onUpdate }: ProfileEditorProps)
           </div>
         )}
 
-        <Button onClick={handleSave} disabled={saving} className="w-full">
+        <Button 
+          onClick={handleSave} 
+          disabled={saving} 
+          size="lg"
+          className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold"
+        >
           <Save className="w-4 h-4 mr-2" />
           {saving ? "Saving..." : "Save Changes"}
         </Button>
+        <p className="text-xs text-center text-muted-foreground">
+          Press Ctrl+S to save quickly
+        </p>
       </CardContent>
     </Card>
   );
