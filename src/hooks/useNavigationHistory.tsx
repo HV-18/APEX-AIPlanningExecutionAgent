@@ -58,7 +58,7 @@ export const useNavigationHistory = () => {
       const newHistory = [
         { path: currentPath, title, timestamp },
         ...prev.filter((item) => item.path !== currentPath), // Remove duplicates
-      ].slice(0, 20); // Keep only last 20 items
+      ];
 
       // Save to localStorage
       localStorage.setItem("navigationHistory", JSON.stringify(newHistory));
