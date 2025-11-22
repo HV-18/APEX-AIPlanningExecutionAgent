@@ -219,8 +219,9 @@ serve(async (req) => {
 
     if (!response.ok) {
       if (response.status === 429) {
+        console.warn("Gemini API rate limit hit");
         return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
+          JSON.stringify({ error: "Gemini API rate limit reached. Please wait 30-60 seconds before trying again." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
