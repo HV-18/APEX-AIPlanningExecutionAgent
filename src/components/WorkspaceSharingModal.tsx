@@ -31,6 +31,9 @@ interface Member {
   user_id: string;
   role: string;
   joined_at: string;
+  profiles?: {
+    full_name: string | null;
+  };
 }
 
 export const WorkspaceSharingModal = ({
@@ -50,7 +53,7 @@ export const WorkspaceSharingModal = ({
   const loadMembers = async () => {
     const { data } = await supabase
       .from("workspace_members")
-      .select("*")
+      .select("*, profiles(full_name)")
       .eq("workspace_id", workspaceId);
 
     if (data) setMembers(data);
@@ -68,18 +71,44 @@ export const WorkspaceSharingModal = ({
 
     setLoading(true);
     try {
-      // In a real app, you'd look up the user by email first
-      // For now, we'll show a success message
-      toast({
-        title: "Invitation sent",
-        description: `Invited ${email} as ${role} to ${workspaceName}`,
+      const { data, error } = await supabase.functions.invoke('invite-workspace-member', {
+        body: {
+          email,
+          workspaceId,
+          role,
+        },
       });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to add member",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data?.error) {
+        toast({
+          title: "Error",
+          description: data.error,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Member added",
+        description: `${email} has been added as ${role}`,
+      });
+      
       setEmail("");
+      await loadMembers();
     } catch (error) {
       console.error("Error inviting member:", error);
       toast({
         title: "Error",
-        description: "Failed to send invitation",
+        description: "Failed to add member",
         variant: "destructive",
       });
     } finally {
@@ -155,7 +184,9 @@ export const WorkspaceSharingModal = ({
                   >
                     <div className="flex items-center gap-2">
                       <Shield className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">{member.user_id.slice(0, 8)}...</span>
+                      <span className="text-sm">
+                        {member.profiles?.full_name || member.user_id.slice(0, 8) + '...'}
+                      </span>
                       <Badge variant="secondary" className="text-xs">
                         {member.role}
                       </Badge>
