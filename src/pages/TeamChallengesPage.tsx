@@ -381,6 +381,23 @@ export default function TeamChallengesPage() {
         return;
       }
 
+      // Check if already a member of this team
+      const { data: existingMembership } = await supabase
+        .from('team_members')
+        .select('id')
+        .eq('team_id', team.id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (existingMembership) {
+        toast({ 
+          title: 'Already a member',
+          description: 'You are already a member of this team.',
+          variant: 'destructive'
+        });
+        return;
+      }
+
       const { data: profile } = await supabase
         .from('profiles')
         .select('full_name')
