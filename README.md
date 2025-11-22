@@ -4,14 +4,6 @@ APEX is an AI-driven platform that helps students plan, execute, and track acade
 
 ---
 
-## 🔗 Live Application
-
-- **Auth / Login:** http://10.0.14.9:8081/auth
-
-> Accessible only within the internal/local network.
-
----
-
 ## 🧠 What APEX Does
 
 APEX supports three major domains:
