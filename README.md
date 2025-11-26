@@ -88,10 +88,10 @@ APEX supports three major domains:
 
 ```sh
 # Clone repository
-git clone <YOUR_GIT_URL>
+git clone <[https://github.com/HV-18/APEX-AIPlanningExecutionAgent/edit/main/README.md]>
 
 # Navigate to project folder
-cd <YOUR_PROJECT_NAME>
+cd <APEX : AI Planning & Execution Agent>
 
 # Install dependencies
 npm i
