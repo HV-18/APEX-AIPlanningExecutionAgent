@@ -84,17 +84,17 @@ APEX supports three major domains:
 
 ---
 
-## 🚀 Run Locally
-
-```sh
 # Clone repository
-git clone <[https://github.com/HV-18/APEX-AIPlanningExecutionAgent]>
+git clone https://github.com/HV-18/APEX-AIPlanningExecutionAgent.git
 
-# Navigate to project folder
-cd <APEX : AI Planning & Execution Agent>
+# Navigate into project folder
+cd APEX-AIPlanningExecutionAgent
 
 # Install dependencies
-npm i
+npm install
+
+# Start development server
+npm run dev
 
 # Start dev server
 npm run dev
